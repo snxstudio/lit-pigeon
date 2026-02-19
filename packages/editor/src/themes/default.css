@@ -1,0 +1,26 @@
+:host {
+  --pigeon-primary: #3b82f6;
+  --pigeon-primary-hover: #2563eb;
+  --pigeon-bg: #ffffff;
+  --pigeon-surface: #f8fafc;
+  --pigeon-surface-hover: #f1f5f9;
+  --pigeon-text: #1e293b;
+  --pigeon-text-secondary: #64748b;
+  --pigeon-border: #e2e8f0;
+  --pigeon-border-focus: #3b82f6;
+  --pigeon-radius: 6px;
+  --pigeon-radius-sm: 4px;
+  --pigeon-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --pigeon-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --pigeon-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --pigeon-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --pigeon-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --pigeon-canvas-bg: #e2e8f0;
+  --pigeon-palette-width: 240px;
+  --pigeon-properties-width: 300px;
+  --pigeon-toolbar-height: 48px;
+  --pigeon-drop-color: #3b82f6;
+  --pigeon-selected-outline: #3b82f6;
+  --pigeon-danger: #ef4444;
+  --pigeon-success: #22c55e;
+}

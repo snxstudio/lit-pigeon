@@ -1,0 +1,15 @@
+:host(.pigeon-dark) {
+  --pigeon-primary: #60a5fa;
+  --pigeon-primary-hover: #3b82f6;
+  --pigeon-bg: #1e293b;
+  --pigeon-surface: #334155;
+  --pigeon-surface-hover: #475569;
+  --pigeon-text: #f1f5f9;
+  --pigeon-text-secondary: #94a3b8;
+  --pigeon-border: #475569;
+  --pigeon-border-focus: #60a5fa;
+  --pigeon-canvas-bg: #0f172a;
+  --pigeon-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --pigeon-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --pigeon-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+}

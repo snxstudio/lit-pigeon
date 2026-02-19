@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="flame" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#FDE68A"/>
+      <stop offset="35%" stop-color="#FB923C"/>
+      <stop offset="70%" stop-color="#EF4444"/>
+      <stop offset="100%" stop-color="#DC2626"/>
+    </linearGradient>
+    <linearGradient id="flameInner" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#FFFBEB"/>
+      <stop offset="50%" stop-color="#FDE68A"/>
+      <stop offset="100%" stop-color="#FB923C"/>
+    </linearGradient>
+    <linearGradient id="bird" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#475569"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+    <linearGradient id="wing" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#64748B"/>
+      <stop offset="100%" stop-color="#334155"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Outer flame (large) -->
+  <path d="M 28 95 C 18 80, 8 88, 12 72 C 16 56, 6 50, 18 38 C 28 28, 22 18, 36 22 C 46 25, 48 14, 56 28 C 62 38, 72 36, 68 52 C 66 62, 76 68, 72 80 C 70 88, 78 92, 72 98 C 68 102, 62 100, 58 98 L 48 100 Z"
+        fill="url(#flame)" opacity="0.85"/>
+
+  <!-- Inner flame (bright core) -->
+  <path d="M 42 96 C 36 86, 28 88, 32 76 C 35 66, 28 60, 38 52 C 45 46, 42 38, 50 44 C 56 48, 60 46, 58 58 C 57 66, 64 72, 60 82 C 58 88, 62 92, 56 96 Z"
+        fill="url(#flameInner)" opacity="0.9"/>
+
+  <!-- Tail -->
+  <path d="M 148 110 L 180 130 L 176 122 L 185 138 L 178 128 L 182 142 L 170 126 L 148 118 Z"
+        fill="#334155"/>
+
+  <!-- Body -->
+  <ellipse cx="118" cy="115" rx="42" ry="30" fill="url(#bird)"/>
+
+  <!-- Wing -->
+  <path d="M 110 96 C 120 78, 148 70, 164 78 C 172 82, 174 90, 168 98 C 162 106, 145 110, 130 112 C 118 113, 110 108, 110 102 Z"
+        fill="url(#wing)"/>
+
+  <!-- Wing line details -->
+  <line x1="120" y1="100" x2="155" y2="90" stroke="#475569" stroke-width="0.8" opacity="0.5"/>
+  <line x1="118" y1="105" x2="158" y2="94" stroke="#475569" stroke-width="0.8" opacity="0.4"/>
+
+  <!-- Head -->
+  <circle cx="82" cy="96" r="20" fill="#64748B"/>
+
+  <!-- Eye -->
+  <circle cx="76" cy="93" r="4.5" fill="#0F172A"/>
+  <circle cx="74.5" cy="91.5" r="1.8" fill="#FF6B00" opacity="0.9"/>
+  <circle cx="78" cy="91" r="1.2" fill="white" opacity="0.8"/>
+
+  <!-- Brow (fierce) -->
+  <path d="M 68 86 C 72 83, 80 82, 84 84" stroke="#334155" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+  <!-- Upper beak (open) -->
+  <path d="M 66 95 L 52 90 L 66 98 Z" fill="#F59E0B"/>
+
+  <!-- Lower beak (open, angled down) -->
+  <path d="M 66 100 L 54 102 L 66 103 Z" fill="#D97706"/>
+
+  <!-- Glow at beak tip connecting to flame -->
+  <circle cx="53" cy="96" r="5" fill="#FB923C" opacity="0.3"/>
+
+  <!-- Feet -->
+  <g stroke="#D97706" stroke-width="2" fill="none" stroke-linecap="round">
+    <path d="M 105 142 L 100 162 M 100 162 L 94 168 M 100 162 L 104 169"/>
+    <path d="M 125 142 L 122 162 M 122 162 L 116 168 M 122 162 L 126 169"/>
+  </g>
+</svg>
