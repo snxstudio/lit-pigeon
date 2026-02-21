@@ -55,6 +55,28 @@ importers:
         specifier: ^5.4.0
         version: 5.4.21
 
+  packages/angular:
+    dependencies:
+      '@angular/core':
+        specifier: '>=17.0.0'
+        version: 21.1.5(rxjs@7.8.2)
+      '@lit-pigeon/core':
+        specifier: workspace:*
+        version: link:../core
+      '@lit-pigeon/editor':
+        specifier: workspace:*
+        version: link:../editor
+    devDependencies:
+      typescript:
+        specifier: ^5.5.0
+        version: 5.9.3
+      vite:
+        specifier: ^5.4.0
+        version: 5.4.21
+      vite-plugin-dts:
+        specifier: ^4.0.0
+        version: 4.5.4(rollup@4.57.1)(typescript@5.9.3)(vite@5.4.21)
+
   packages/core:
     dependencies:
       immer:
@@ -95,6 +117,28 @@ importers:
       vite-plugin-dts:
         specifier: ^4.0.0
         version: 4.5.4(rollup@4.57.1)(typescript@5.9.3)(vite@5.4.21)
+
+  packages/parser-mjml:
+    dependencies:
+      '@lit-pigeon/core':
+        specifier: workspace:*
+        version: link:../core
+      htmlparser2:
+        specifier: ^9.1.0
+        version: 9.1.0
+    devDependencies:
+      typescript:
+        specifier: ^5.5.0
+        version: 5.9.3
+      vite:
+        specifier: ^5.4.0
+        version: 5.4.21
+      vite-plugin-dts:
+        specifier: ^4.0.0
+        version: 4.5.4(rollup@4.57.1)(typescript@5.9.3)(vite@5.4.21)
+      vitest:
+        specifier: ^2.0.0
+        version: 2.1.9
 
   packages/react:
     dependencies:
@@ -153,6 +197,19 @@ importers:
         version: 2.1.9
 
 packages:
+
+  '@angular/core@21.1.5':
+    resolution: {integrity: sha512-m61YHiyE+SIvS8UXcFLjYCucv6ShJJCwz9xxEk7ysYW9wOtHdfIf9tgyOsucZDAvrvpSyQLRj5jGBCGm1VIvXA==}
+    engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
+    peerDependencies:
+      '@angular/compiler': 21.1.5
+      rxjs: ^6.5.3 || ^7.4.0
+      zone.js: ~0.15.0 || ~0.16.0
+    peerDependenciesMeta:
+      '@angular/compiler':
+        optional: true
+      zone.js:
+        optional: true
 
   '@babel/helper-string-parser@7.27.1':
     resolution: {integrity: sha512-qMlSxKbpRlAridDExk92nSobyDdpPijUq2DW6oDnUqd0iOGxmQjyqhMIihI9+zv4LPyZdRje2cavWPbCbWm3eA==}
@@ -1852,6 +1909,9 @@ packages:
   run-parallel@1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
 
+  rxjs@7.8.2:
+    resolution: {integrity: sha512-dhKf903U/PQZY6boNNtAGdWbG85WAbjT/1xYoZIC7FAY0yWapOBQVsVrDl58W86//e1VpMNBtRV4MaXfdMySFA==}
+
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
 
@@ -1987,6 +2047,9 @@ packages:
     engines: {node: '>=16'}
     peerDependencies:
       typescript: '>=4.2.0'
+
+  tslib@2.8.1:
+    resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
   turbo-darwin-64@2.8.10:
     resolution: {integrity: sha512-A03fXh+B7S8mL3PbdhTd+0UsaGrhfyPkODvzBDpKRY7bbeac4MDFpJ7I+Slf2oSkCEeSvHKR7Z4U71uKRUfX7g==}
@@ -2194,6 +2257,11 @@ packages:
     engines: {node: '>=10'}
 
 snapshots:
+
+  '@angular/core@21.1.5(rxjs@7.8.2)':
+    dependencies:
+      rxjs: 7.8.2
+      tslib: 2.8.1
 
   '@babel/helper-string-parser@7.27.1': {}
 
@@ -4170,6 +4238,10 @@ snapshots:
     dependencies:
       queue-microtask: 1.2.3
 
+  rxjs@7.8.2:
+    dependencies:
+      tslib: 2.8.1
+
   safer-buffer@2.1.2: {}
 
   scheduler@0.27.0: {}
@@ -4268,6 +4340,8 @@ snapshots:
   ts-api-utils@1.4.3(typescript@5.9.3):
     dependencies:
       typescript: 5.9.3
+
+  tslib@2.8.1: {}
 
   turbo-darwin-64@2.8.10:
     optional: true
