@@ -1,0 +1,30 @@
+export { PigeonEditorComponent } from './lib/pigeon-editor.component.js';
+
+// Re-export all core types for convenience
+export type {
+  PigeonDocument,
+  RowNode,
+  ColumnNode,
+  ContentBlock,
+  BlockType,
+  TextBlock,
+  ImageBlock,
+  ButtonBlock,
+  DividerBlock,
+  SpacerBlock,
+  SocialBlock,
+  HtmlBlock,
+  HeroBlock,
+  NavBarBlock,
+  NavLink,
+  Spacing,
+  SocialIcon,
+  EditorConfig,
+  Selection,
+  AssetManagerConfig,
+  MergeTag,
+  MergeTagConfig,
+  Renderer,
+  RenderOptions,
+  RenderResult,
+} from '@lit-pigeon/core';
