@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pigeon Email Editor — Playground</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0f172a;
+      color: #f1f5f9;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
+      background: #1e293b;
+      border-bottom: 1px solid #334155;
+      height: 48px;
+      flex-shrink: 0;
+    }
+
+    .app-header h1 {
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .app-header h1 a {
+      color: inherit;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .app-header h1 a:hover {
+      opacity: 0.85;
+    }
+
+    .app-header .logo {
+      font-size: 20px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .header-actions button {
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: 1px solid #475569;
+      background: #334155;
+      color: #f1f5f9;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .header-actions button:hover {
+      background: #475569;
+    }
+
+    .header-actions button.primary {
+      background: #3b82f6;
+      border-color: #3b82f6;
+    }
+
+    .header-actions button.primary:hover {
+      background: #2563eb;
+    }
+
+    .editor-container {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    pigeon-editor {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Modal overlay */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      width: 80vw;
+      max-width: 900px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid #334155;
+    }
+
+    .modal-header h2 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .modal-header button {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .modal-tabs {
+      display: flex;
+      border-bottom: 1px solid #334155;
+    }
+
+    .modal-tabs button {
+      padding: 10px 20px;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: #94a3b8;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .modal-tabs button.active {
+      color: #3b82f6;
+      border-bottom-color: #3b82f6;
+    }
+
+    .modal-body {
+      flex: 1;
+      overflow: auto;
+      padding: 16px 20px;
+    }
+
+    .modal-body pre {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #e2e8f0;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .template-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      padding: 8px 0;
+    }
+
+    .template-card {
+      padding: 16px;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .template-card:hover {
+      border-color: #3b82f6;
+      background: #334155;
+    }
+
+    .template-card h3 {
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .template-card p {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <h1>
+      <a href="/">
+        <span class="logo">&#x1f54a;</span>
+        Pigeon Playground
+      </a>
+    </h1>
+    <div class="header-actions">
+      <button id="btn-templates">Templates</button>
+      <button id="btn-json">View JSON</button>
+      <button id="btn-export" class="primary">Export HTML</button>
+    </div>
+  </header>
+
+  <div class="editor-container">
+    <pigeon-editor id="editor"></pigeon-editor>
+  </div>
+
+  <!-- Export/JSON Modal -->
+  <div class="modal-overlay" id="modal-export">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modal-title">Export</h2>
+        <button id="modal-close">&times;</button>
+      </div>
+      <div class="modal-tabs" id="modal-tabs">
+        <button class="active" data-tab="html">HTML</button>
+        <button data-tab="mjml">MJML</button>
+        <button data-tab="json">JSON</button>
+      </div>
+      <div class="modal-body">
+        <pre id="modal-content"></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Templates Modal -->
+  <div class="modal-overlay" id="modal-templates">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Choose a Template</h2>
+        <button id="templates-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="template-grid" id="template-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/playground.ts"></script>
+</body>
+</html>
