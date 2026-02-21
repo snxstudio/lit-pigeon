@@ -12,6 +12,9 @@ export type {
   SpacerBlock,
   SocialBlock,
   HtmlBlock,
+  HeroBlock,
+  NavBarBlock,
+  NavLink,
   Spacing,
   SocialIcon,
 } from './types/document.js';
@@ -19,6 +22,9 @@ export type {
 export type {
   Selection,
   EditorConfig,
+  AssetManagerConfig,
+  MergeTag,
+  MergeTagConfig,
   Step,
   PigeonPlugin,
   BlockDefinition,

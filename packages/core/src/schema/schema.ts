@@ -1,6 +1,6 @@
 import type { PigeonDocument, RowNode, ColumnNode, ContentBlock, BlockType } from '../types/document.js';
 
-const VALID_BLOCK_TYPES: BlockType[] = ['text', 'image', 'button', 'divider', 'spacer', 'social', 'html'];
+const VALID_BLOCK_TYPES: BlockType[] = ['text', 'image', 'button', 'divider', 'spacer', 'social', 'html', 'hero', 'navbar'];
 
 export interface ValidationError {
   path: string;

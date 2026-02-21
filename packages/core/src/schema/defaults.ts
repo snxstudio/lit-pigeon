@@ -8,6 +8,8 @@ import type {
   SpacerBlock,
   SocialBlock,
   HtmlBlock,
+  HeroBlock,
+  NavBarBlock,
   ContentBlock,
   BlockType,
   RowNode,
@@ -85,6 +87,37 @@ export function defaultHtmlValues(): HtmlBlock['values'] {
   };
 }
 
+export function defaultHeroValues(): HeroBlock['values'] {
+  return {
+    backgroundUrl: '',
+    backgroundPosition: 'center center',
+    mode: 'fluid-height',
+    width: 600,
+    height: 400,
+    verticalAlign: 'middle',
+    padding: defaultSpacing(0),
+    innerPadding: defaultSpacing(20),
+    backgroundColor: '#ffffff',
+    content: '<p style="color:#ffffff;font-size:24px;">Hero Title</p>',
+  };
+}
+
+export function defaultNavBarValues(): NavBarBlock['values'] {
+  return {
+    links: [
+      { href: '#', text: 'Home' },
+      { href: '#', text: 'About' },
+      { href: '#', text: 'Contact' },
+    ],
+    hamburger: 'hamburger',
+    alignment: 'center',
+    padding: defaultSpacing(10),
+    linkColor: '#000000',
+    linkFontSize: 14,
+    linkPadding: '10px 15px',
+  };
+}
+
 const defaultValuesMap: Record<BlockType, () => ContentBlock['values']> = {
   text: defaultTextValues,
   image: defaultImageValues,
@@ -93,6 +126,8 @@ const defaultValuesMap: Record<BlockType, () => ContentBlock['values']> = {
   spacer: defaultSpacerValues,
   social: defaultSocialValues,
   html: defaultHtmlValues,
+  hero: defaultHeroValues,
+  navbar: defaultNavBarValues,
 };
 
 export function getDefaultValues(type: BlockType): ContentBlock['values'] {

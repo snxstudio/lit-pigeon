@@ -47,6 +47,18 @@ const BUILT_IN_BLOCKS: BlockDefinition[] = [
     icon: 'html',
     defaultValues: getDefaultValues('html') as Record<string, unknown>,
   },
+  {
+    type: 'hero',
+    label: 'Hero',
+    icon: 'hero',
+    defaultValues: getDefaultValues('hero') as Record<string, unknown>,
+  },
+  {
+    type: 'navbar',
+    label: 'Navbar',
+    icon: 'navbar',
+    defaultValues: getDefaultValues('navbar') as Record<string, unknown>,
+  },
 ];
 
 export function initBlockRegistry(): void {

@@ -7,9 +7,32 @@ export interface Selection {
   blockId?: string;
 }
 
+export interface AssetManagerConfig {
+  enabled?: boolean;
+  uploadUrl?: string;
+  uploadHeaders?: Record<string, string>;
+  acceptedTypes?: string[];
+  maxFileSize?: number;
+  uploadHandler?: (file: File) => Promise<string>;
+}
+
+export interface MergeTag {
+  name: string;
+  label: string;
+  category?: string;
+  sample?: string;
+}
+
+export interface MergeTagConfig {
+  trigger?: string;
+  tags?: MergeTag[];
+}
+
 export interface EditorConfig {
   doc?: PigeonDocument;
   plugins?: PigeonPlugin[];
+  assetManager?: AssetManagerConfig;
+  mergeTags?: MergeTagConfig;
 }
 
 export interface Step {

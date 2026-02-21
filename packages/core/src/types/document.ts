@@ -96,6 +96,46 @@ export interface HtmlBlock {
   };
 }
 
+export interface HeroBlock {
+  id: string;
+  type: 'hero';
+  values: {
+    backgroundUrl: string;
+    backgroundPosition: 'center center' | 'top center' | 'bottom center' | 'left center' | 'right center';
+    mode: 'fixed-height' | 'fluid-height';
+    width: number;
+    height: number;
+    verticalAlign: 'top' | 'middle' | 'bottom';
+    padding: Spacing;
+    innerPadding: Spacing;
+    backgroundColor: string;
+    content: string;
+  };
+}
+
+export interface NavLink {
+  href: string;
+  text: string;
+  color?: string;
+  fontWeight?: string;
+  textDecoration?: string;
+  padding?: string;
+}
+
+export interface NavBarBlock {
+  id: string;
+  type: 'navbar';
+  values: {
+    links: NavLink[];
+    hamburger: 'hamburger' | 'none';
+    alignment: 'left' | 'center' | 'right';
+    padding: Spacing;
+    linkColor: string;
+    linkFontSize: number;
+    linkPadding: string;
+  };
+}
+
 export type ContentBlock =
   | TextBlock
   | ImageBlock
@@ -103,7 +143,9 @@ export type ContentBlock =
   | DividerBlock
   | SpacerBlock
   | SocialBlock
-  | HtmlBlock;
+  | HtmlBlock
+  | HeroBlock
+  | NavBarBlock;
 
 export type BlockType = ContentBlock['type'];
 
