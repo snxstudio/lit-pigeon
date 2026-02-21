@@ -11,6 +11,8 @@ import '../blocks/divider-block.js';
 import '../blocks/spacer-block.js';
 import '../blocks/social-block.js';
 import '../blocks/html-block.js';
+import '../blocks/hero-block.js';
+import '../blocks/navbar-block.js';
 
 @customElement('pigeon-column')
 export class PigeonColumn extends LitElement {
@@ -121,6 +123,10 @@ export class PigeonColumn extends LitElement {
         return html`<pigeon-social-block .block=${block} ?selected=${isSelected}></pigeon-social-block>`;
       case 'html':
         return html`<pigeon-html-block .block=${block} ?selected=${isSelected}></pigeon-html-block>`;
+      case 'hero':
+        return html`<pigeon-hero-block .block=${block} ?selected=${isSelected}></pigeon-hero-block>`;
+      case 'navbar':
+        return html`<pigeon-navbar-block .block=${block} ?selected=${isSelected}></pigeon-navbar-block>`;
       default:
         return html`<div>Unknown block type: ${(block as ContentBlock).type}</div>`;
     }
@@ -145,7 +151,7 @@ export class PigeonColumn extends LitElement {
     // Calculate drop index
     const blockElements = Array.from(
       this.renderRoot.querySelectorAll(
-        'pigeon-text-block, pigeon-image-block, pigeon-button-block, pigeon-divider-block, pigeon-spacer-block, pigeon-social-block, pigeon-html-block'
+        'pigeon-text-block, pigeon-image-block, pigeon-button-block, pigeon-divider-block, pigeon-spacer-block, pigeon-social-block, pigeon-html-block, pigeon-hero-block, pigeon-navbar-block'
       )
     ) as HTMLElement[];
 

@@ -5,6 +5,8 @@ import {
   type PigeonDocument,
   type EditorConfig,
   type BlockType,
+  type Renderer,
+  type MergeTag,
   createHistoryPlugin,
   createDefaultDocument,
   createBlock,
@@ -37,6 +39,8 @@ import './components/toolbar/pigeon-toolbar.js';
 import './components/palette/pigeon-palette.js';
 import './components/canvas/pigeon-canvas.js';
 import './components/properties/pigeon-properties.js';
+import './components/preview/pigeon-preview.js';
+import './components/merge-tags/pigeon-merge-tag-picker.js';
 import type { DragData } from './dnd/drag-manager.js';
 
 /**
@@ -48,6 +52,10 @@ import type { DragData } from './dnd/drag-manager.js';
  * @fires pigeon:ready  - Fired once after the editor has initialised
  * @fires pigeon:preview - Fired when the user clicks Preview in the toolbar
  * @fires pigeon:export  - Fired when the user clicks Export in the toolbar
+ * @fires pigeon:export-json - Fired for JSON export
+ * @fires pigeon:export-mjml - Fired for MJML export
+ * @fires pigeon:export-html - Fired for HTML export
+ * @fires pigeon:merge-tag-request - Fired when merge tag trigger detected but no static tags
  *
  * @csspart toolbar - The toolbar area
  * @csspart palette - The left palette area
@@ -68,6 +76,14 @@ export class PigeonEditor extends LitElement {
   @property({ type: Object })
   config: Partial<EditorConfig> = {};
 
+  /** Optional renderer for preview mode. */
+  @property({ type: Object })
+  renderer?: Renderer;
+
+  /** Optional function to convert document to MJML. */
+  @property({ type: Object })
+  documentToMjml?: (doc: PigeonDocument) => string;
+
   /* ------------------------------------------------------------------ */
   /*  Internal state                                                     */
   /* ------------------------------------------------------------------ */
@@ -76,6 +92,8 @@ export class PigeonEditor extends LitElement {
   @state() private _canUndo = false;
   @state() private _canRedo = false;
   @state() private _device: 'desktop' | 'mobile' = 'desktop';
+  @state() private _fullscreen = false;
+  @state() private _previewOpen = false;
 
   /* ------------------------------------------------------------------ */
   /*  Styles                                                             */
@@ -119,6 +137,12 @@ export class PigeonEditor extends LitElement {
       box-sizing: border-box;
     }
 
+    :host([fullscreen]) {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+    }
+
     .editor-body {
       display: flex;
       flex: 1;
@@ -140,6 +164,13 @@ export class PigeonEditor extends LitElement {
       // If the consumer sets a new document property, reload
       if (this.document && this.document !== this._state.doc) {
         this.loadDocument(this.document);
+      }
+    }
+    if (changed.has('_fullscreen')) {
+      if (this._fullscreen) {
+        this.setAttribute('fullscreen', '');
+      } else {
+        this.removeAttribute('fullscreen');
       }
     }
   }
@@ -182,6 +213,34 @@ export class PigeonEditor extends LitElement {
     return coreRedo(this._state, this._dispatch);
   }
 
+  /** Export the document as JSON. */
+  exportJson(): PigeonDocument {
+    return this._state.doc;
+  }
+
+  /** Export the document as MJML. Requires documentToMjml to be set. */
+  exportMjml(): string | null {
+    if (this.documentToMjml) {
+      return this.documentToMjml(this._state.doc);
+    }
+    return null;
+  }
+
+  /** Export the document as HTML. Requires renderer to be set. */
+  async exportHtml(): Promise<string | null> {
+    if (this.renderer) {
+      const result = await this.renderer.render(this._state.doc);
+      return result.html;
+    }
+    return null;
+  }
+
+  /** Set merge tags dynamically (for lazy loading). */
+  setMergeTags(tags: MergeTag[]) {
+    this.config = { ...this.config, mergeTags: { ...this.config.mergeTags, tags } };
+    this.requestUpdate();
+  }
+
   /* ------------------------------------------------------------------ */
   /*  Render                                                             */
   /* ------------------------------------------------------------------ */
@@ -199,14 +258,22 @@ export class PigeonEditor extends LitElement {
         ?can-undo=${this._canUndo}
         ?can-redo=${this._canRedo}
         .device=${this._device}
+        .fullscreen=${this._fullscreen}
         @toolbar-undo=${this._handleUndo}
         @toolbar-redo=${this._handleRedo}
         @toolbar-device=${this._handleDevice}
+        @toolbar-fullscreen=${this._handleFullscreen}
+        @pigeon:preview=${this._handlePreview}
+        @pigeon:export-html=${this._handleExportHtml}
+        @pigeon:export-mjml=${this._handleExportMjml}
+        @pigeon:export-json=${this._handleExportJson}
       ></pigeon-toolbar>
 
       <div class="editor-body">
         <pigeon-palette
           part="palette"
+          .doc=${doc}
+          .selection=${sel}
         ></pigeon-palette>
 
         <pigeon-canvas
@@ -235,6 +302,18 @@ export class PigeonEditor extends LitElement {
           @body-property-change=${this._handleBodyPropertyChange}
         ></pigeon-properties>
       </div>
+
+      <pigeon-preview
+        ?open=${this._previewOpen}
+        .doc=${doc}
+        .renderer=${this.renderer}
+        .documentToMjml=${this.documentToMjml}
+        @click=${(e: Event) => {
+          if ((e.target as HTMLElement).classList?.contains('overlay')) {
+            this._previewOpen = false;
+          }
+        }}
+      ></pigeon-preview>
     `;
   }
 
@@ -303,6 +382,46 @@ export class PigeonEditor extends LitElement {
 
   private _handleDevice(e: CustomEvent<{ device: 'desktop' | 'mobile' }>) {
     this._device = e.detail.device;
+  }
+
+  private _handleFullscreen() {
+    this._fullscreen = !this._fullscreen;
+  }
+
+  private _handlePreview() {
+    if (this.renderer) {
+      this._previewOpen = true;
+    } else {
+      this.dispatchEvent(new CustomEvent('pigeon:preview', {
+        bubbles: true,
+        composed: true,
+      }));
+    }
+  }
+
+  private _handleExportHtml() {
+    this.dispatchEvent(new CustomEvent('pigeon:export-html', {
+      detail: { document: this._state.doc },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  private _handleExportMjml() {
+    const mjml = this.documentToMjml ? this.documentToMjml(this._state.doc) : null;
+    this.dispatchEvent(new CustomEvent('pigeon:export-mjml', {
+      detail: { document: this._state.doc, mjml },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  private _handleExportJson() {
+    this.dispatchEvent(new CustomEvent('pigeon:export-json', {
+      detail: { document: this._state.doc },
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   /* ------------------------------------------------------------------ */

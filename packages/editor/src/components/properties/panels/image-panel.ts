@@ -1,9 +1,10 @@
 import { LitElement, html, css } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
-import type { ImageBlock, Spacing } from '@lit-pigeon/core';
+import { customElement, property, state } from 'lit/decorators.js';
+import type { ImageBlock, Spacing, AssetManagerConfig } from '@lit-pigeon/core';
 import '../controls/alignment-picker.js';
 import '../controls/spacing-input.js';
 import '../controls/slider-input.js';
+import '../../asset-manager/pigeon-asset-manager.js';
 
 @customElement('pigeon-image-panel')
 export class PigeonImagePanel extends LitElement {
@@ -15,6 +16,12 @@ export class PigeonImagePanel extends LitElement {
 
   @property({ type: String })
   columnId = '';
+
+  @property({ type: Object })
+  assetManagerConfig?: AssetManagerConfig;
+
+  @state()
+  private _assetManagerOpen = false;
 
   static styles = css`
     :host {
@@ -61,6 +68,25 @@ export class PigeonImagePanel extends LitElement {
       border-color: var(--pigeon-border-focus, #3b82f6);
       box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
     }
+
+    .upload-btn {
+      height: 28px;
+      padding: 0 12px;
+      border: 1px solid var(--pigeon-border, #e2e8f0);
+      border-radius: var(--pigeon-radius-sm, 4px);
+      background: var(--pigeon-surface, #f8fafc);
+      color: var(--pigeon-text, #1e293b);
+      cursor: pointer;
+      font-family: var(--pigeon-font);
+      font-size: 12px;
+      font-weight: 500;
+      margin-top: 4px;
+    }
+
+    .upload-btn:hover {
+      background: var(--pigeon-surface-hover, #f1f5f9);
+      border-color: var(--pigeon-primary, #3b82f6);
+    }
   `;
 
   render() {
@@ -79,7 +105,14 @@ export class PigeonImagePanel extends LitElement {
           placeholder="https://example.com/image.jpg"
           @change=${this._onSrcChange}
         />
+        <button class="upload-btn" @click=${this._openAssetManager}>Upload Image</button>
       </div>
+
+      <pigeon-asset-manager
+        ?open=${this._assetManagerOpen}
+        .config=${this.assetManagerConfig ?? {}}
+        @asset-selected=${this._onAssetSelected}
+      ></pigeon-asset-manager>
 
       <div class="field">
         <label>Alt Text</label>
@@ -173,6 +206,15 @@ export class PigeonImagePanel extends LitElement {
 
   private _onPaddingChange(e: CustomEvent<{ value: Spacing }>) {
     this._emit({ padding: e.detail.value });
+  }
+
+  private _openAssetManager() {
+    this._assetManagerOpen = true;
+  }
+
+  private _onAssetSelected(e: CustomEvent<{ url: string }>) {
+    this._emit({ src: e.detail.url });
+    this._assetManagerOpen = false;
   }
 }
 

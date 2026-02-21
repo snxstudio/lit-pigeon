@@ -27,5 +27,13 @@
     "vite": "^5.4.0",
     "vite-plugin-dts": "^4.0.0"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/snxstudio/unnlayer.git",
+    "directory": "packages/editor"
+  },
   "license": "MIT"
 }

@@ -6,6 +6,8 @@ import './panels/image-panel.js';
 import './panels/button-panel.js';
 import './panels/row-panel.js';
 import './panels/body-panel.js';
+import './panels/hero-panel.js';
+import './panels/navbar-panel.js';
 
 @customElement('pigeon-properties')
 export class PigeonProperties extends LitElement {
@@ -120,6 +122,10 @@ export class PigeonProperties extends LitElement {
         return html`<pigeon-image-panel .block=${block} .rowId=${rowId} .columnId=${columnId}></pigeon-image-panel>`;
       case 'button':
         return html`<pigeon-button-panel .block=${block} .rowId=${rowId} .columnId=${columnId}></pigeon-button-panel>`;
+      case 'hero':
+        return html`<pigeon-hero-panel .block=${block} .rowId=${rowId} .columnId=${columnId}></pigeon-hero-panel>`;
+      case 'navbar':
+        return html`<pigeon-navbar-panel .block=${block} .rowId=${rowId} .columnId=${columnId}></pigeon-navbar-panel>`;
       default:
         return html`
           <div class="empty-state">

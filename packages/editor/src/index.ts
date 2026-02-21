@@ -20,6 +20,8 @@ export { PigeonImagePanel } from './components/properties/panels/image-panel.js'
 export { PigeonButtonPanel } from './components/properties/panels/button-panel.js';
 export { PigeonRowPanel } from './components/properties/panels/row-panel.js';
 export { PigeonBodyPanel } from './components/properties/panels/body-panel.js';
+export { PigeonHeroPanel } from './components/properties/panels/hero-panel.js';
+export { PigeonNavBarPanel } from './components/properties/panels/navbar-panel.js';
 
 // Property controls
 export { PigeonColorPicker } from './components/properties/controls/color-picker.js';
@@ -38,6 +40,20 @@ export { PigeonDividerBlock } from './components/blocks/divider-block.js';
 export { PigeonSpacerBlock } from './components/blocks/spacer-block.js';
 export { PigeonSocialBlock } from './components/blocks/social-block.js';
 export { PigeonHtmlBlock } from './components/blocks/html-block.js';
+export { PigeonHeroBlock } from './components/blocks/hero-block.js';
+export { PigeonNavBarBlock } from './components/blocks/navbar-block.js';
+
+// Asset Manager
+export { PigeonAssetManager } from './components/asset-manager/pigeon-asset-manager.js';
+
+// Preview
+export { PigeonPreview } from './components/preview/pigeon-preview.js';
+
+// Layers
+export { PigeonLayers } from './components/layers/pigeon-layers.js';
+
+// Merge Tags
+export { PigeonMergeTagPicker } from './components/merge-tags/pigeon-merge-tag-picker.js';
 
 // DnD utilities
 export { setDragData, getDragData, clearDragData, writeDragTransfer, readDragTransfer } from './dnd/drag-manager.js';

@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 
 @customElement('pigeon-toolbar')
 export class PigeonToolbar extends LitElement {
@@ -11,6 +11,12 @@ export class PigeonToolbar extends LitElement {
 
   @property({ type: String })
   device: 'desktop' | 'mobile' = 'desktop';
+
+  @property({ type: Boolean })
+  fullscreen = false;
+
+  @state()
+  private _exportMenuOpen = false;
 
   static styles = css`
     :host {
@@ -107,6 +113,38 @@ export class PigeonToolbar extends LitElement {
     .device-group button:not(:last-child) {
       border-right: 1px solid var(--pigeon-border, #e2e8f0);
     }
+
+    .export-wrapper {
+      position: relative;
+    }
+
+    .export-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 4px;
+      background: var(--pigeon-bg, #ffffff);
+      border: 1px solid var(--pigeon-border, #e2e8f0);
+      border-radius: var(--pigeon-radius, 6px);
+      box-shadow: var(--pigeon-shadow-md);
+      min-width: 160px;
+      z-index: 100;
+      overflow: hidden;
+    }
+
+    .export-menu button {
+      width: 100%;
+      justify-content: flex-start;
+      border: none;
+      border-radius: 0;
+      height: 36px;
+      padding: 0 12px;
+      font-weight: 400;
+    }
+
+    .export-menu button:not(:last-child) {
+      border-bottom: 1px solid var(--pigeon-border, #e2e8f0);
+    }
   `;
 
   render() {
@@ -165,6 +203,29 @@ export class PigeonToolbar extends LitElement {
 
       <div class="spacer"></div>
 
+      <!-- Fullscreen toggle -->
+      <button
+        class="icon-btn"
+        title="${this.fullscreen ? 'Exit fullscreen' : 'Fullscreen'}"
+        @click=${this._onFullscreen}
+      >
+        ${this.fullscreen
+          ? html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="4 14 10 14 10 20"/>
+              <polyline points="20 10 14 10 14 4"/>
+              <line x1="14" y1="10" x2="21" y2="3"/>
+              <line x1="3" y1="21" x2="10" y2="14"/>
+            </svg>`
+          : html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="15 3 21 3 21 9"/>
+              <polyline points="9 21 3 21 3 15"/>
+              <line x1="21" y1="3" x2="14" y2="10"/>
+              <line x1="3" y1="21" x2="10" y2="14"/>
+            </svg>`}
+      </button>
+
+      <div class="separator"></div>
+
       <!-- Actions -->
       <button @click=${this._onPreview}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -174,14 +235,26 @@ export class PigeonToolbar extends LitElement {
         Preview
       </button>
 
-      <button class="primary" @click=${this._onExport}>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-          <polyline points="7 10 12 15 17 10"/>
-          <line x1="12" y1="15" x2="12" y2="3"/>
-        </svg>
-        Export
-      </button>
+      <div class="export-wrapper">
+        <button class="primary" @click=${this._toggleExportMenu}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Export
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </button>
+        ${this._exportMenuOpen ? html`
+          <div class="export-menu">
+            <button @click=${this._onExportHtml}>Export HTML</button>
+            <button @click=${this._onExportMjml}>Export MJML</button>
+            <button @click=${this._onExportJson}>Export JSON</button>
+          </div>
+        ` : ''}
+      </div>
     `;
   }
 
@@ -208,6 +281,13 @@ export class PigeonToolbar extends LitElement {
     }));
   }
 
+  private _onFullscreen() {
+    this.dispatchEvent(new CustomEvent('toolbar-fullscreen', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
   private _onPreview() {
     this.dispatchEvent(new CustomEvent('pigeon:preview', {
       bubbles: true,
@@ -215,8 +295,29 @@ export class PigeonToolbar extends LitElement {
     }));
   }
 
-  private _onExport() {
-    this.dispatchEvent(new CustomEvent('pigeon:export', {
+  private _toggleExportMenu() {
+    this._exportMenuOpen = !this._exportMenuOpen;
+  }
+
+  private _onExportHtml() {
+    this._exportMenuOpen = false;
+    this.dispatchEvent(new CustomEvent('pigeon:export-html', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  private _onExportMjml() {
+    this._exportMenuOpen = false;
+    this.dispatchEvent(new CustomEvent('pigeon:export-mjml', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  private _onExportJson() {
+    this._exportMenuOpen = false;
+    this.dispatchEvent(new CustomEvent('pigeon:export-json', {
       bubbles: true,
       composed: true,
     }));
