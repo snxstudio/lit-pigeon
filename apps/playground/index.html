@@ -34,6 +34,29 @@
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
 
+    *:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+
+    .skip-link {
+      position: absolute;
+      top: -100%;
+      left: 16px;
+      z-index: 100;
+      padding: 8px 16px;
+      background: var(--primary);
+      color: var(--primary-foreground);
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+    }
+
+    .skip-link:focus {
+      top: 8px;
+    }
+
     body {
       font-family: var(--font);
       background: var(--background);
@@ -56,6 +79,31 @@
     }
 
     a:hover { color: var(--foreground); }
+
+    /* ── Animations ── */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in-up {
+      opacity: 0;
+      animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    .fade-in-up:nth-child(1) { animation-delay: 0s; }
+    .fade-in-up:nth-child(2) { animation-delay: 0.08s; }
+    .fade-in-up:nth-child(3) { animation-delay: 0.16s; }
+    .fade-in-up:nth-child(4) { animation-delay: 0.24s; }
+    .fade-in-up:nth-child(5) { animation-delay: 0.32s; }
+    .fade-in-up:nth-child(6) { animation-delay: 0.40s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .fade-in-up {
+        opacity: 1;
+        animation: none;
+      }
+    }
 
     /* ── Nav ── */
     .nav {
@@ -103,7 +151,9 @@
     }
 
     .hero-badge {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
       padding: 4px 14px;
       background: var(--muted);
       border: 1px solid var(--border);
@@ -112,6 +162,12 @@
       font-weight: 500;
       color: var(--muted-foreground);
       margin-bottom: 24px;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .hero-badge:hover {
+      border-color: #3f3f46;
+      color: var(--foreground);
     }
 
     .hero h1 {
@@ -185,6 +241,7 @@
       font-family: var(--mono);
       font-size: 13px;
       color: var(--muted-foreground);
+      margin-bottom: 48px;
     }
 
     .install-bar code {
@@ -216,6 +273,153 @@
       color: #22c55e;
     }
 
+    /* ── Editor Mockup ── */
+    .editor-mockup {
+      max-width: 800px;
+      margin: 0 auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #18181b;
+    }
+
+    .mockup-titlebar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 14px;
+      background: #18181b;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .mockup-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #3f3f46;
+    }
+
+    .mockup-panels {
+      display: grid;
+      grid-template-columns: 180px 1fr 200px;
+      height: 260px;
+    }
+
+    .mockup-sidebar {
+      border-right: 1px solid var(--border);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .mockup-sidebar-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: #52525b;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+
+    .mockup-block {
+      padding: 8px 10px;
+      background: #27272a;
+      border-radius: 6px;
+      font-size: 11px;
+      color: #a1a1aa;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mockup-block-icon {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      background: #3f3f46;
+      flex-shrink: 0;
+    }
+
+    .mockup-canvas {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      background: #09090b;
+    }
+
+    .mockup-email {
+      width: 100%;
+      max-width: 320px;
+      background: #fff;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .mockup-email-header {
+      height: 40px;
+      background: #3b82f6;
+    }
+
+    .mockup-email-body {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .mockup-email-line {
+      height: 8px;
+      background: #e4e4e7;
+      border-radius: 4px;
+    }
+
+    .mockup-email-line.short { width: 60%; }
+    .mockup-email-line.medium { width: 85%; }
+
+    .mockup-email-btn {
+      width: 80px;
+      height: 24px;
+      background: #3b82f6;
+      border-radius: 4px;
+      margin: 4px auto;
+    }
+
+    .mockup-props {
+      border-left: 1px solid var(--border);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .mockup-prop-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: #52525b;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .mockup-prop-input {
+      height: 28px;
+      background: #27272a;
+      border-radius: 4px;
+    }
+
+    .mockup-prop-color {
+      display: flex;
+      gap: 6px;
+    }
+
+    .mockup-prop-swatch {
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+    }
+
     /* ── Sections ── */
     .section {
       padding: 64px 0;
@@ -237,6 +441,63 @@
     .section-header p {
       color: var(--muted-foreground);
       font-size: 15px;
+    }
+
+    /* ── Why Lit Pigeon (Comparison) ── */
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .comparison-table th {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted-foreground);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: #18181b;
+    }
+
+    .comparison-table td {
+      color: var(--muted-foreground);
+    }
+
+    .comparison-table td:first-child {
+      color: var(--foreground);
+      font-weight: 500;
+    }
+
+    .comparison-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .comparison-table .highlight-row td {
+      background: rgba(250, 250, 250, 0.04);
+      color: var(--foreground);
+      font-weight: 500;
+    }
+
+    .comparison-table .highlight-row td:first-child {
+      font-weight: 700;
+    }
+
+    .check { color: #22c55e; }
+    .cross { color: #52525b; }
+
+    .comparison-scroll {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     /* ── Features ── */
@@ -325,6 +586,40 @@
       background: var(--muted);
     }
 
+    .quickstart-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .quickstart-tabs button {
+      padding: 8px 16px;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--muted-foreground);
+      font-size: 13px;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .quickstart-tabs button:hover {
+      color: var(--foreground);
+    }
+
+    .quickstart-tabs button.active {
+      color: var(--foreground);
+      border-bottom-color: var(--foreground);
+    }
+
+    .quickstart-panel {
+      display: none;
+    }
+
+    .quickstart-panel.active {
+      display: block;
+    }
+
     .quickstart-block pre {
       padding: 20px 24px;
       overflow-x: auto;
@@ -341,6 +636,9 @@
     .hl-kw { color: #c084fc; }
     .hl-str { color: #4ade80; }
     .hl-fn { color: #60a5fa; }
+    .hl-cm { color: #52525b; }
+    .hl-tag { color: #f472b6; }
+    .hl-attr { color: #c084fc; }
 
     /* ── Footer ── */
     .footer {
@@ -380,6 +678,29 @@
       .nav-links { gap: 16px; }
 
       .package-item { flex-direction: column; gap: 4px; }
+
+      .mockup-panels {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+
+      .mockup-sidebar,
+      .mockup-props {
+        display: none;
+      }
+
+      .mockup-canvas {
+        min-height: 200px;
+      }
+
+      .comparison-table {
+        font-size: 13px;
+      }
+
+      .comparison-table th,
+      .comparison-table td {
+        padding: 10px 12px;
+      }
     }
 
     @media (max-width: 540px) {
@@ -403,6 +724,8 @@
   </style>
 </head>
 <body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+
   <nav class="nav">
     <div class="container">
       <a href="/" class="nav-logo"><img src="./lit-pigeon.png" alt="" width="24" height="24"> Lit Pigeon</a>
@@ -415,12 +738,15 @@
     </div>
   </nav>
 
-  <section class="hero">
+  <section class="hero" id="main-content">
     <div class="container">
-      <div class="hero-badge">Open Source</div>
-      <h1><img src="./lit-pigeon.png" alt="" width="56" height="56" style="vertical-align: middle; margin-right: 4px;"> Lit Pigeon</h1>
-      <p class="hero-tagline">Open-source drag &amp; drop email editor built with web components</p>
-      <div class="hero-actions">
+      <a href="https://github.com/snxstudio/lit-pigeon" target="_blank" rel="noopener" class="hero-badge fade-in-up">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        Open Source · Star on GitHub
+      </a>
+      <h1 class="fade-in-up"><img src="./lit-pigeon.png" alt="" width="56" height="56" style="vertical-align: middle; margin-right: 4px;"> Lit Pigeon</h1>
+      <p class="hero-tagline fade-in-up">Open-source drag &amp; drop email editor built with web components</p>
+      <div class="hero-actions fade-in-up">
         <a href="./playground" class="btn btn-primary">
           Try the Playground
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
@@ -430,11 +756,122 @@
           GitHub
         </a>
       </div>
-      <div class="install-bar">
+      <div class="install-bar fade-in-up">
         <code>npm install @lit-pigeon/editor</code>
         <button class="copy-btn" id="copy-install" aria-label="Copy install command">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="9" height="9" rx="1.5"/><path d="M5 11H3.5A1.5 1.5 0 012 9.5v-7A1.5 1.5 0 013.5 1h7A1.5 1.5 0 0112 2.5V5"/></svg>
         </button>
+      </div>
+
+      <!-- CSS Editor Mockup -->
+      <div class="editor-mockup fade-in-up">
+        <div class="mockup-titlebar">
+          <span class="mockup-dot"></span>
+          <span class="mockup-dot"></span>
+          <span class="mockup-dot"></span>
+        </div>
+        <div class="mockup-panels">
+          <div class="mockup-sidebar">
+            <span class="mockup-sidebar-label">Blocks</span>
+            <div class="mockup-block"><span class="mockup-block-icon"></span> Text</div>
+            <div class="mockup-block"><span class="mockup-block-icon"></span> Image</div>
+            <div class="mockup-block"><span class="mockup-block-icon"></span> Button</div>
+            <div class="mockup-block"><span class="mockup-block-icon"></span> Divider</div>
+            <div class="mockup-block"><span class="mockup-block-icon"></span> Social</div>
+          </div>
+          <div class="mockup-canvas">
+            <div class="mockup-email">
+              <div class="mockup-email-header"></div>
+              <div class="mockup-email-body">
+                <div class="mockup-email-line medium"></div>
+                <div class="mockup-email-line"></div>
+                <div class="mockup-email-line short"></div>
+                <div class="mockup-email-btn"></div>
+                <div class="mockup-email-line" style="height: 1px; background: #e4e4e7;"></div>
+                <div class="mockup-email-line short" style="height: 6px;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="mockup-props">
+            <span class="mockup-prop-label">Properties</span>
+            <div class="mockup-prop-input"></div>
+            <div class="mockup-prop-input"></div>
+            <span class="mockup-prop-label" style="margin-top: 4px;">Color</span>
+            <div class="mockup-prop-color">
+              <div class="mockup-prop-swatch" style="background: #3b82f6;"></div>
+              <div class="mockup-prop-swatch" style="background: #18181b;"></div>
+              <div class="mockup-prop-swatch" style="background: #ffffff;"></div>
+            </div>
+            <span class="mockup-prop-label" style="margin-top: 4px;">Padding</span>
+            <div class="mockup-prop-input"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Lit Pigeon -->
+  <section class="section" id="comparison">
+    <div class="container">
+      <div class="section-header">
+        <h2>Why Lit Pigeon?</h2>
+        <p>How it compares to other email editing solutions</p>
+      </div>
+      <div class="comparison-scroll">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Solution</th>
+              <th>Open Source</th>
+              <th>Framework Agnostic</th>
+              <th>Bundle Size</th>
+              <th>MJML Export</th>
+              <th>Visual Editor</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Unlayer</td>
+              <td><span class="cross">&#x2717;</span> Proprietary</td>
+              <td><span class="check">&#x2713;</span></td>
+              <td>~300 kB+</td>
+              <td><span class="cross">&#x2717;</span></td>
+              <td><span class="check">&#x2713;</span></td>
+            </tr>
+            <tr>
+              <td>GrapesJS</td>
+              <td><span class="check">&#x2713;</span></td>
+              <td><span class="check">&#x2713;</span></td>
+              <td>~250 kB+</td>
+              <td><span class="cross">&#x2717;</span> Plugin</td>
+              <td><span class="check">&#x2713;</span></td>
+            </tr>
+            <tr>
+              <td>MJML / React Email</td>
+              <td><span class="check">&#x2713;</span></td>
+              <td><span class="cross">&#x2717;</span> React-only</td>
+              <td>Varies</td>
+              <td><span class="check">&#x2713;</span></td>
+              <td><span class="cross">&#x2717;</span> Code-only</td>
+            </tr>
+            <tr>
+              <td>Mosaico</td>
+              <td><span class="check">&#x2713;</span></td>
+              <td><span class="cross">&#x2717;</span> Knockout.js</td>
+              <td>~200 kB+</td>
+              <td><span class="cross">&#x2717;</span></td>
+              <td><span class="check">&#x2713;</span></td>
+            </tr>
+            <tr class="highlight-row">
+              <td>Lit Pigeon</td>
+              <td><span class="check">&#x2713;</span> MIT</td>
+              <td><span class="check">&#x2713;</span> Web Components</td>
+              <td>~17 kB gzipped</td>
+              <td><span class="check">&#x2713;</span> Built-in</td>
+              <td><span class="check">&#x2713;</span> Drag &amp; Drop</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </section>
@@ -452,7 +889,7 @@
         </div>
         <div class="feature-card">
           <h3>MJML Export</h3>
-          <p>Render to MJML and responsive HTML that works across all email clients.</p>
+          <p>Render to MJML and responsive HTML tested across Gmail, Outlook, and Apple Mail.</p>
         </div>
         <div class="feature-card">
           <h3>MJML Import</h3>
@@ -460,15 +897,15 @@
         </div>
         <div class="feature-card">
           <h3>Framework Agnostic</h3>
-          <p>Web components with Lit. Works with React, Angular, Vue, or vanilla JS.</p>
+          <p>Web components with Lit. Wrappers for React and Angular — or use vanilla JS.</p>
         </div>
         <div class="feature-card">
-          <h3>Asset Manager</h3>
-          <p>Built-in image and file management with upload and library browsing.</p>
+          <h3>~17 kB Gzipped</h3>
+          <p>Tiny footprint. ~5 kB core engine plus ~12 kB editor UI — no bloated dependencies.</p>
         </div>
         <div class="feature-card">
-          <h3>Merge Tags</h3>
-          <p>Dynamic placeholders for personalization — names, links, and custom fields.</p>
+          <h3>Plugin System</h3>
+          <p>Extend the editor with custom blocks, toolbars, and behaviors — inspired by ProseMirror.</p>
         </div>
       </div>
     </div>
@@ -517,11 +954,37 @@
           <span class="quickstart-dot"></span>
           <span class="quickstart-dot"></span>
         </div>
-        <pre><code><span class="hl-kw">import</span> <span class="hl-str">'@lit-pigeon/editor'</span>;
+        <div class="quickstart-tabs" id="quickstart-tabs">
+          <button class="active" data-tab="vanilla">Vanilla JS</button>
+          <button data-tab="react">React</button>
+          <button data-tab="angular">Angular</button>
+        </div>
+        <div class="quickstart-panel active" data-panel="vanilla">
+          <pre><code><span class="hl-kw">import</span> <span class="hl-str">'@lit-pigeon/editor'</span>;
 <span class="hl-kw">import</span> { createDefaultDocument } <span class="hl-kw">from</span> <span class="hl-str">'@lit-pigeon/core'</span>;
 
 <span class="hl-kw">const</span> editor = document.<span class="hl-fn">querySelector</span>(<span class="hl-str">'pigeon-editor'</span>);
 editor.document = <span class="hl-fn">createDefaultDocument</span>(<span class="hl-str">'My Email'</span>);</code></pre>
+        </div>
+        <div class="quickstart-panel" data-panel="react">
+          <pre><code><span class="hl-kw">import</span> { PigeonEditor } <span class="hl-kw">from</span> <span class="hl-str">'@lit-pigeon/react'</span>;
+<span class="hl-kw">import</span> { createDefaultDocument } <span class="hl-kw">from</span> <span class="hl-str">'@lit-pigeon/core'</span>;
+
+<span class="hl-kw">const</span> doc = <span class="hl-fn">createDefaultDocument</span>(<span class="hl-str">'My Email'</span>);
+
+<span class="hl-kw">export default</span> <span class="hl-kw">function</span> <span class="hl-fn">App</span>() {
+  <span class="hl-kw">return</span> <span class="hl-tag">&lt;PigeonEditor</span> <span class="hl-attr">document</span>={doc} <span class="hl-tag">/&gt;</span>;
+}</code></pre>
+        </div>
+        <div class="quickstart-panel" data-panel="angular">
+          <pre><code><span class="hl-kw">import</span> { PigeonEditorModule } <span class="hl-kw">from</span> <span class="hl-str">'@lit-pigeon/angular'</span>;
+
+<span class="hl-cm">// In your module</span>
+<span class="hl-fn">@NgModule</span>({ imports: [PigeonEditorModule] })
+
+<span class="hl-cm">// In your template</span>
+<span class="hl-tag">&lt;pigeon-editor</span> <span class="hl-attr">[document]</span>=<span class="hl-str">"doc"</span><span class="hl-tag">&gt;&lt;/pigeon-editor&gt;</span></code></pre>
+        </div>
       </div>
     </div>
   </section>

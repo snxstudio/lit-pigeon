@@ -8,6 +8,7 @@ export default defineConfig({
       '@lit-pigeon/core': resolve(__dirname, '../../packages/core/src/index.ts'),
       '@lit-pigeon/editor': resolve(__dirname, '../../packages/editor/src/index.ts'),
       '@lit-pigeon/renderer-mjml': resolve(__dirname, '../../packages/renderer-mjml/src/index.ts'),
+      '@lit-pigeon/parser-mjml': resolve(__dirname, '../../packages/parser-mjml/src/index.ts'),
     },
   },
   build: {
