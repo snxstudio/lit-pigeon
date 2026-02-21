@@ -32,5 +32,13 @@
     "vite-plugin-dts": "^4.0.0",
     "vitest": "^2.0.0"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/snxstudio/unnlayer.git",
+    "directory": "packages/renderer-mjml"
+  },
   "license": "MIT"
 }

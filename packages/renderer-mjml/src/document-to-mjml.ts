@@ -3,6 +3,7 @@ import type {
   RowNode,
   ColumnNode,
   ContentBlock,
+  HeroBlock,
 } from '@lit-pigeon/core';
 import { spacingToMjml } from './utils/spacing.js';
 import { renderTextBlock } from './block-renderers/text.js';
@@ -12,6 +13,8 @@ import { renderDividerBlock } from './block-renderers/divider.js';
 import { renderSpacerBlock } from './block-renderers/spacer.js';
 import { renderSocialBlock } from './block-renderers/social.js';
 import { renderHtmlBlock } from './block-renderers/html.js';
+import { renderHeroBlock, renderHeroSection } from './block-renderers/hero.js';
+import { renderNavBarBlock } from './block-renderers/navbar.js';
 
 /**
  * Renders a single content block to its MJML representation.
@@ -32,6 +35,10 @@ function renderBlock(block: ContentBlock): string {
       return renderSocialBlock(block);
     case 'html':
       return renderHtmlBlock(block);
+    case 'hero':
+      return renderHeroBlock(block);
+    case 'navbar':
+      return renderNavBarBlock(block);
     default: {
       // Exhaustive check: if a new block type is added, TypeScript will error here
       const _exhaustive: never = block;
@@ -76,6 +83,15 @@ ${blocksMarkup}
  * Each ratio represents a fraction of a 12-column grid.
  */
 function renderRow(row: RowNode): string {
+  // If the row has a single column with a single hero block, render as mj-hero
+  if (
+    row.columns.length === 1 &&
+    row.columns[0].blocks.length === 1 &&
+    row.columns[0].blocks[0].type === 'hero'
+  ) {
+    return renderHeroSection(row.columns[0].blocks[0] as HeroBlock);
+  }
+
   const { backgroundColor, backgroundImage, padding, fullWidth } = row.attributes;
 
   const attrs: string[] = [

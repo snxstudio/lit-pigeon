@@ -12,6 +12,8 @@ export { renderDividerBlock } from './block-renderers/divider.js';
 export { renderSpacerBlock } from './block-renderers/spacer.js';
 export { renderSocialBlock } from './block-renderers/social.js';
 export { renderHtmlBlock } from './block-renderers/html.js';
+export { renderHeroBlock, renderHeroSection } from './block-renderers/hero.js';
+export { renderNavBarBlock } from './block-renderers/navbar.js';
 
 // Utilities
 export { spacingToMjml } from './utils/spacing.js';
