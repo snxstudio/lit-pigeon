@@ -4,4 +4,5 @@ export default defineWorkspace([
   'packages/core',
   'packages/renderer-mjml',
   'packages/parser-mjml',
+  'packages/editor',
 ]);
