@@ -204,13 +204,23 @@ This will prompt you to:
 2. Choose the semver bump type (patch, minor, major)
 3. Write a summary of the change
 
-The changeset file is committed with your PR. Maintainers will batch-release versions periodically.
+The changeset file is committed with your PR. The release workflow batches changesets automatically.
 
 ### Semver Guidelines
 
 - **patch** (0.1.x) -- Bug fixes, typos, internal refactors
 - **minor** (0.x.0) -- New features, new block types, new API methods
 - **major** (x.0.0) -- Breaking changes to public API or document schema
+
+### Release process (maintainers)
+
+Releases are automated via [`changesets/action`](https://github.com/changesets/action) in `.github/workflows/release.yml`:
+
+1. Contributors add `.changeset/*.md` files in their PRs.
+2. When PRs land on `main`, the action opens (or updates) a single `chore(release): version packages` PR that consumes every pending changeset, bumps versions, and updates each `CHANGELOG.md`.
+3. Merging that PR triggers the action again, which now publishes the bumped packages to npm.
+
+**One-time setup required before the first release:** an `NPM_TOKEN` repository secret with publish access to the `@lit-pigeon/*` scope. The workflow uses npm provenance (`NPM_CONFIG_PROVENANCE=true`) so a token with `id-token: write` is sufficient.
 
 ## Reporting Bugs
 

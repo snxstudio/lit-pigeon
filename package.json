@@ -10,6 +10,9 @@
     "test:watch": "vitest",
     "lint": "eslint packages/ apps/ --ext .ts,.tsx",
     "format": "prettier --write \"packages/*/src/**/*.ts\" \"apps/*/src/**/*.ts\"",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "turbo run build --filter=!@lit-pigeon/playground && changeset publish",
     "clean": "turbo run clean && rm -rf node_modules"
   },
   "devDependencies": {
