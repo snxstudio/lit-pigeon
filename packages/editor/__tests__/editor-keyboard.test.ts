@@ -198,6 +198,58 @@ describe('pigeon-editor keyboard shortcuts', () => {
     });
   });
 
+  describe('Cmd/Ctrl+C and Cmd/Ctrl+V copy + paste', () => {
+    it('Cmd+C copies the block and Cmd+V pastes it after the selection', async () => {
+      const { doc, rowId, blockId } = makeDoc();
+      const editor = await mountEditor(doc);
+      selectBlockOnEditor(editor, rowId, blockId);
+      await editor.updateComplete;
+
+      pressKey({ key: 'c', metaKey: true });
+      await editor.updateComplete;
+      pressKey({ key: 'v', metaKey: true });
+      await editor.updateComplete;
+
+      const blocks = editor.getDocument().body.rows[0].columns[0].blocks;
+      expect(blocks).toHaveLength(2);
+      expect(blocks[0].id).not.toBe(blocks[1].id);
+      expect(blocks[0].type).toBe(blocks[1].type);
+      // Source unchanged, pasted is positioned right after
+      expect(blocks[0].id).toBe(blockId);
+    });
+
+    it('Cmd+V with an empty clipboard does nothing', async () => {
+      const { doc, rowId, blockId } = makeDoc();
+      const editor = await mountEditor(doc);
+      selectBlockOnEditor(editor, rowId, blockId);
+      await editor.updateComplete;
+
+      pressKey({ key: 'v', metaKey: true });
+      await editor.updateComplete;
+
+      expect(editor.getDocument().body.rows[0].columns[0].blocks).toHaveLength(1);
+    });
+
+    it('Cmd+V can be triggered multiple times to paste multiple copies', async () => {
+      const { doc, rowId, blockId } = makeDoc();
+      const editor = await mountEditor(doc);
+      selectBlockOnEditor(editor, rowId, blockId);
+      await editor.updateComplete;
+
+      pressKey({ key: 'c', metaKey: true });
+      await editor.updateComplete;
+      pressKey({ key: 'v', metaKey: true });
+      await editor.updateComplete;
+      pressKey({ key: 'v', metaKey: true });
+      await editor.updateComplete;
+
+      const blocks = editor.getDocument().body.rows[0].columns[0].blocks;
+      expect(blocks).toHaveLength(3);
+      const ids = new Set(blocks.map(b => b.id));
+      expect(ids.size).toBe(3);
+    });
+  });
+
   describe('Escape', () => {
     it('clears selection back to body', async () => {
       const { doc, rowId, blockId } = makeDoc();

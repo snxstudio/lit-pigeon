@@ -265,7 +265,7 @@ PigeonDocument
 - [x] Property panels for divider, spacer, social, and html blocks
 - [x] Wire asset manager, merge-tag picker, and layers panel into the default editor shell
 - [ ] Image upload with configurable adapter (URL, base64, S3 presigned)
-- [ ] Copy/paste blocks
+- [x] Copy/paste blocks (Cmd/Ctrl+C / Cmd/Ctrl+V on a selected block; in-memory clipboard)
 - [x] Keyboard shortcuts (Cmd/Ctrl+Z undo, Shift+Cmd/Ctrl+Z or Ctrl+Y redo, Delete, Cmd/Ctrl+D duplicate, Escape deselect)
 - [ ] Arrow-key block/row navigation
 - [x] Row reordering via drag within canvas

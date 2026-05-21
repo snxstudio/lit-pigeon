@@ -5,6 +5,7 @@ import {
   type PigeonDocument,
   type EditorConfig,
   type BlockType,
+  type ContentBlock,
   type Renderer,
   type MergeTag,
   createHistoryPlugin,
@@ -34,6 +35,7 @@ import {
   canRedo as coreCanRedo,
   HISTORY_PLUGIN_NAME,
   createDocStep,
+  generateId,
 } from '@lit-pigeon/core';
 import type { HistoryState, TransactionSnapshot } from '@lit-pigeon/core';
 
@@ -96,6 +98,9 @@ export class PigeonEditor extends LitElement {
   @state() private _device: 'desktop' | 'mobile' = 'desktop';
   @state() private _fullscreen = false;
   @state() private _previewOpen = false;
+
+  /** In-memory clipboard for Cmd/Ctrl+C / Cmd/Ctrl+V on blocks. */
+  private _clipboard: ContentBlock | null = null;
 
   /* ------------------------------------------------------------------ */
   /*  Styles                                                             */
@@ -564,7 +569,57 @@ export class PigeonEditor extends LitElement {
       }
       return;
     }
+
+    // Cmd/Ctrl+C: copy the selected block into the in-memory clipboard
+    if (mod && e.key.toLowerCase() === 'c') {
+      if (sel.type === 'block' && sel.rowId && sel.columnId && sel.blockId) {
+        const block = this._findBlock(sel.rowId, sel.columnId, sel.blockId);
+        if (block) {
+          e.preventDefault();
+          this._clipboard = structuredClone(block);
+        }
+      }
+      return;
+    }
+
+    // Cmd/Ctrl+V: paste the clipboard block (with a new id)
+    if (mod && e.key.toLowerCase() === 'v') {
+      if (!this._clipboard) return;
+
+      if (sel.type === 'block' && sel.rowId && sel.columnId && sel.blockId) {
+        e.preventDefault();
+        const pasted = structuredClone(this._clipboard);
+        pasted.id = generateId();
+        const blockIndex = this._findBlockIndex(sel.rowId, sel.columnId, sel.blockId);
+        const insertIndex = blockIndex >= 0 ? blockIndex + 1 : undefined;
+        const cmd = insertBlock(sel.rowId, sel.columnId, pasted, insertIndex);
+        cmd(this._state, this._dispatch);
+      } else if (sel.type === 'column' && sel.rowId && sel.columnId) {
+        e.preventDefault();
+        const pasted = structuredClone(this._clipboard);
+        pasted.id = generateId();
+        const cmd = insertBlock(sel.rowId, sel.columnId, pasted);
+        cmd(this._state, this._dispatch);
+      }
+      return;
+    }
   };
+
+  private _findBlock(rowId: string, columnId: string, blockId: string): ContentBlock | undefined {
+    const row = this._state.doc.body.rows.find(r => r.id === rowId);
+    if (!row) return undefined;
+    const col = row.columns.find(c => c.id === columnId);
+    if (!col) return undefined;
+    return col.blocks.find(b => b.id === blockId);
+  }
+
+  private _findBlockIndex(rowId: string, columnId: string, blockId: string): number {
+    const row = this._state.doc.body.rows.find(r => r.id === rowId);
+    if (!row) return -1;
+    const col = row.columns.find(c => c.id === columnId);
+    if (!col) return -1;
+    return col.blocks.findIndex(b => b.id === blockId);
+  }
 
   /* ------------------------------------------------------------------ */
   /*  DnD handlers                                                       */
