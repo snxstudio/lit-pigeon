@@ -1,13 +1,25 @@
 import { LitElement, html, css } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
-import type { PigeonDocument } from '@lit-pigeon/core';
+import { customElement, property, state } from 'lit/decorators.js';
+import { createRef, ref, type Ref } from 'lit/directives/ref.js';
+import type { PigeonDocument, MergeTag } from '@lit-pigeon/core';
 import '../controls/color-picker.js';
 import '../controls/slider-input.js';
+import '../../merge-tags/pigeon-merge-tag-picker.js';
 
 @customElement('pigeon-body-panel')
 export class PigeonBodyPanel extends LitElement {
   @property({ type: Object })
   doc!: PigeonDocument;
+
+  @property({ type: Array })
+  mergeTags: MergeTag[] = [];
+
+  @state() private _pickerOpen = false;
+  @state() private _pickerX = 0;
+  @state() private _pickerY = 0;
+
+  private _previewInputRef: Ref<HTMLInputElement> = createRef();
+  private _triggerRef: Ref<HTMLButtonElement> = createRef();
 
   static styles = css`
     :host {
@@ -104,6 +116,40 @@ export class PigeonBodyPanel extends LitElement {
       background: var(--pigeon-primary, #3b82f6);
       color: white;
     }
+
+    .label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .label-row label {
+      margin-bottom: 0;
+    }
+
+    .tag-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      height: 22px;
+      padding: 0 8px;
+      border: 1px solid var(--pigeon-border, #e2e8f0);
+      border-radius: var(--pigeon-radius-sm, 4px);
+      background: var(--pigeon-surface, #f8fafc);
+      color: var(--pigeon-text-secondary, #64748b);
+      font-family: var(--pigeon-font);
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.1s, color 0.1s, border-color 0.1s;
+    }
+
+    .tag-btn:hover {
+      background: var(--pigeon-surface-hover, #f1f5f9);
+      color: var(--pigeon-text, #1e293b);
+      border-color: var(--pigeon-primary, #3b82f6);
+    }
   `;
 
   private _fontFamilies = [
@@ -171,15 +217,59 @@ export class PigeonBodyPanel extends LitElement {
       </div>
 
       <div class="field">
-        <label>Preview Text</label>
+        <div class="label-row">
+          <label>Preview Text</label>
+          ${this.mergeTags.length > 0 ? html`
+            <button class="tag-btn" ${ref(this._triggerRef)} @click=${this._togglePicker} title="Insert merge tag">
+              { } Tag
+            </button>
+          ` : ''}
+        </div>
         <input
           type="text"
+          ${ref(this._previewInputRef)}
           .value=${this.doc.metadata.previewText ?? ''}
           placeholder="Email preview text..."
           @change=${this._onPreviewTextChange}
         />
       </div>
+
+      ${this.mergeTags.length > 0 ? html`
+        <pigeon-merge-tag-picker
+          ?open=${this._pickerOpen}
+          .tags=${this.mergeTags}
+          .x=${this._pickerX}
+          .y=${this._pickerY}
+          @merge-tag-insert=${this._onMergeTagInsert}
+        ></pigeon-merge-tag-picker>
+      ` : ''}
     `;
+  }
+
+  private _togglePicker() {
+    const trigger = this._triggerRef.value;
+    if (!trigger) return;
+    if (!this._pickerOpen) {
+      const rect = trigger.getBoundingClientRect();
+      this._pickerX = Math.max(0, rect.right - 260);
+      this._pickerY = rect.bottom + 4;
+    }
+    this._pickerOpen = !this._pickerOpen;
+  }
+
+  private _onMergeTagInsert(e: CustomEvent<{ tag: MergeTag }>) {
+    const input = this._previewInputRef.value;
+    if (!input) return;
+    const start = input.selectionStart ?? input.value.length;
+    const end = input.selectionEnd ?? input.value.length;
+    const insertion = e.detail.tag.name;
+    const newValue = input.value.substring(0, start) + insertion + input.value.substring(end);
+    input.value = newValue;
+    const newCursor = start + insertion.length;
+    input.setSelectionRange(newCursor, newCursor);
+    input.focus();
+    this._emit({ metaField: 'previewText', value: newValue });
+    this._pickerOpen = false;
   }
 
   private _emit(detail: Record<string, unknown>) {

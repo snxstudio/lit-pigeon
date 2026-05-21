@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import type { PigeonDocument, RowNode, ContentBlock, Selection } from '@lit-pigeon/core';
+import type { PigeonDocument, RowNode, ContentBlock, Selection, MergeTag } from '@lit-pigeon/core';
 import './panels/text-panel.js';
 import './panels/image-panel.js';
 import './panels/button-panel.js';
@@ -16,6 +16,9 @@ export class PigeonProperties extends LitElement {
 
   @property({ type: Object })
   selection: Selection | null = null;
+
+  @property({ type: Array })
+  mergeTags: MergeTag[] = [];
 
   static styles = css`
     :host {
@@ -65,7 +68,7 @@ export class PigeonProperties extends LitElement {
     if (!this.selection || this.selection.type === 'body') {
       return html`
         <div class="panel-wrapper">
-          <pigeon-body-panel .doc=${this.doc}></pigeon-body-panel>
+          <pigeon-body-panel .doc=${this.doc} .mergeTags=${this.mergeTags}></pigeon-body-panel>
         </div>
       `;
     }
@@ -117,7 +120,7 @@ export class PigeonProperties extends LitElement {
   private _renderBlockPanel(block: ContentBlock, rowId: string, columnId: string) {
     switch (block.type) {
       case 'text':
-        return html`<pigeon-text-panel .block=${block} .rowId=${rowId} .columnId=${columnId}></pigeon-text-panel>`;
+        return html`<pigeon-text-panel .block=${block} .rowId=${rowId} .columnId=${columnId} .mergeTags=${this.mergeTags}></pigeon-text-panel>`;
       case 'image':
         return html`<pigeon-image-panel .block=${block} .rowId=${rowId} .columnId=${columnId}></pigeon-image-panel>`;
       case 'button':

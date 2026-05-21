@@ -274,6 +274,8 @@ export class PigeonEditor extends LitElement {
           part="palette"
           .doc=${doc}
           .selection=${sel}
+          @row-select=${this._handleRowSelect}
+          @block-select=${this._handleBlockSelect}
         ></pigeon-palette>
 
         <pigeon-canvas
@@ -296,6 +298,7 @@ export class PigeonEditor extends LitElement {
           part="properties"
           .doc=${doc}
           .selection=${sel}
+          .mergeTags=${this.config.mergeTags?.tags ?? []}
           @property-change=${this._handlePropertyChange}
           @row-property-change=${this._handleRowPropertyChange}
           @row-layout-change=${this._handleRowLayoutChange}
