@@ -163,6 +163,23 @@ const templates: Record<string, { name: string; description: string; create: () 
 // Initialize
 const editor = document.getElementById('editor') as PigeonEditor;
 
+// Demo merge tags so the text-panel and body-panel show their "{ } Tag" picker.
+editor.config = {
+  mergeTags: {
+    trigger: '{{',
+    tags: [
+      { name: '{{firstName}}', label: 'First name', category: 'Recipient', sample: 'Jane' },
+      { name: '{{lastName}}', label: 'Last name', category: 'Recipient', sample: 'Doe' },
+      { name: '{{email}}', label: 'Email', category: 'Recipient', sample: 'jane@example.com' },
+      { name: '{{company}}', label: 'Company', category: 'Recipient', sample: 'Acme Inc.' },
+      { name: '{{unsubscribeUrl}}', label: 'Unsubscribe URL', category: 'Links', sample: 'https://…' },
+      { name: '{{webViewUrl}}', label: 'View in browser', category: 'Links', sample: 'https://…' },
+      { name: '{{sender.name}}', label: 'Sender name', category: 'Sender', sample: 'Alex' },
+      { name: '{{sender.email}}', label: 'Sender email', category: 'Sender', sample: 'team@acme.io' },
+    ],
+  },
+};
+
 // Restore from localStorage or load welcome template
 function loadInitialDocument() {
   try {
