@@ -57,7 +57,9 @@ There is no truly open-source, self-hosted, framework-agnostic drag-and-drop ema
 | [`@lit-pigeon/core`](./packages/core) | Pure TypeScript engine — document schema, state management, commands, undo/redo, plugin system | ~5 kB |
 | [`@lit-pigeon/editor`](./packages/editor) | Lit Web Components UI — canvas, palette, properties panel, toolbar, drag-and-drop | ~17 kB |
 | [`@lit-pigeon/renderer-mjml`](./packages/renderer-mjml) | MJML-based HTML renderer — converts documents to email-safe HTML | ~2 kB + mjml |
+| [`@lit-pigeon/parser-mjml`](./packages/parser-mjml) | MJML → JSON document parser — import existing MJML into the editor | ~3 kB |
 | [`@lit-pigeon/react`](./packages/react) | React wrapper via `@lit/react` | <1 kB |
+| [`@lit-pigeon/angular`](./packages/angular) | Angular component wrapper | ~1 kB |
 
 ---
 
@@ -71,7 +73,7 @@ There is no truly open-source, self-hosted, framework-agnostic drag-and-drop ema
 ### Install
 
 ```bash
-git clone https://github.com/your-username/lit-pigeon.git
+git clone https://github.com/snxstudio/unnlayer.git lit-pigeon
 cd lit-pigeon
 pnpm install
 pnpm build
@@ -133,6 +135,37 @@ function App() {
       onReady={() => console.log('Ready')}
     />
   );
+}
+```
+
+### Angular
+
+```bash
+npm install @lit-pigeon/angular
+```
+
+```typescript
+import { Component } from '@angular/core';
+import { PigeonEditorComponent } from '@lit-pigeon/angular';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [PigeonEditorComponent],
+  template: `
+    <pigeon-editor-wrapper
+      (pigeonChange)="onChange($event)"
+      (pigeonReady)="onReady()"
+    />
+  `,
+})
+export class AppComponent {
+  onChange(e: { document: unknown }) {
+    console.log(e.document);
+  }
+  onReady() {
+    console.log('Ready');
+  }
 }
 ```
 
@@ -212,22 +245,27 @@ PigeonDocument
 ### v0.1 -- Foundation (current)
 - [x] Core engine with document schema and validation
 - [x] Immutable EditorState + Transaction system
-- [x] Command system (insert, delete, move, update, duplicate blocks/rows)
+- [x] Command system (insert, delete, move, update, duplicate blocks/rows, column add/remove/resize)
 - [x] Undo/redo via history plugin
 - [x] Plugin registry
 - [x] Lit Web Components editor UI
-- [x] Drag-and-drop from palette to canvas
-- [x] Property panels for all block types
+- [x] Drag-and-drop from palette to canvas (and reorder blocks within columns)
+- [x] Property panels for text, image, button, hero, navbar, row, and body
 - [x] MJML renderer for email-safe HTML export
-- [x] React wrapper
-- [x] Playground app
+- [x] MJML parser for importing existing email templates (`@lit-pigeon/parser-mjml`)
+- [x] React wrapper (`@lit-pigeon/react`)
+- [x] Angular wrapper (`@lit-pigeon/angular`)
+- [x] Asset manager and merge-tag picker components (available as standalone, default wiring in v0.2)
+- [x] Playground app + landing page
 
-### v0.2 -- Rich Editing
+### v0.2 -- Rich Editing & UX
 - [ ] Inline rich text editing (TipTap/ProseMirror integration)
+- [ ] Property panels for divider, spacer, social, and html blocks
+- [ ] Wire asset manager, merge-tag picker, and layers panel into the default editor shell
 - [ ] Image upload with configurable adapter (URL, base64, S3 presigned)
 - [ ] Copy/paste blocks
 - [ ] Keyboard shortcuts (Ctrl+Z, Ctrl+Y, Delete, arrow keys)
-- [ ] Block reordering via drag within canvas
+- [ ] Row reordering via drag within canvas
 
 ### v0.3 -- Templates & Theming
 - [ ] Template system with save/load
@@ -238,14 +276,14 @@ PigeonDocument
 
 ### v0.4 -- Advanced Features
 - [ ] Conditional content / dynamic variables (`{{firstName}}`)
-- [ ] Mobile-responsive preview with live toggle
+- [ ] Mobile-responsive preview baked into the main canvas
+- [ ] Outlook (mso) and dark-mode rendering workarounds + email-client compatibility matrix
 - [ ] Collaborative editing (CRDT-based)
 - [ ] Custom block plugin API with full docs
 - [ ] Accessibility audit (WCAG 2.1 AA)
 
 ### v0.5 -- Framework Wrappers & Ecosystem
 - [ ] Vue wrapper (`@lit-pigeon/vue`)
-- [ ] Angular wrapper (`@lit-pigeon/angular`)
 - [ ] Svelte wrapper (`@lit-pigeon/svelte`)
 - [ ] Server-side rendering API
 - [ ] REST API adapter for headless usage
@@ -268,9 +306,11 @@ lit-pigeon/
     core/              # Pure TypeScript engine (0 runtime UI deps)
     editor/            # Lit Web Components UI
     renderer-mjml/     # JSON -> MJML -> HTML renderer
+    parser-mjml/       # MJML -> JSON parser (import existing templates)
     react/             # React wrapper via @lit/react
+    angular/           # Angular component wrapper
   apps/
-    playground/        # Development playground app
+    playground/        # Development playground app + landing page
   package.json         # Workspace root
   pnpm-workspace.yaml
   turbo.json           # Turborepo build pipeline
