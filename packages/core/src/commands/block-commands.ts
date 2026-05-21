@@ -30,11 +30,7 @@ export function insertBlock(
     const insertIndex = index ?? col.blocks.length;
 
     if (dispatch) {
-      const tr = ('createTransaction' in state)
-        ? (state as any).createTransaction()
-        : null;
-      if (!tr) return false;
-
+      const tr = state.createTransaction();
       const step = createDocStep(
         'insertBlock',
         `body.rows[${loc.rowIndex}].columns[${loc.columnIndex}].blocks`,
@@ -65,8 +61,8 @@ export function deleteBlock(rowId: string, columnId: string, blockId: string): C
     if (blockIndex === -1) return false;
 
     if (dispatch) {
-      const deletedBlock = { ...col.blocks[blockIndex] };
-      const tr = (state as any).createTransaction();
+      const deletedBlock: ContentBlock = col.blocks[blockIndex];
+      const tr = state.createTransaction();
 
       const step = createDocStep(
         'deleteBlock',
@@ -76,7 +72,7 @@ export function deleteBlock(rowId: string, columnId: string, blockId: string): C
         },
         (doc) => {
           doc.body.rows[loc.rowIndex].columns[loc.columnIndex].blocks.splice(
-            blockIndex, 0, deletedBlock as any,
+            blockIndex, 0, deletedBlock,
           );
         },
       );
@@ -105,8 +101,8 @@ export function updateBlock(
     if (blockIndex === -1) return false;
 
     if (dispatch) {
-      const oldValues = { ...col.blocks[blockIndex].values };
-      const tr = (state as any).createTransaction();
+      const oldBlock: ContentBlock = col.blocks[blockIndex];
+      const tr = state.createTransaction();
 
       const step = createDocStep(
         'updateBlock',
@@ -116,8 +112,7 @@ export function updateBlock(
           Object.assign(block.values, values);
         },
         (doc) => {
-          const block = doc.body.rows[loc.rowIndex].columns[loc.columnIndex].blocks[blockIndex];
-          block.values = oldValues as any;
+          doc.body.rows[loc.rowIndex].columns[loc.columnIndex].blocks[blockIndex] = oldBlock;
         },
       );
 
@@ -149,7 +144,7 @@ export function moveBlock(
     if (!toLoc) return false;
 
     if (dispatch) {
-      const tr = (state as any).createTransaction();
+      const tr = state.createTransaction();
 
       const step = createDocStep(
         'moveBlock',
@@ -185,11 +180,11 @@ export function duplicateBlock(rowId: string, columnId: string, blockId: string)
     if (dispatch) {
       const original = col.blocks[blockIndex];
       const newId = generateId();
-      const duplicate = JSON.parse(JSON.stringify(original));
+      const duplicate = structuredClone(original);
       duplicate.id = newId;
 
       const insertIndex = blockIndex + 1;
-      const tr = (state as any).createTransaction();
+      const tr = state.createTransaction();
 
       const step = createDocStep(
         'duplicateBlock',

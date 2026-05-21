@@ -346,7 +346,7 @@ export class PigeonEditor extends LitElement {
 
   /** Central dispatch -- every mutation flows through here. */
   private _dispatch = (tr: TransactionSnapshot) => {
-    this._state = this._state.apply(tr as any);
+    this._state = this._state.apply(tr);
     this._syncHistoryFlags();
     this.requestUpdate();
     this._fireChange();
@@ -632,7 +632,7 @@ export class PigeonEditor extends LitElement {
     attributes: Record<string, unknown>;
   }>) {
     const { rowId, attributes } = e.detail;
-    const cmd = updateRowAttributes(rowId, attributes as any);
+    const cmd = updateRowAttributes(rowId, attributes);
     cmd(this._state, this._dispatch);
   }
 
@@ -683,30 +683,32 @@ export class PigeonEditor extends LitElement {
     const tr = this._state.createTransaction();
 
     if (attribute) {
-      const oldValue = (this._state.doc.body.attributes as any)[attribute];
+      const attrs = this._state.doc.body.attributes as Record<string, unknown>;
+      const oldValue = attrs[attribute];
       const step = createDocStep(
         'updateBodyAttribute',
         `body.attributes.${attribute}`,
         (doc: PigeonDocument) => {
-          (doc.body.attributes as any)[attribute] = value;
+          (doc.body.attributes as Record<string, unknown>)[attribute] = value;
         },
         (doc: PigeonDocument) => {
-          (doc.body.attributes as any)[attribute] = oldValue;
+          (doc.body.attributes as Record<string, unknown>)[attribute] = oldValue;
         },
       );
       tr.addStep(step);
     }
 
     if (metaField) {
-      const oldValue = (this._state.doc.metadata as any)[metaField];
+      const meta = this._state.doc.metadata as Record<string, unknown>;
+      const oldValue = meta[metaField];
       const step = createDocStep(
         'updateMetadata',
         `metadata.${metaField}`,
         (doc: PigeonDocument) => {
-          (doc.metadata as any)[metaField] = value;
+          (doc.metadata as Record<string, unknown>)[metaField] = value;
         },
         (doc: PigeonDocument) => {
-          (doc.metadata as any)[metaField] = oldValue;
+          (doc.metadata as Record<string, unknown>)[metaField] = oldValue;
         },
       );
       tr.addStep(step);

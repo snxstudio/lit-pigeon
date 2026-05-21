@@ -67,12 +67,19 @@ export interface EditorStateSnapshot {
   readonly doc: PigeonDocument;
   readonly selection: Selection | null;
   readonly plugins: Map<string, unknown>;
+  createTransaction(): TransactionSnapshot;
 }
 
 export interface TransactionSnapshot {
+  readonly doc: PigeonDocument;
   readonly steps: readonly Step[];
   readonly selection: Selection | null;
+  readonly selectionSet: boolean;
   readonly meta: ReadonlyMap<string, unknown>;
+  addStep(step: Step): TransactionSnapshot;
+  setSelection(sel: Selection | null): TransactionSnapshot;
+  setMeta(key: string, value: unknown): TransactionSnapshot;
+  getMeta(key: string): unknown;
 }
 
 export interface Renderer {

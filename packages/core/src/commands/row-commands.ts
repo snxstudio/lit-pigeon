@@ -9,7 +9,7 @@ export function insertRow(row: RowNode, index?: number): Command {
     const insertIndex = index ?? state.doc.body.rows.length;
 
     if (dispatch) {
-      const tr = (state as any).createTransaction();
+      const tr = state.createTransaction();
 
       const step = createDocStep(
         'insertRow',
@@ -37,8 +37,8 @@ export function deleteRow(rowId: string): Command {
     if (rowIndex === -1) return false;
 
     if (dispatch) {
-      const deletedRow = JSON.parse(JSON.stringify(state.doc.body.rows[rowIndex]));
-      const tr = (state as any).createTransaction();
+      const deletedRow: RowNode = structuredClone(state.doc.body.rows[rowIndex]);
+      const tr = state.createTransaction();
 
       const step = createDocStep(
         'deleteRow',
@@ -67,7 +67,7 @@ export function moveRow(rowId: string, toIndex: number): Command {
     if (fromIndex === toIndex) return false;
 
     if (dispatch) {
-      const tr = (state as any).createTransaction();
+      const tr = state.createTransaction();
 
       const step = createDocStep(
         'moveRow',
@@ -98,7 +98,7 @@ export function duplicateRow(rowId: string): Command {
 
     if (dispatch) {
       const original = state.doc.body.rows[rowIndex];
-      const duplicate: RowNode = JSON.parse(JSON.stringify(original));
+      const duplicate: RowNode = structuredClone(original);
       duplicate.id = generateId();
       // Give new IDs to columns and blocks
       duplicate.columns.forEach((col) => {
@@ -109,7 +109,7 @@ export function duplicateRow(rowId: string): Command {
       });
 
       const insertIndex = rowIndex + 1;
-      const tr = (state as any).createTransaction();
+      const tr = state.createTransaction();
 
       const step = createDocStep(
         'duplicateRow',
@@ -140,8 +140,8 @@ export function updateRowAttributes(
     if (rowIndex === -1) return false;
 
     if (dispatch) {
-      const oldAttrs = { ...state.doc.body.rows[rowIndex].attributes };
-      const tr = (state as any).createTransaction();
+      const oldAttrs: RowNode['attributes'] = { ...state.doc.body.rows[rowIndex].attributes };
+      const tr = state.createTransaction();
 
       const step = createDocStep(
         'updateRowAttributes',
@@ -150,7 +150,7 @@ export function updateRowAttributes(
           Object.assign(doc.body.rows[rowIndex].attributes, attributes);
         },
         (doc) => {
-          doc.body.rows[rowIndex].attributes = oldAttrs as any;
+          doc.body.rows[rowIndex].attributes = oldAttrs;
         },
       );
 

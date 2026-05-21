@@ -1,6 +1,6 @@
 import { produce } from 'immer';
 import type { PigeonDocument } from '../types/document.js';
-import type { Selection, EditorConfig, PigeonPlugin } from '../types/editor.js';
+import type { Selection, EditorConfig, PigeonPlugin, TransactionSnapshot } from '../types/editor.js';
 import { Transaction } from './transaction.js';
 import { createDefaultDocument } from '../schema/defaults.js';
 
@@ -43,7 +43,7 @@ export class EditorState {
     return new Transaction(this.doc);
   }
 
-  apply(tr: Transaction): EditorState {
+  apply(tr: TransactionSnapshot): EditorState {
     let newDoc = tr.doc;
     const newSelection = tr.selectionSet ? tr.selection : this.selection;
     const newPluginState = new Map(this.plugins);

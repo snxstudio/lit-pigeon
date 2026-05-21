@@ -1,3 +1,4 @@
+import type { ColumnNode } from '../types/document.js';
 import type { Command } from '../types/editor.js';
 import { createDocStep } from '../state/transaction.js';
 import { createColumn } from '../schema/defaults.js';
@@ -17,7 +18,7 @@ export function addColumn(rowId: string): Command {
       const newRatios = distributeRatios(newCount);
       const oldRatios = [...row.columnRatios];
 
-      const tr = (state as any).createTransaction();
+      const tr = state.createTransaction();
 
       const step = createDocStep(
         'addColumn',
@@ -53,12 +54,12 @@ export function removeColumn(rowId: string, columnId: string): Command {
     if (colIndex === -1) return false;
 
     if (dispatch) {
-      const removedCol = JSON.parse(JSON.stringify(row.columns[colIndex]));
+      const removedCol: ColumnNode = structuredClone(row.columns[colIndex]);
       const oldRatios = [...row.columnRatios];
       const newCount = row.columns.length - 1;
       const newRatios = distributeRatios(newCount);
 
-      const tr = (state as any).createTransaction();
+      const tr = state.createTransaction();
 
       const step = createDocStep(
         'removeColumn',
@@ -94,7 +95,7 @@ export function resizeColumns(rowId: string, ratios: number[]): Command {
 
     if (dispatch) {
       const oldRatios = [...row.columnRatios];
-      const tr = (state as any).createTransaction();
+      const tr = state.createTransaction();
 
       const step = createDocStep(
         'resizeColumns',

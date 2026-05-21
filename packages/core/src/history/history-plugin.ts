@@ -35,7 +35,7 @@ export function createHistoryPlugin(): PigeonPlugin {
 
       const entry: HistoryEntry = {
         steps: [...tr.steps],
-        doc: (tr as any).doc,
+        doc: tr.doc,
         timestamp: Date.now(),
       };
 
@@ -44,7 +44,10 @@ export function createHistoryPlugin(): PigeonPlugin {
   };
 }
 
-export function undo(state: EditorStateSnapshot, dispatch?: (tr: any) => void): boolean {
+export function undo(
+  state: EditorStateSnapshot,
+  dispatch?: (tr: TransactionSnapshot) => void,
+): boolean {
   const history = state.plugins.get(HISTORY_PLUGIN_NAME) as HistoryState | undefined;
   if (!history || !canUndo(history)) return false;
 
@@ -52,9 +55,8 @@ export function undo(state: EditorStateSnapshot, dispatch?: (tr: any) => void): 
     const { history: newHistory, entry } = undoFromHistory(history);
     if (!entry) return false;
 
-    const tr = (state as any).createTransaction();
+    const tr = state.createTransaction();
 
-    // Apply inverse steps
     for (let i = entry.steps.length - 1; i >= 0; i--) {
       const inverseStep = entry.steps[i].invert(tr.doc);
       tr.addStep(inverseStep);
@@ -69,7 +71,10 @@ export function undo(state: EditorStateSnapshot, dispatch?: (tr: any) => void): 
   return true;
 }
 
-export function redo(state: EditorStateSnapshot, dispatch?: (tr: any) => void): boolean {
+export function redo(
+  state: EditorStateSnapshot,
+  dispatch?: (tr: TransactionSnapshot) => void,
+): boolean {
   const history = state.plugins.get(HISTORY_PLUGIN_NAME) as HistoryState | undefined;
   if (!history || !canRedo(history)) return false;
 
@@ -77,9 +82,8 @@ export function redo(state: EditorStateSnapshot, dispatch?: (tr: any) => void): 
     const { history: newHistory, entry } = redoFromHistory(history);
     if (!entry) return false;
 
-    const tr = (state as any).createTransaction();
+    const tr = state.createTransaction();
 
-    // Re-apply steps
     for (const step of entry.steps) {
       tr.addStep(step);
     }
