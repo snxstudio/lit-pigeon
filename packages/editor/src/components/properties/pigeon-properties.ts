@@ -8,6 +8,10 @@ import './panels/row-panel.js';
 import './panels/body-panel.js';
 import './panels/hero-panel.js';
 import './panels/navbar-panel.js';
+import './panels/divider-panel.js';
+import './panels/spacer-panel.js';
+import './panels/social-panel.js';
+import './panels/html-panel.js';
 
 @customElement('pigeon-properties')
 export class PigeonProperties extends LitElement {
@@ -129,12 +133,23 @@ export class PigeonProperties extends LitElement {
         return html`<pigeon-hero-panel .block=${block} .rowId=${rowId} .columnId=${columnId}></pigeon-hero-panel>`;
       case 'navbar':
         return html`<pigeon-navbar-panel .block=${block} .rowId=${rowId} .columnId=${columnId}></pigeon-navbar-panel>`;
-      default:
+      case 'divider':
+        return html`<pigeon-divider-panel .block=${block} .rowId=${rowId} .columnId=${columnId}></pigeon-divider-panel>`;
+      case 'spacer':
+        return html`<pigeon-spacer-panel .block=${block} .rowId=${rowId} .columnId=${columnId}></pigeon-spacer-panel>`;
+      case 'social':
+        return html`<pigeon-social-panel .block=${block} .rowId=${rowId} .columnId=${columnId}></pigeon-social-panel>`;
+      case 'html':
+        return html`<pigeon-html-panel .block=${block} .rowId=${rowId} .columnId=${columnId} .mergeTags=${this.mergeTags}></pigeon-html-panel>`;
+      default: {
+        const exhaustive: never = block;
+        const unknownType = (exhaustive as { type?: string }).type ?? 'unknown';
         return html`
           <div class="empty-state">
-            <p>No property editor available for "${block.type}" blocks yet.</p>
+            <p>No property editor available for "${unknownType}" blocks yet.</p>
           </div>
         `;
+      }
     }
   }
 
