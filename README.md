@@ -262,12 +262,13 @@ PigeonDocument
 
 ### v0.2 -- Rich Editing & UX
 - [ ] Inline rich text editing (TipTap/ProseMirror integration)
-- [ ] Property panels for divider, spacer, social, and html blocks
-- [ ] Wire asset manager, merge-tag picker, and layers panel into the default editor shell
+- [x] Property panels for divider, spacer, social, and html blocks
+- [x] Wire asset manager, merge-tag picker, and layers panel into the default editor shell
 - [ ] Image upload with configurable adapter (URL, base64, S3 presigned)
 - [ ] Copy/paste blocks
-- [ ] Keyboard shortcuts (Ctrl+Z, Ctrl+Y, Delete, arrow keys)
-- [ ] Row reordering via drag within canvas
+- [x] Keyboard shortcuts (Cmd/Ctrl+Z undo, Shift+Cmd/Ctrl+Z or Ctrl+Y redo, Delete, Cmd/Ctrl+D duplicate, Escape deselect)
+- [ ] Arrow-key block/row navigation
+- [x] Row reordering via drag within canvas
 
 ### v0.3 -- Templates & Theming
 - [ ] Template system with save/load

@@ -2,7 +2,7 @@ import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import type { PigeonDocument, Selection, RowNode } from '@lit-pigeon/core';
 import { getDragData, clearDragData } from '../../dnd/drag-manager.js';
-import { calculateRowDropIndex } from '../../dnd/drop-zones.js';
+import { calculateRowDropIndex, resolveReorderTarget } from '../../dnd/drop-zones.js';
 import './pigeon-row.js';
 import './pigeon-drop-indicator.js';
 
@@ -169,17 +169,19 @@ export class PigeonCanvas extends LitElement {
     const dragData = getDragData();
     if (!dragData) return;
 
-    // Accept row drops and block drops (blocks into empty canvas go as new row)
     e.preventDefault();
 
     if (e.dataTransfer) {
-      e.dataTransfer.dropEffect = 'copy';
+      e.dataTransfer.dropEffect = dragData.type === 'existing-row' ? 'move' : 'copy';
     }
 
     this._isDragOver = true;
 
-    // For row drops, calculate row drop position
-    if (dragData.type === 'palette-row' || this.doc.body.rows.length === 0) {
+    if (
+      dragData.type === 'palette-row' ||
+      dragData.type === 'existing-row' ||
+      this.doc.body.rows.length === 0
+    ) {
       const rowElements = Array.from(
         this.renderRoot.querySelectorAll('pigeon-row')
       ) as HTMLElement[];
@@ -205,9 +207,11 @@ export class PigeonCanvas extends LitElement {
     e.preventDefault();
 
     const dragData = getDragData();
-    if (!dragData) return;
+    if (!dragData) {
+      this._resetDragState();
+      return;
+    }
 
-    // Handle row drops
     if (dragData.type === 'palette-row') {
       const index = this._rowDropIndex >= 0 ? this._rowDropIndex : this.doc.body.rows.length;
       this.dispatchEvent(new CustomEvent('row-drop', {
@@ -218,10 +222,18 @@ export class PigeonCanvas extends LitElement {
         bubbles: true,
         composed: true,
       }));
-    }
-
-    // Handle block drop on empty canvas (auto-create row first)
-    if (dragData.type === 'palette-block' && this.doc.body.rows.length === 0) {
+    } else if (dragData.type === 'existing-row' && dragData.rowId) {
+      const sourceIndex = this.doc.body.rows.findIndex(r => r.id === dragData.rowId);
+      const dropIndex = this._rowDropIndex >= 0 ? this._rowDropIndex : this.doc.body.rows.length;
+      const targetIndex = resolveReorderTarget(sourceIndex, dropIndex);
+      if (targetIndex !== null) {
+        this.dispatchEvent(new CustomEvent('row-move', {
+          detail: { rowId: dragData.rowId, toIndex: targetIndex },
+          bubbles: true,
+          composed: true,
+        }));
+      }
+    } else if (dragData.type === 'palette-block' && this.doc.body.rows.length === 0) {
       this.dispatchEvent(new CustomEvent('block-drop-new-row', {
         detail: {
           blockType: dragData.blockType,
@@ -232,6 +244,10 @@ export class PigeonCanvas extends LitElement {
       }));
     }
 
+    this._resetDragState();
+  }
+
+  private _resetDragState() {
     this._isDragOver = false;
     this._rowDropIndex = -1;
     clearDragData();

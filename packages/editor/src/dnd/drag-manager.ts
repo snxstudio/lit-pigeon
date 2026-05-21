@@ -3,7 +3,7 @@
  * Stores drag state globally so any component can query it.
  */
 
-export type DragItemType = 'palette-block' | 'palette-row' | 'existing-block';
+export type DragItemType = 'palette-block' | 'palette-row' | 'existing-block' | 'existing-row';
 
 export interface DragData {
   type: DragItemType;

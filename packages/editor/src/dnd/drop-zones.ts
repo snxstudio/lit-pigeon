@@ -55,3 +55,19 @@ export function calculateBlockDropIndex(
   }
   return blockElements.length;
 }
+
+/**
+ * Translates a visual drop position (where the user wants the item to
+ * appear in the final layout) into the splice target index expected by
+ * moveRow/moveBlock, which removes the source first and then inserts.
+ *
+ * Returns `null` for no-op moves (drop on or immediately after source).
+ */
+export function resolveReorderTarget(
+  sourceIndex: number,
+  dropIndex: number,
+): number | null {
+  if (sourceIndex < 0) return null;
+  if (dropIndex === sourceIndex || dropIndex === sourceIndex + 1) return null;
+  return dropIndex > sourceIndex ? dropIndex - 1 : dropIndex;
+}

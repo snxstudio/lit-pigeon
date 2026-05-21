@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 import type { RowNode, Selection } from '@lit-pigeon/core';
+import { writeDragTransfer, clearDragData } from '../../dnd/drag-manager.js';
 import './pigeon-column.js';
 
 @customElement('pigeon-row')
@@ -17,6 +18,9 @@ export class PigeonRow extends LitElement {
   @property({ type: Object })
   selection: Selection | null = null;
 
+  @state()
+  private _dragging = false;
+
   static styles = css`
     :host {
       display: block;
@@ -25,9 +29,21 @@ export class PigeonRow extends LitElement {
 
     .row-wrapper {
       position: relative;
-      transition: outline 0.15s ease;
+      transition: outline 0.15s ease, opacity 0.15s ease;
       outline: 2px solid transparent;
       outline-offset: -2px;
+    }
+
+    .row-wrapper.dragging {
+      opacity: 0.4;
+    }
+
+    .drag-handle {
+      cursor: grab;
+    }
+
+    .drag-handle:active {
+      cursor: grabbing;
     }
 
     .row-wrapper.selected {
@@ -137,7 +153,7 @@ export class PigeonRow extends LitElement {
 
     return html`
       <div
-        class="row-wrapper ${isSelected ? 'selected' : ''}"
+        class="row-wrapper ${isSelected ? 'selected' : ''} ${this._dragging ? 'dragging' : ''}"
         style="${bgStyle} ${bgImgStyle} ${padStyle}"
         @click=${this._onRowClick}
       >
@@ -160,6 +176,22 @@ export class PigeonRow extends LitElement {
         </div>
 
         <div class="actions">
+          <button
+            class="action-btn drag-handle"
+            title="Drag to reorder"
+            draggable="true"
+            @dragstart=${this._onDragStart}
+            @dragend=${this._onDragEnd}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="9" cy="6" r="1"/>
+              <circle cx="9" cy="12" r="1"/>
+              <circle cx="9" cy="18" r="1"/>
+              <circle cx="15" cy="6" r="1"/>
+              <circle cx="15" cy="12" r="1"/>
+              <circle cx="15" cy="18" r="1"/>
+            </svg>
+          </button>
           <button
             class="action-btn"
             title="Move up"
@@ -259,6 +291,26 @@ export class PigeonRow extends LitElement {
       bubbles: true,
       composed: true,
     }));
+  }
+
+  private _onDragStart(e: DragEvent) {
+    writeDragTransfer(e, {
+      type: 'existing-row',
+      rowId: this.row.id,
+    });
+    if (e.dataTransfer) {
+      const target = e.currentTarget as HTMLElement;
+      const rowEl = target.closest('.row-wrapper') as HTMLElement | null;
+      if (rowEl) {
+        e.dataTransfer.setDragImage(rowEl, 0, 0);
+      }
+    }
+    this._dragging = true;
+  }
+
+  private _onDragEnd() {
+    this._dragging = false;
+    clearDragData();
   }
 }
 
