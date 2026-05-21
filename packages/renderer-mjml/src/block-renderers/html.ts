@@ -1,15 +1,16 @@
 import type { HtmlBlock } from '@lit-pigeon/core';
 import { spacingToMjml } from '../utils/spacing.js';
 
-/**
- * Renders an HtmlBlock to MJML.
- * Uses <mj-raw> wrapped in a <mj-section> style approach.
- * Since mj-raw does not support padding directly, we wrap the content
- * in a div with inline padding styles.
- */
+const MJ_RAW_TAG = /<(\s*\/?\s*mj-raw\b[^>]*)>/gi;
+
+function escapeMjRawTags(content: string): string {
+  return content.replace(MJ_RAW_TAG, '&lt;$1&gt;');
+}
+
 export function renderHtmlBlock(block: HtmlBlock): string {
   const { content, padding } = block.values;
   const paddingStr = spacingToMjml(padding);
+  const safeContent = escapeMjRawTags(content);
 
-  return `<mj-raw><div style="padding: ${paddingStr};">${content}</div></mj-raw>`;
+  return `<mj-raw><div style="padding: ${paddingStr};">${safeContent}</div></mj-raw>`;
 }

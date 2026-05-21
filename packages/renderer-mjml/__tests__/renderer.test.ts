@@ -99,6 +99,48 @@ describe('documentToMjml', () => {
     expect(mjml).toContain('Custom HTML');
   });
 
+  describe('html block injection safety', () => {
+    it('should not allow </mj-raw> in content to break out of the raw block', () => {
+      const doc = createDefaultDocument('Test');
+      const malicious = '</mj-raw><mj-text>INJECTED</mj-text><mj-raw>';
+      const htmlBlock = createBlock('html', { content: malicious });
+      doc.body.rows = [createRow([createColumn([htmlBlock])])];
+      const mjml = documentToMjml(doc);
+
+      const rawOpen = (mjml.match(/<mj-raw>/g) || []).length;
+      const rawClose = (mjml.match(/<\/mj-raw>/g) || []).length;
+      expect(rawOpen).toBe(1);
+      expect(rawClose).toBe(1);
+
+      expect(mjml).not.toMatch(/<\/mj-raw>\s*<mj-text>INJECTED<\/mj-text>/);
+    });
+
+    it('should neutralize case- and whitespace-variant closing tags', () => {
+      const doc = createDefaultDocument('Test');
+      const htmlBlock = createBlock('html', {
+        content: '</ MJ-RAW ><mj-text>X</mj-text>< /mj-raw>',
+      });
+      doc.body.rows = [createRow([createColumn([htmlBlock])])];
+      const mjml = documentToMjml(doc);
+
+      const rawOpen = (mjml.match(/<mj-raw>/gi) || []).length;
+      const rawClose = (mjml.match(/<\/\s*mj-raw\s*>/gi) || []).length;
+      expect(rawOpen).toBe(rawClose);
+    });
+
+    it('should preserve benign html content unchanged', () => {
+      const doc = createDefaultDocument('Test');
+      const htmlBlock = createBlock('html', {
+        content: '<div class="my-widget">Hello <strong>world</strong></div>',
+      });
+      doc.body.rows = [createRow([createColumn([htmlBlock])])];
+      const mjml = documentToMjml(doc);
+
+      expect(mjml).toContain('<div class="my-widget">');
+      expect(mjml).toContain('Hello <strong>world</strong>');
+    });
+  });
+
   it('should handle two-column layout', () => {
     const doc = createDefaultDocument('Test');
     doc.body.rows = [
