@@ -18,6 +18,8 @@ import {
   insertBlock,
   updateBlock,
   moveBlock,
+  deleteBlock,
+  duplicateBlock,
   insertRow,
   deleteRow,
   moveRow,
@@ -157,6 +159,12 @@ export class PigeonEditor extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     this._initState();
+    document.addEventListener('keydown', this._handleKeyDown);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    document.removeEventListener('keydown', this._handleKeyDown);
   }
 
   updated(changed: Map<string, unknown>) {
@@ -477,6 +485,86 @@ export class PigeonEditor extends LitElement {
     const cmd = deleteRow(e.detail.rowId);
     cmd(this._state, this._dispatch);
   }
+
+  /* ------------------------------------------------------------------ */
+  /*  Keyboard shortcuts                                                 */
+  /* ------------------------------------------------------------------ */
+
+  /**
+   * Returns true if the event originates from a text-editing context
+   * (input, textarea, select, or contentEditable element), in which
+   * case shortcuts like Delete and Ctrl+Z should not hijack the keys.
+   * Uses composedPath so it works across shadow DOM boundaries.
+   */
+  private _isInTextInput(e: KeyboardEvent): boolean {
+    for (const el of e.composedPath()) {
+      if (!(el instanceof HTMLElement)) continue;
+      const tag = el.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return true;
+      if (el.isContentEditable) return true;
+    }
+    return false;
+  }
+
+  private _handleKeyDown = (e: KeyboardEvent) => {
+    if (!this._state) return;
+    if (this._isInTextInput(e)) return;
+
+    const mod = e.metaKey || e.ctrlKey;
+    const sel = this._state.selection;
+
+    // Undo: Cmd/Ctrl+Z (without shift)
+    if (mod && !e.shiftKey && e.key.toLowerCase() === 'z') {
+      e.preventDefault();
+      this.undo();
+      return;
+    }
+
+    // Redo: Cmd/Ctrl+Shift+Z, or Ctrl+Y
+    if ((mod && e.shiftKey && e.key.toLowerCase() === 'z') || (mod && e.key.toLowerCase() === 'y')) {
+      e.preventDefault();
+      this.redo();
+      return;
+    }
+
+    // Escape: deselect to body
+    if (e.key === 'Escape') {
+      const tr = this._state.createTransaction();
+      tr.setSelection(createBodySelection());
+      this._dispatch(tr);
+      return;
+    }
+
+    if (!sel) return;
+
+    // Delete / Backspace: remove the selected block or row
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+      if (sel.type === 'block' && sel.rowId && sel.columnId && sel.blockId) {
+        e.preventDefault();
+        const cmd = deleteBlock(sel.rowId, sel.columnId, sel.blockId);
+        cmd(this._state, this._dispatch);
+      } else if (sel.type === 'row' && sel.rowId) {
+        e.preventDefault();
+        const cmd = deleteRow(sel.rowId);
+        cmd(this._state, this._dispatch);
+      }
+      return;
+    }
+
+    // Cmd/Ctrl+D: duplicate the selected block or row
+    if (mod && e.key.toLowerCase() === 'd') {
+      if (sel.type === 'block' && sel.rowId && sel.columnId && sel.blockId) {
+        e.preventDefault();
+        const cmd = duplicateBlock(sel.rowId, sel.columnId, sel.blockId);
+        cmd(this._state, this._dispatch);
+      } else if (sel.type === 'row' && sel.rowId) {
+        e.preventDefault();
+        const cmd = duplicateRow(sel.rowId);
+        cmd(this._state, this._dispatch);
+      }
+      return;
+    }
+  };
 
   /* ------------------------------------------------------------------ */
   /*  DnD handlers                                                       */
