@@ -54,12 +54,14 @@ There is no truly open-source, self-hosted, framework-agnostic drag-and-drop ema
 
 | Package | Description | Size (gz) |
 |---|---|---|
-| [`@lit-pigeon/core`](./packages/core) | Pure TypeScript engine — document schema, state management, commands, undo/redo, plugin system | ~5 kB |
-| [`@lit-pigeon/editor`](./packages/editor) | Lit Web Components UI — canvas, palette, properties panel, toolbar, drag-and-drop | ~17 kB |
-| [`@lit-pigeon/renderer-mjml`](./packages/renderer-mjml) | MJML-based HTML renderer — converts documents to email-safe HTML | ~2 kB + mjml |
-| [`@lit-pigeon/parser-mjml`](./packages/parser-mjml) | MJML → JSON document parser — import existing MJML into the editor | ~3 kB |
-| [`@lit-pigeon/react`](./packages/react) | React wrapper via `@lit/react` | <1 kB |
+| [`@lit-pigeon/core`](./packages/core) | Pure TypeScript engine — document schema, state management, commands, undo/redo, plugin system | ~4.4 kB |
+| [`@lit-pigeon/editor`](./packages/editor) | Lit Web Components UI — canvas, palette, properties panels, toolbar, drag-and-drop, layers, merge tags, keyboard shortcuts | ~29.6 kB |
+| [`@lit-pigeon/renderer-mjml`](./packages/renderer-mjml) | MJML-based HTML renderer — converts documents to email-safe HTML | ~2.6 kB + mjml |
+| [`@lit-pigeon/parser-mjml`](./packages/parser-mjml) | MJML → JSON document parser — import existing MJML into the editor | ~2.9 kB |
+| [`@lit-pigeon/react`](./packages/react) | React wrapper via `@lit/react` | 0.5 kB |
 | [`@lit-pigeon/angular`](./packages/angular) | Angular component wrapper | ~1 kB |
+
+Sizes are measured by `pnpm size` and enforced in CI via [size-limit](https://github.com/ai/size-limit), excluding peer dependencies. See [`.size-limit.json`](./.size-limit.json) for the budgets.
 
 ---
 

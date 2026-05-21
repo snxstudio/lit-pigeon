@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   check:
-    name: Lint, build & test
+    name: Lint, build, test & size
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,3 +25,4 @@ jobs:
       - run: pnpm lint
       - run: pnpm build
       - run: pnpm test
+      - run: pnpm size

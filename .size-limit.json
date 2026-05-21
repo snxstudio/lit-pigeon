@@ -1,0 +1,44 @@
+[
+  {
+    "name": "@lit-pigeon/core (ESM, excluding immer + nanoid)",
+    "path": "packages/core/dist/index.js",
+    "ignore": ["immer", "nanoid"],
+    "limit": "6 kB",
+    "gzip": true
+  },
+  {
+    "name": "@lit-pigeon/editor (ESM, excluding lit)",
+    "path": "packages/editor/dist/index.js",
+    "ignore": ["lit", "lit/decorators.js", "lit/directives/ref.js", "@lit-pigeon/core"],
+    "limit": "35 kB",
+    "gzip": true
+  },
+  {
+    "name": "@lit-pigeon/renderer-mjml (ESM, excluding mjml)",
+    "path": "packages/renderer-mjml/dist/index.js",
+    "ignore": ["mjml", "@lit-pigeon/core"],
+    "limit": "3 kB",
+    "gzip": true
+  },
+  {
+    "name": "@lit-pigeon/parser-mjml (ESM)",
+    "path": "packages/parser-mjml/dist/index.js",
+    "ignore": ["@lit-pigeon/core", "htmlparser2"],
+    "limit": "4 kB",
+    "gzip": true
+  },
+  {
+    "name": "@lit-pigeon/react (ESM, excluding react/lit)",
+    "path": "packages/react/dist/index.js",
+    "ignore": ["react", "react-dom", "@lit/react", "@lit-pigeon/editor", "@lit-pigeon/core"],
+    "limit": "1 kB",
+    "gzip": true
+  },
+  {
+    "name": "@lit-pigeon/angular (ESM, excluding @angular/core)",
+    "path": "packages/angular/dist/index.js",
+    "ignore": ["@angular/core", "@lit-pigeon/editor", "@lit-pigeon/core"],
+    "limit": "2 kB",
+    "gzip": true
+  }
+]
