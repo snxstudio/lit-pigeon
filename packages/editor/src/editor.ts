@@ -570,6 +570,15 @@ export class PigeonEditor extends LitElement {
       return;
     }
 
+    // ArrowUp / ArrowDown: navigate between blocks in document order
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      if (sel.type === 'block' && sel.blockId) {
+        e.preventDefault();
+        this._moveBlockSelection(e.key === 'ArrowDown' ? 1 : -1);
+      }
+      return;
+    }
+
     // Cmd/Ctrl+C: copy the selected block into the in-memory clipboard
     if (mod && e.key.toLowerCase() === 'c') {
       if (sel.type === 'block' && sel.rowId && sel.columnId && sel.blockId) {
@@ -604,6 +613,35 @@ export class PigeonEditor extends LitElement {
       return;
     }
   };
+
+  private _flattenBlockLocations(): Array<{ rowId: string; columnId: string; blockId: string }> {
+    const out: Array<{ rowId: string; columnId: string; blockId: string }> = [];
+    for (const row of this._state.doc.body.rows) {
+      for (const col of row.columns) {
+        for (const block of col.blocks) {
+          out.push({ rowId: row.id, columnId: col.id, blockId: block.id });
+        }
+      }
+    }
+    return out;
+  }
+
+  private _moveBlockSelection(delta: -1 | 1) {
+    const sel = this._state.selection;
+    if (!sel || sel.type !== 'block' || !sel.blockId) return;
+
+    const flat = this._flattenBlockLocations();
+    const currentIdx = flat.findIndex(b => b.blockId === sel.blockId);
+    if (currentIdx === -1) return;
+
+    const nextIdx = currentIdx + delta;
+    if (nextIdx < 0 || nextIdx >= flat.length) return;
+
+    const target = flat[nextIdx];
+    const tr = this._state.createTransaction();
+    tr.setSelection(createBlockSelection(target.rowId, target.columnId, target.blockId));
+    this._dispatch(tr);
+  }
 
   private _findBlock(rowId: string, columnId: string, blockId: string): ContentBlock | undefined {
     const row = this._state.doc.body.rows.find(r => r.id === rowId);

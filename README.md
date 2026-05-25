@@ -266,8 +266,8 @@ PigeonDocument
 - [x] Wire asset manager, merge-tag picker, and layers panel into the default editor shell
 - [ ] Image upload with configurable adapter (URL, base64, S3 presigned)
 - [x] Copy/paste blocks (Cmd/Ctrl+C / Cmd/Ctrl+V on a selected block; in-memory clipboard)
-- [x] Keyboard shortcuts (Cmd/Ctrl+Z undo, Shift+Cmd/Ctrl+Z or Ctrl+Y redo, Delete, Cmd/Ctrl+D duplicate, Escape deselect)
-- [ ] Arrow-key block/row navigation
+- [x] Keyboard shortcuts (Cmd/Ctrl+Z undo, Shift+Cmd/Ctrl+Z or Ctrl+Y redo, Delete, Cmd/Ctrl+D duplicate, Cmd/Ctrl+C / Cmd/Ctrl+V copy/paste, Escape deselect, ArrowUp/Down navigate blocks)
+- [ ] Arrow-key row navigation (block-level done; row selection still TODO)
 - [x] Row reordering via drag within canvas
 
 ### v0.3 -- Templates & Theming

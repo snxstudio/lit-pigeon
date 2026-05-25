@@ -198,6 +198,106 @@ describe('pigeon-editor keyboard shortcuts', () => {
     });
   });
 
+  describe('ArrowDown / ArrowUp block navigation', () => {
+    async function makeMultiBlockEditor() {
+      const doc = createDefaultDocument('Test');
+      const b1 = createBlock('text', { content: 'one' });
+      const b2 = createBlock('text', { content: 'two' });
+      const b3 = createBlock('text', { content: 'three' });
+      const col1 = createColumn([b1, b2]);
+      const col2 = createColumn([b3]);
+      const row = createRow([col1, col2]);
+      doc.body.rows = [row];
+      const editor = await mountEditor(doc);
+      return { editor, rowId: row.id, b1: b1.id, b2: b2.id, b3: b3.id };
+    }
+
+    it('ArrowDown moves selection to the next block in document order', async () => {
+      const { editor, rowId, b1, b2 } = await makeMultiBlockEditor();
+      selectBlockOnEditor(editor, rowId, b1);
+      await editor.updateComplete;
+
+      let sel: { blockId?: string } | null = null;
+      editor.addEventListener('pigeon:select', (e) => {
+        sel = (e as CustomEvent).detail.selection;
+      });
+
+      pressKey({ key: 'ArrowDown' });
+      await editor.updateComplete;
+
+      expect(sel).not.toBeNull();
+      expect(sel!.blockId).toBe(b2);
+    });
+
+    it('ArrowDown crosses column boundaries', async () => {
+      const { editor, rowId, b2, b3 } = await makeMultiBlockEditor();
+      selectBlockOnEditor(editor, rowId, b2);
+      await editor.updateComplete;
+
+      let sel: { blockId?: string } | null = null;
+      editor.addEventListener('pigeon:select', (e) => {
+        sel = (e as CustomEvent).detail.selection;
+      });
+
+      pressKey({ key: 'ArrowDown' });
+      await editor.updateComplete;
+
+      expect(sel!.blockId).toBe(b3);
+    });
+
+    it('ArrowUp moves selection to the previous block', async () => {
+      const { editor, rowId, b1, b3 } = await makeMultiBlockEditor();
+      selectBlockOnEditor(editor, rowId, b3);
+      await editor.updateComplete;
+
+      let sel: { blockId?: string } | null = null;
+      editor.addEventListener('pigeon:select', (e) => {
+        sel = (e as CustomEvent).detail.selection;
+      });
+
+      pressKey({ key: 'ArrowUp' });
+      await editor.updateComplete;
+      pressKey({ key: 'ArrowUp' });
+      await editor.updateComplete;
+
+      expect(sel!.blockId).toBe(b1);
+    });
+
+    it('ArrowDown at the last block is a no-op', async () => {
+      const { editor, rowId, b3 } = await makeMultiBlockEditor();
+      selectBlockOnEditor(editor, rowId, b3);
+      await editor.updateComplete;
+
+      let selectChangeCount = 0;
+      editor.addEventListener('pigeon:select', () => {
+        selectChangeCount++;
+      });
+
+      pressKey({ key: 'ArrowDown' });
+      await editor.updateComplete;
+
+      expect(selectChangeCount).toBe(0);
+    });
+
+    it('ArrowDown does nothing when no block is selected', async () => {
+      const doc = createDefaultDocument('Test');
+      const block = createBlock('text', { content: 'hi' });
+      doc.body.rows = [createRow([createColumn([block])])];
+      const editor = await mountEditor(doc);
+
+      // Default selection is null / body
+      let selectChangeCount = 0;
+      editor.addEventListener('pigeon:select', () => {
+        selectChangeCount++;
+      });
+
+      pressKey({ key: 'ArrowDown' });
+      await editor.updateComplete;
+
+      expect(selectChangeCount).toBe(0);
+    });
+  });
+
   describe('Cmd/Ctrl+C and Cmd/Ctrl+V copy + paste', () => {
     it('Cmd+C copies the block and Cmd+V pastes it after the selection', async () => {
       const { doc, rowId, blockId } = makeDoc();
