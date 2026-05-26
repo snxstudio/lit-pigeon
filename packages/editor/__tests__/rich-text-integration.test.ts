@@ -114,6 +114,52 @@ describe('rich-text integration (text-block double-click)', () => {
     });
   });
 
+  it('double-click on a hero block enters edit mode', async () => {
+    const doc = createDefaultDocument('Test');
+    const hero = createBlock('hero', { content: '<p>Headline</p>', backgroundUrl: 'https://x/y.png' });
+    doc.body.rows = [createRow([createColumn([hero])])];
+    const editor = await mountEditor(doc);
+
+    const heroEl = editor.shadowRoot!
+      .querySelector('pigeon-canvas')!.shadowRoot!
+      .querySelector('pigeon-row')!.shadowRoot!
+      .querySelector('pigeon-column')!.shadowRoot!
+      .querySelector('pigeon-hero-block') as HTMLElement;
+
+    heroEl.dispatchEvent(new CustomEvent('block-enter-edit', {
+      detail: { blockId: hero.id },
+      bubbles: true,
+      composed: true,
+    }));
+    await editor.updateComplete;
+    await new Promise((r) => setTimeout(r, 20));
+
+    expect(heroEl.hasAttribute('editing')).toBe(true);
+  });
+
+  it('double-click on a button block enters edit mode', async () => {
+    const doc = createDefaultDocument('Test');
+    const btn = createBlock('button', { content: '<p>Click me</p>' });
+    doc.body.rows = [createRow([createColumn([btn])])];
+    const editor = await mountEditor(doc);
+
+    const btnEl = editor.shadowRoot!
+      .querySelector('pigeon-canvas')!.shadowRoot!
+      .querySelector('pigeon-row')!.shadowRoot!
+      .querySelector('pigeon-column')!.shadowRoot!
+      .querySelector('pigeon-button-block') as HTMLElement;
+
+    btnEl.dispatchEvent(new CustomEvent('block-enter-edit', {
+      detail: { blockId: btn.id },
+      bubbles: true,
+      composed: true,
+    }));
+    await editor.updateComplete;
+    await new Promise((r) => setTimeout(r, 20));
+
+    expect(btnEl.hasAttribute('editing')).toBe(true);
+  });
+
   it('Delete keydown is suppressed while editing (TipTap owns keys)', async () => {
     const { doc, blockId } = makeTextDoc();
     const editor = await mountEditor(doc);

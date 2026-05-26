@@ -2,6 +2,8 @@ import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import type { ButtonBlock } from '@lit-pigeon/core';
+import type { Editor } from '@tiptap/core';
+import { loadRichTextEditor } from '../../rich-text/loader.js';
 
 @customElement('pigeon-button-block')
 export class PigeonButtonBlock extends LitElement {
@@ -10,6 +12,12 @@ export class PigeonButtonBlock extends LitElement {
 
   @property({ type: Boolean, reflect: true })
   selected = false;
+
+  @property({ type: Boolean, reflect: true })
+  editing = false;
+
+  private _editor: Editor | null = null;
+  private _editorHost: HTMLElement | null = null;
 
   static styles = css`
     :host {
@@ -47,6 +55,20 @@ export class PigeonButtonBlock extends LitElement {
       width: 100%;
       text-align: center;
     }
+
+    :host([editing]) .wrapper {
+      outline: 2px solid var(--pigeon-primary, #3b82f6);
+      outline-offset: 0px;
+    }
+
+    .button .pigeon-rich-text {
+      outline: none;
+    }
+
+    .button .pigeon-rich-text p {
+      margin: 0;
+      display: inline;
+    }
   `;
 
   render() {
@@ -65,7 +87,7 @@ export class PigeonButtonBlock extends LitElement {
     `;
 
     // Stored content is HTML (e.g. <p>Click me</p>); strip the wrapping
-    // <p> so the button renders inline.
+    // <p> so the button renders inline when NOT editing.
     const inner = v.content.replace(/^\s*<p>([\s\S]*?)<\/p>\s*$/i, '$1');
 
     return html`
@@ -73,15 +95,64 @@ export class PigeonButtonBlock extends LitElement {
         class="wrapper"
         style="${padStyle} ${alignStyle}"
         @click=${this._handleClick}
+        @dblclick=${this._handleDblClick}
       >
         <a
           class="button ${v.fullWidth ? 'full-width' : ''}"
           href="${v.href}"
           style="${btnStyle}"
           @click=${this._preventNav}
-        >${unsafeHTML(inner)}</a>
+        >${this.editing ? html`` : unsafeHTML(inner)}</a>
       </div>
     `;
+  }
+
+  updated(changed: Map<string, unknown>) {
+    super.updated(changed);
+    if (changed.has('editing')) {
+      if (this.editing) void this._mountEditor();
+      else this._teardownEditor();
+    }
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this._teardownEditor();
+  }
+
+  private async _mountEditor() {
+    const host = this.renderRoot.querySelector('.button') as HTMLElement | null;
+    if (!host) return;
+    this._editorHost = host;
+    const mod = await loadRichTextEditor();
+    if (!this.editing || !this._editorHost) return;
+    this._editor = mod.createEditor({
+      element: this._editorHost,
+      initialHTML: this.block.values.content,
+      onBlur: (html) => this._commit(html),
+      onEscape: () => this._exit(),
+    });
+  }
+
+  private _teardownEditor() {
+    if (this._editor) {
+      try { this._editor.destroy(); } catch { /* ignore */ }
+      this._editor = null;
+    }
+    this._editorHost = null;
+  }
+
+  private _commit(html: string) {
+    this.dispatchEvent(new CustomEvent('block-exit-edit', {
+      detail: { blockId: this.block.id, content: html },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  private _exit() {
+    const html = this._editor ? this._editor.getHTML() : this.block.values.content;
+    this._commit(html);
   }
 
   private _preventNav(e: Event) {
@@ -91,7 +162,19 @@ export class PigeonButtonBlock extends LitElement {
   private _handleClick(e: Event) {
     e.stopPropagation();
     e.preventDefault();
+    if (this.editing) return;
     this.dispatchEvent(new CustomEvent('block-select', {
+      detail: { blockId: this.block.id },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  private _handleDblClick(e: Event) {
+    e.stopPropagation();
+    e.preventDefault();
+    if (this.editing) return;
+    this.dispatchEvent(new CustomEvent('block-enter-edit', {
       detail: { blockId: this.block.id },
       bubbles: true,
       composed: true,

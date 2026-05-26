@@ -1,5 +1,6 @@
 import { Editor } from '@tiptap/core';
 import { buildBaseExtensions } from './extensions/base.js';
+import { sanitizeHTML } from './serialization.js';
 import type { CreateEditorOptions } from './types.js';
 
 export function createEditor(opts: CreateEditorOptions): Editor {
@@ -20,8 +21,8 @@ export function createEditor(opts: CreateEditorOptions): Editor {
         class: 'pigeon-rich-text',
       },
     },
-    onBlur: ({ editor: e }) => opts.onBlur?.(e.getHTML()),
-    onUpdate: opts.onUpdate ? ({ editor: e }) => opts.onUpdate!(e.getHTML()) : undefined,
+    onBlur: ({ editor: e }) => opts.onBlur?.(sanitizeHTML(e.getHTML())),
+    onUpdate: opts.onUpdate ? ({ editor: e }) => opts.onUpdate!(sanitizeHTML(e.getHTML())) : undefined,
   });
   return editor;
 }

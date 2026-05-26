@@ -122,7 +122,11 @@ export class PigeonColumn extends LitElement {
       case 'image':
         return html`<pigeon-image-block .block=${block} ?selected=${isSelected}></pigeon-image-block>`;
       case 'button':
-        return html`<pigeon-button-block .block=${block} ?selected=${isSelected}></pigeon-button-block>`;
+        return html`<pigeon-button-block
+          .block=${block}
+          ?selected=${isSelected}
+          ?editing=${isEditing}
+        ></pigeon-button-block>`;
       case 'divider':
         return html`<pigeon-divider-block .block=${block} ?selected=${isSelected}></pigeon-divider-block>`;
       case 'spacer':
@@ -132,7 +136,11 @@ export class PigeonColumn extends LitElement {
       case 'html':
         return html`<pigeon-html-block .block=${block} ?selected=${isSelected}></pigeon-html-block>`;
       case 'hero':
-        return html`<pigeon-hero-block .block=${block} ?selected=${isSelected}></pigeon-hero-block>`;
+        return html`<pigeon-hero-block
+          .block=${block}
+          ?selected=${isSelected}
+          ?editing=${isEditing}
+        ></pigeon-hero-block>`;
       case 'navbar':
         return html`<pigeon-navbar-block .block=${block} ?selected=${isSelected}></pigeon-navbar-block>`;
       default:
