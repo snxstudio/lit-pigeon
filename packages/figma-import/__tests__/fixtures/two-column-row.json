@@ -1,0 +1,50 @@
+{
+  "id": "0:1",
+  "name": "Promo email",
+  "type": "FRAME",
+  "absoluteBoundingBox": { "x": 0, "y": 0, "width": 600, "height": 400 },
+  "layoutMode": "VERTICAL",
+  "children": [
+    {
+      "id": "row-grid",
+      "name": "Grid row",
+      "type": "FRAME",
+      "layoutMode": "HORIZONTAL",
+      "absoluteBoundingBox": { "x": 0, "y": 0, "width": 600, "height": 300 },
+      "children": [
+        {
+          "id": "col-left",
+          "name": "Left",
+          "type": "FRAME",
+          "absoluteBoundingBox": { "x": 0, "y": 0, "width": 200, "height": 300 },
+          "children": [
+            {
+              "id": "text-left",
+              "type": "TEXT",
+              "name": "Left text",
+              "characters": "Left side",
+              "fills": [{ "type": "SOLID", "color": { "r": 0, "g": 0, "b": 0 } }],
+              "style": { "fontSize": 14 }
+            }
+          ]
+        },
+        {
+          "id": "col-right",
+          "name": "Right",
+          "type": "FRAME",
+          "absoluteBoundingBox": { "x": 200, "y": 0, "width": 400, "height": 300 },
+          "children": [
+            {
+              "id": "text-right",
+              "type": "TEXT",
+              "name": "Right text",
+              "characters": "Right side, wider column",
+              "fills": [{ "type": "SOLID", "color": { "r": 0, "g": 0, "b": 0 } }],
+              "style": { "fontSize": 14 }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

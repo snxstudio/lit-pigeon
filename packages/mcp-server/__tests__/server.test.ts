@@ -47,6 +47,7 @@ describe('@lit-pigeon/mcp-server', () => {
         'create_document',
         'delete_block',
         'get_document',
+        'import_figma_frame',
         'list_block_types',
         'list_documents',
         'render_to_html',
@@ -176,5 +177,58 @@ describe('@lit-pigeon/mcp-server', () => {
     expect(blockTypes.sort()).toEqual(
       ['text', 'image', 'button', 'divider', 'spacer', 'social', 'html', 'hero', 'navbar'].sort(),
     );
+  });
+
+  it('import_figma_frame imports a frame (via globally-mocked fetch) and loads it into the store', async () => {
+    // Mock the global fetch for the duration of this test.
+    const realFetch = globalThis.fetch;
+    const figmaFrame = {
+      id: '0:1',
+      name: 'Mocked frame',
+      type: 'FRAME',
+      absoluteBoundingBox: { x: 0, y: 0, width: 600, height: 400 },
+      layoutMode: 'VERTICAL',
+      children: [
+        {
+          id: '1:1',
+          type: 'TEXT',
+          name: 'Headline',
+          characters: 'Hi from Figma',
+          fills: [{ type: 'SOLID', color: { r: 0, g: 0, b: 0 } }],
+          style: { fontSize: 24, fontWeight: 700, textAlignHorizontal: 'CENTER' },
+        },
+      ],
+    };
+    globalThis.fetch = (async (input: RequestInfo | URL) => {
+      const url = typeof input === 'string' ? input : (input as URL).toString();
+      if (url.includes('/nodes?')) {
+        return new Response(JSON.stringify({ nodes: { '0:1': { document: figmaFrame } } }), { status: 200 });
+      }
+      if (url.endsWith('/images')) {
+        return new Response(JSON.stringify({ meta: { images: {} } }), { status: 200 });
+      }
+      return new Response('not found', { status: 404 });
+    }) as typeof fetch;
+
+    try {
+      const result = parseReply<{ documentId: string; warnings: string[]; document: { metadata: { name: string } } }>(
+        await client.callTool({
+          name: 'import_figma_frame',
+          arguments: { fileKey: 'FILE_KEY', frameId: '0:1', accessToken: 'tok' },
+        }),
+      );
+      expect(result.documentId).toBeTruthy();
+      expect(result.document.metadata.name).toBe('Mocked frame');
+      expect(result.warnings).toEqual([]);
+
+      // Doc is now in the store; we can render it.
+      const rendered = parseReply<{ html: string; errors: unknown[] }>(
+        await client.callTool({ name: 'render_to_html', arguments: { documentId: result.documentId } }),
+      );
+      expect(rendered.errors).toEqual([]);
+      expect(rendered.html).toContain('Hi from Figma');
+    } finally {
+      globalThis.fetch = realFetch;
+    }
   });
 });

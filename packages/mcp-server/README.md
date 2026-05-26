@@ -59,6 +59,7 @@ After restarting your client, ask: *"Use lit-pigeon to build a welcome email wit
 | `delete_block` | Remove a block. |
 | `render_to_mjml` | Serialize to MJML. |
 | `render_to_html` | Render to email-client-safe HTML (with inline CSS). Returns `{ html, errors }`. |
+| `import_figma_frame` | Fetch a Figma frame via the REST API, convert to a `PigeonDocument`, and load it into the store. Returns `{ documentId, warnings }`. |
 
 Every tool takes a `documentId` after `create_document`. The id is opaque — keep it around for the rest of the conversation.
 
@@ -93,9 +94,23 @@ await server.connect(transport);
 
 The `DocumentStore` is also exported if you want to persist documents elsewhere — supply your own via `buildServer({ store })`.
 
+## Figma import (live)
+
+```text
+User: Use lit-pigeon to import this Figma frame as an email — file key
+      abcd1234, frame id 12:34. Token: figd_…
+Model: [calls import_figma_frame { fileKey, frameId, accessToken }]
+       [calls render_to_html { documentId }]
+       …returns the rendered HTML.
+```
+
+The tool fetches the Figma file via the REST API, converts the frame to a
+`PigeonDocument`, and loads it into the same store as `create_document` —
+follow it with `update_block`, `render_to_html`, etc. See
+[`@lit-pigeon/figma-import`](../figma-import/) for the conversion heuristics.
+
 ## What's coming
 
-- `import_figma_frame` — convert a Figma frame into a `PigeonDocument` directly inside the server (see [`@lit-pigeon/figma-import`](../figma-import/)).
 - `save_template` / `load_template` — persist documents as reusable templates.
 
 ## License

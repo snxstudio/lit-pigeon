@@ -1,0 +1,48 @@
+{
+  "id": "0:1",
+  "name": "Welcome email",
+  "type": "FRAME",
+  "absoluteBoundingBox": { "x": 0, "y": 0, "width": 600, "height": 800 },
+  "fills": [{ "type": "SOLID", "color": { "r": 0.96, "g": 0.97, "b": 0.99 }, "visible": true }],
+  "layoutMode": "VERTICAL",
+  "children": [
+    {
+      "id": "1:1",
+      "name": "Headline",
+      "type": "TEXT",
+      "characters": "Welcome to Lumen",
+      "fills": [{ "type": "SOLID", "color": { "r": 0.06, "g": 0.09, "b": 0.16 } }],
+      "style": { "fontFamily": "Inter", "fontWeight": 700, "fontSize": 32, "textAlignHorizontal": "CENTER" },
+      "absoluteBoundingBox": { "x": 24, "y": 40, "width": 552, "height": 40 }
+    },
+    {
+      "id": "1:2",
+      "name": "Intro",
+      "type": "TEXT",
+      "characters": "Thanks for signing up. Let's get you started.",
+      "fills": [{ "type": "SOLID", "color": { "r": 0.39, "g": 0.45, "b": 0.55 } }],
+      "style": { "fontSize": 16, "fontWeight": 400, "textAlignHorizontal": "LEFT" },
+      "absoluteBoundingBox": { "x": 24, "y": 100, "width": 552, "height": 24 }
+    },
+    {
+      "id": "1:3",
+      "name": "CTA",
+      "type": "FRAME",
+      "layoutMode": "HORIZONTAL",
+      "paddingTop": 12, "paddingBottom": 12, "paddingLeft": 24, "paddingRight": 24,
+      "cornerRadius": 6,
+      "fills": [{ "type": "SOLID", "color": { "r": 0.23, "g": 0.51, "b": 0.96 } }],
+      "absoluteBoundingBox": { "x": 240, "y": 160, "width": 120, "height": 48 },
+      "children": [
+        {
+          "id": "1:4",
+          "name": "Label",
+          "type": "TEXT",
+          "characters": "Get started",
+          "fills": [{ "type": "SOLID", "color": { "r": 1, "g": 1, "b": 1 } }],
+          "style": { "fontSize": 16, "fontWeight": 600 }
+        }
+      ]
+    }
+  ]
+}

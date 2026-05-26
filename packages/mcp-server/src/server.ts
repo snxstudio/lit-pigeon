@@ -3,6 +3,7 @@ import { DocumentStore } from './store/document-store.js';
 import { registerDocumentTools } from './tools/document.js';
 import { registerStructureTools } from './tools/structure.js';
 import { registerRenderTools } from './tools/render.js';
+import { registerFigmaTools } from './tools/figma.js';
 
 export interface BuildServerOptions {
   /** Override the default in-memory store (e.g. for tests or persistence). */
@@ -27,6 +28,7 @@ export function buildServer(opts: BuildServerOptions = {}): { server: McpServer;
   registerDocumentTools(server, store);
   registerStructureTools(server, store);
   registerRenderTools(server, store);
+  registerFigmaTools(server, store);
 
   return { server, store };
 }

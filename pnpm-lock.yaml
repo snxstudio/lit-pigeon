@@ -169,11 +169,27 @@ importers:
         specifier: ^2.0.0
         version: 2.1.9(@types/node@25.9.1)(happy-dom@20.9.0)
 
+  packages/figma-import:
+    dependencies:
+      '@lit-pigeon/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      typescript:
+        specifier: ^5.5.0
+        version: 5.9.3
+      vitest:
+        specifier: ^2.0.0
+        version: 2.1.9(@types/node@25.9.1)(happy-dom@20.9.0)
+
   packages/mcp-server:
     dependencies:
       '@lit-pigeon/core':
         specifier: workspace:*
         version: link:../core
+      '@lit-pigeon/figma-import':
+        specifier: workspace:*
+        version: link:../figma-import
       '@lit-pigeon/renderer-mjml':
         specifier: workspace:*
         version: link:../renderer-mjml

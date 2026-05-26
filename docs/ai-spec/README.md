@@ -73,7 +73,7 @@ Parsers exist in the other direction: `mjmlToDocument(mjml)` round-trips MJML ba
 - **LLMs / prompted models**: include the [prompting guide](./prompting-guide.md) in your system prompt. Reference the JSON Schema URL above for validation.
 - **MCP-compatible tools**: install `@lit-pigeon/mcp-server` (coming next) — it exposes the same operations as live tools.
 - **Custom CLIs / agents**: parse the JSON Schema, generate structured output, hand the result to `@lit-pigeon/core`'s `isValidDocument(doc)` before storing or rendering.
-- **Figma → Pigeon**: see `@lit-pigeon/figma-import` (coming next) — converts a Figma frame to a `PigeonDocument` you can hand off here.
+- **Figma → Pigeon**: use [`@lit-pigeon/figma-import`](../../packages/figma-import/) directly, or invoke the `import_figma_frame` tool on the MCP server.
 
 ## Versioning
 

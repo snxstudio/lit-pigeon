@@ -61,6 +61,7 @@ There is no truly open-source, self-hosted, framework-agnostic drag-and-drop ema
 | [`@lit-pigeon/react`](./packages/react) | React wrapper via `@lit/react` | 0.5 kB |
 | [`@lit-pigeon/angular`](./packages/angular) | Angular component wrapper | ~1 kB |
 | [`@lit-pigeon/mcp-server`](./packages/mcp-server) | Model Context Protocol server — exposes authoring + rendering as MCP tools for AI clients (Claude Code, Cursor, etc.) | Node.js |
+| [`@lit-pigeon/figma-import`](./packages/figma-import) | Convert a Figma frame into a `PigeonDocument` via the Figma REST API | Node.js |
 
 Sizes are measured by `pnpm size` and enforced in CI via [size-limit](https://github.com/ai/size-limit), excluding peer dependencies. See [`.size-limit.json`](./.size-limit.json) for the budgets.
 
@@ -307,8 +308,10 @@ example documents that let any AI tool (LLMs via JSON output, MCP-compatible
 clients, custom agents) author Lit Pigeon emails as JSON. The spec is the
 canonical contract. [`@lit-pigeon/mcp-server`](./packages/mcp-server) is the
 runtime implementation: plug it into Claude Code, Cursor, or any MCP client
-and ask the model to build emails for you. `@lit-pigeon/figma-import`
-(coming soon) will convert Figma frames into the same `PigeonDocument` shape.
+and ask the model to build emails for you. [`@lit-pigeon/figma-import`](./packages/figma-import)
+converts a Figma frame into the same `PigeonDocument` shape, and the MCP
+server exposes it as the `import_figma_frame` tool — turning "build me an
+email from this Figma design" into one prompt.
 
 ```bash
 docs/ai-spec/
