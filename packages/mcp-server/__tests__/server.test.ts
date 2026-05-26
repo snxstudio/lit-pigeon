@@ -46,12 +46,16 @@ describe('@lit-pigeon/mcp-server', () => {
         'add_row',
         'create_document',
         'delete_block',
+        'delete_template',
         'get_document',
         'import_figma_frame',
         'list_block_types',
         'list_documents',
+        'list_templates',
+        'load_template',
         'render_to_html',
         'render_to_mjml',
+        'save_template',
         'set_body_attribute',
         'set_document_metadata',
         'update_block',
@@ -177,6 +181,82 @@ describe('@lit-pigeon/mcp-server', () => {
     expect(blockTypes.sort()).toEqual(
       ['text', 'image', 'button', 'divider', 'spacer', 'social', 'html', 'hero', 'navbar'].sort(),
     );
+  });
+
+  it('list_templates returns the 4 starters with no document payload', async () => {
+    const { templates } = parseReply<{ templates: Array<{ id: string; name: string; document?: unknown }> }>(
+      await client.callTool({ name: 'list_templates', arguments: {} }),
+    );
+    expect(templates.map((t) => t.id).sort()).toEqual(
+      ['starter-newsletter', 'starter-promo', 'starter-transactional', 'starter-welcome'].sort(),
+    );
+    // Listing must NOT carry the full document — keep payloads small.
+    expect(templates[0].document).toBeUndefined();
+  });
+
+  it('load_template hydrates a starter into the store and renders cleanly', async () => {
+    const loaded = parseReply<{ documentId: string; template: { id: string; name: string } }>(
+      await client.callTool({ name: 'load_template', arguments: { templateId: 'starter-welcome' } }),
+    );
+    expect(loaded.template.id).toBe('starter-welcome');
+    expect(loaded.documentId).toBeTruthy();
+
+    const rendered = parseReply<{ html: string; errors: unknown[] }>(
+      await client.callTool({ name: 'render_to_html', arguments: { documentId: loaded.documentId } }),
+    );
+    expect(rendered.errors).toEqual([]);
+    expect(rendered.html).toContain('Welcome');
+  });
+
+  it('save_template snapshots a stored document and load_template recreates it', async () => {
+    // Build a tiny document
+    const { documentId } = parseReply<{ documentId: string }>(
+      await client.callTool({ name: 'create_document', arguments: { name: 'Source' } }),
+    );
+    const { rowId, columnIds } = parseReply<{ rowId: string; columnIds: string[] }>(
+      await client.callTool({ name: 'add_row', arguments: { documentId, columnCount: 1 } }),
+    );
+    await client.callTool({
+      name: 'add_block',
+      arguments: {
+        documentId, rowId, columnId: columnIds[0],
+        blockType: 'text',
+        values: { content: '<p>Snapshot me</p>' },
+      },
+    });
+
+    await client.callTool({
+      name: 'save_template',
+      arguments: {
+        documentId, templateId: 'my-custom', name: 'My custom template', category: 'other',
+      },
+    });
+
+    const { documentId: loadedDocId } = parseReply<{ documentId: string }>(
+      await client.callTool({ name: 'load_template', arguments: { templateId: 'my-custom' } }),
+    );
+    expect(loadedDocId).not.toBe(documentId); // a fresh doc, not the original
+
+    const html = parseReply<{ html: string }>(
+      await client.callTool({ name: 'render_to_html', arguments: { documentId: loadedDocId } }),
+    );
+    expect(html.html).toContain('Snapshot me');
+  });
+
+  it('save_template rejects a non-kebab-case templateId', async () => {
+    const { documentId } = parseReply<{ documentId: string }>(
+      await client.callTool({ name: 'create_document', arguments: {} }),
+    );
+    const result = await client.callTool({
+      name: 'save_template',
+      arguments: { documentId, templateId: 'Has Spaces!', name: 'x' },
+    });
+    expect(result.isError).toBe(true);
+  });
+
+  it('load_template returns an error for unknown ids', async () => {
+    const result = await client.callTool({ name: 'load_template', arguments: { templateId: 'nope' } });
+    expect(result.isError).toBe(true);
   });
 
   it('import_figma_frame imports a frame (via globally-mocked fetch) and loads it into the store', async () => {

@@ -100,3 +100,14 @@ export { PluginRegistry } from './plugins/plugin-registry.js';
 // Utils
 export { generateId } from './utils/id.js';
 export { deepEqual } from './utils/deep-equal.js';
+
+// Templates
+export {
+  getStarterTemplates,
+  getStarterTemplate,
+  InMemoryTemplateStorage,
+  type Template,
+  type TemplateCategory,
+  type TemplateStorage,
+  type InMemoryTemplateStorageOptions,
+} from './templates/index.js';

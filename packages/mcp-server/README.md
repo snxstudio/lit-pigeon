@@ -60,6 +60,10 @@ After restarting your client, ask: *"Use lit-pigeon to build a welcome email wit
 | `render_to_mjml` | Serialize to MJML. |
 | `render_to_html` | Render to email-client-safe HTML (with inline CSS). Returns `{ html, errors }`. |
 | `import_figma_frame` | Fetch a Figma frame via the REST API, convert to a `PigeonDocument`, and load it into the store. Returns `{ documentId, warnings }`. |
+| `list_templates` | List the four starter templates (welcome / newsletter / transactional / promo) and any saved during this session. |
+| `load_template` | Hydrate a template into the document store. Returns the new `documentId`. |
+| `save_template` | Snapshot the current document as a reusable template (kebab-case `templateId`). |
+| `delete_template` | Remove a template by id. |
 
 Every tool takes a `documentId` after `create_document`. The id is opaque — keep it around for the rest of the conversation.
 
@@ -111,7 +115,7 @@ follow it with `update_block`, `render_to_html`, etc. See
 
 ## What's coming
 
-- `save_template` / `load_template` — persist documents as reusable templates.
+- File-system-backed `TemplateStorage` (so saved templates survive restarts) wired in via `buildServer({ templateStorage })`.
 
 ## License
 

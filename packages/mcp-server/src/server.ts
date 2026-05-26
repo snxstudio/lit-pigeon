@@ -4,6 +4,7 @@ import { registerDocumentTools } from './tools/document.js';
 import { registerStructureTools } from './tools/structure.js';
 import { registerRenderTools } from './tools/render.js';
 import { registerFigmaTools } from './tools/figma.js';
+import { registerTemplateTools } from './tools/templates.js';
 
 export interface BuildServerOptions {
   /** Override the default in-memory store (e.g. for tests or persistence). */
@@ -29,6 +30,7 @@ export function buildServer(opts: BuildServerOptions = {}): { server: McpServer;
   registerStructureTools(server, store);
   registerRenderTools(server, store);
   registerFigmaTools(server, store);
+  registerTemplateTools(server, store);
 
   return { server, store };
 }

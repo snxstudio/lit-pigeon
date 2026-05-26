@@ -404,11 +404,11 @@ PigeonDocument
 - [x] Row reordering via drag within canvas
 
 ### v0.3 -- Templates & Theming
-- [ ] Template system with save/load
+- [x] Template system with save/load (`TemplateStorage` + `InMemoryTemplateStorage` in `@lit-pigeon/core`; `list_templates`/`load_template`/`save_template`/`delete_template` MCP tools)
+- [x] Pre-built email templates (welcome, newsletter, transactional, promo) — `getStarterTemplates()` from `@lit-pigeon/core`
 - [ ] Dark theme
 - [ ] Theme customization API
 - [ ] `::part()` CSS selectors for deep customization
-- [ ] Pre-built email templates (welcome, newsletter, transactional, promo)
 
 ### v0.4 -- Advanced Features
 - [ ] Conditional content / dynamic variables (`{{firstName}}`)

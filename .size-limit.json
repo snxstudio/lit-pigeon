@@ -3,7 +3,7 @@
     "name": "@lit-pigeon/core (ESM, excluding immer + nanoid)",
     "path": "packages/core/dist/index.js",
     "ignore": ["immer", "nanoid"],
-    "limit": "6 kB",
+    "limit": "8 kB",
     "gzip": true
   },
   {
