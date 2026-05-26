@@ -403,9 +403,19 @@ PigeonDocument
 - [x] Arrow-key row navigation
 - [x] Row reordering via drag within canvas
 
+### AI Integration (cross-cutting, shipped)
+
+A separate track that any AI tool — Claude Code, Cursor, custom agents, raw LLM prompting — can target to author and import Lit Pigeon emails.
+
+- [x] AI authoring specification 1.0 — JSON Schema + prompting guide + example documents at [`docs/ai-spec/`](./docs/ai-spec/)
+- [x] `@lit-pigeon/mcp-server` — Model Context Protocol stdio server exposing 18 tools (create/list/get/validate document, set body attribute, set metadata, list block types, add row, add/update/delete block, render to MJML/HTML, import Figma frame, list/load/save/delete template)
+- [x] `@lit-pigeon/figma-import` — Figma frame → `PigeonDocument` via the Figma REST API; standalone library + `import_figma_frame` MCP tool
+
 ### v0.3 -- Templates & Theming
 - [x] Template system with save/load (`TemplateStorage` + `InMemoryTemplateStorage` in `@lit-pigeon/core`; `list_templates`/`load_template`/`save_template`/`delete_template` MCP tools)
 - [x] Pre-built email templates (welcome, newsletter, transactional, promo) — `getStarterTemplates()` from `@lit-pigeon/core`
+- [ ] Editor toolbar UI for templates (Save as / Open buttons)
+- [ ] File-system-backed `TemplateStorage` (templates persist across MCP-server restarts)
 - [ ] Dark theme
 - [ ] Theme customization API
 - [ ] `::part()` CSS selectors for deep customization
@@ -423,7 +433,9 @@ PigeonDocument
 - [ ] Svelte wrapper (`@lit-pigeon/svelte`)
 - [ ] Server-side rendering API
 - [ ] REST API adapter for headless usage
-- [ ] Figma-to-email import
+- [x] Figma-to-email import — `@lit-pigeon/figma-import` (see [AI Integration](#ai-integration-cross-cutting-shipped))
+- [ ] Hero block detection in Figma importer (image + overlay-text heuristic)
+- [ ] `import_figma_frame` live-sandbox smoke test in CI
 
 ### Future
 - [ ] AI-powered content suggestions
