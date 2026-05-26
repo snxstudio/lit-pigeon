@@ -94,6 +94,8 @@ export class PigeonImagePanel extends LitElement {
     const v = this.block.values;
     const widthVal = v.width === 'auto' ? 0 : v.width;
 
+    const uploadEnabled = this.assetManagerConfig?.enabled !== false;
+
     return html`
       <h3>Image Properties</h3>
 
@@ -105,14 +107,18 @@ export class PigeonImagePanel extends LitElement {
           placeholder="https://example.com/image.jpg"
           @change=${this._onSrcChange}
         />
-        <button class="upload-btn" @click=${this._openAssetManager}>Upload Image</button>
+        ${uploadEnabled
+          ? html`<button class="upload-btn" @click=${this._openAssetManager}>Upload Image</button>`
+          : ''}
       </div>
 
-      <pigeon-asset-manager
-        ?open=${this._assetManagerOpen}
-        .config=${this.assetManagerConfig ?? {}}
-        @asset-selected=${this._onAssetSelected}
-      ></pigeon-asset-manager>
+      ${uploadEnabled
+        ? html`<pigeon-asset-manager
+            ?open=${this._assetManagerOpen}
+            .config=${this.assetManagerConfig ?? {}}
+            @asset-selected=${this._onAssetSelected}
+          ></pigeon-asset-manager>`
+        : ''}
 
       <div class="field">
         <label>Alt Text</label>

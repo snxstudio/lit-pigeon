@@ -7,6 +7,14 @@ export interface Selection {
   blockId?: string;
 }
 
+export interface PresignedUploadParams {
+  uploadUrl: string;
+  publicUrl: string;
+  method?: 'PUT' | 'POST';
+  headers?: Record<string, string>;
+  fields?: Record<string, string>;
+}
+
 export interface AssetManagerConfig {
   enabled?: boolean;
   uploadUrl?: string;
@@ -14,6 +22,9 @@ export interface AssetManagerConfig {
   acceptedTypes?: string[];
   maxFileSize?: number;
   uploadHandler?: (file: File) => Promise<string>;
+  presignedUpload?: {
+    getUploadParams: (file: File) => Promise<PresignedUploadParams>;
+  };
 }
 
 export interface MergeTag {

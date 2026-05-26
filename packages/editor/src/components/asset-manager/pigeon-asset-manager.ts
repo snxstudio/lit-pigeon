@@ -202,6 +202,7 @@ export class PigeonAssetManager extends LitElement {
   `;
 
   render() {
+    if (this.config.enabled === false) return html``;
     return html`
       <div class="overlay" @click=${this._close}></div>
       <div class="modal">
@@ -317,6 +318,44 @@ export class PigeonAssetManager extends LitElement {
         this._progress = 50;
         const url = await this.config.uploadHandler(file);
         this._selectAsset(url);
+      } catch (err) {
+        this._error = err instanceof Error ? err.message : 'Upload failed';
+      } finally {
+        this._uploading = false;
+        this._progress = 0;
+      }
+      return;
+    }
+
+    // Use presigned upload (two-step: ask backend for signed URL, then PUT/POST)
+    if (this.config.presignedUpload) {
+      try {
+        this._uploading = true;
+        this._progress = 20;
+        const params = await this.config.presignedUpload.getUploadParams(file);
+        this._progress = 40;
+
+        const method = params.method ?? 'PUT';
+        const headers: Record<string, string> = { ...(params.headers ?? {}) };
+        let body: BodyInit;
+
+        if (method === 'POST') {
+          const form = new FormData();
+          for (const [k, v] of Object.entries(params.fields ?? {})) form.append(k, v);
+          form.append('file', file);
+          body = form;
+          // Don't set Content-Type — the browser adds the multipart boundary.
+        } else {
+          body = file;
+          const hasCT = Object.keys(headers).some(k => k.toLowerCase() === 'content-type');
+          if (!hasCT) headers['Content-Type'] = file.type;
+        }
+
+        const res = await fetch(params.uploadUrl, { method, headers, body });
+        this._progress = 90;
+        if (!res.ok) throw new Error(`Upload failed: ${res.status} ${res.statusText}`);
+        this._progress = 100;
+        this._selectAsset(params.publicUrl);
       } catch (err) {
         this._error = err instanceof Error ? err.message : 'Upload failed';
       } finally {

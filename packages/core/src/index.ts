@@ -23,6 +23,7 @@ export type {
   Selection,
   EditorConfig,
   AssetManagerConfig,
+  PresignedUploadParams,
   MergeTag,
   MergeTagConfig,
   Step,

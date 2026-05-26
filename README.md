@@ -200,6 +200,104 @@ const { html } = await renderer.render(doc);
 
 ---
 
+## Asset manager / image upload
+
+The editor ships a built-in asset picker that handles file selection,
+validation, progress, and four upload strategies. Configure it via the
+`assetManager` key on the editor config.
+
+### Config fields
+
+| Field | Type | Notes |
+|---|---|---|
+| `enabled` | `boolean` | When `false`, the "Upload Image" button is hidden in the image-properties panel and the asset-manager modal refuses to render. URL paste still works. Default `true`. |
+| `uploadHandler` | `(file: File) => Promise<string>` | Full-control escape hatch. Resolves to the URL stored on the image block. Wins over every other adapter when set. |
+| `presignedUpload` | `{ getUploadParams: (file: File) => Promise<PresignedUploadParams> }` | Two-step upload: ask your backend for a signed URL, then `PUT`/`POST` directly to S3/R2/GCS/Azure/MinIO. |
+| `uploadUrl` | `string` | Simple REST endpoint. The editor `POST`s `multipart/form-data` and expects `{ url \| src \| location }` in the JSON response. |
+| `uploadHeaders` | `Record<string, string>` | Sent with the `uploadUrl` `POST`. |
+| `acceptedTypes` | `string[]` | MIME allowlist. Default: jpeg/png/gif/webp/svg+xml. |
+| `maxFileSize` | `number` | Bytes. Default: 5 MB. |
+
+Adapter precedence (first one set wins): `uploadHandler` > `presignedUpload` > `uploadUrl` > base64 data-URL fallback.
+
+### Recipes
+
+**1. URL only — no upload UI**
+
+```typescript
+editor.config = { assetManager: { enabled: false } };
+```
+
+**2. Simple REST endpoint**
+
+```typescript
+editor.config = {
+  assetManager: {
+    uploadUrl: '/api/uploads',
+    uploadHeaders: { Authorization: `Bearer ${token}` },
+  },
+};
+// Server returns: { "url": "https://cdn.example.com/abc.png" }
+```
+
+**3. Custom handler (full control)**
+
+```typescript
+editor.config = {
+  assetManager: {
+    uploadHandler: async (file) => {
+      const url = await myUploader.upload(file);
+      return url;
+    },
+  },
+};
+```
+
+**4. S3 presigned PUT**
+
+```typescript
+editor.config = {
+  assetManager: {
+    presignedUpload: {
+      getUploadParams: async (file) => {
+        const res = await fetch('/api/sign', {
+          method: 'POST',
+          body: JSON.stringify({ name: file.name, type: file.type }),
+        });
+        const { uploadUrl, publicUrl } = await res.json();
+        return { uploadUrl, publicUrl }; // PUT is the default method
+      },
+    },
+  },
+};
+```
+
+**5. S3 POST presigned-post**
+
+```typescript
+editor.config = {
+  assetManager: {
+    presignedUpload: {
+      getUploadParams: async (file) => {
+        const res = await fetch('/api/sign-post', {
+          method: 'POST',
+          body: JSON.stringify({ name: file.name, type: file.type }),
+        });
+        const { url, fields, publicUrl } = await res.json();
+        return {
+          uploadUrl: url,
+          publicUrl,
+          method: 'POST',
+          fields, // key, policy, x-amz-signature, etc.
+        };
+      },
+    },
+  },
+};
+```
+
+---
+
 ## Architecture
 
 ```
@@ -264,7 +362,7 @@ PigeonDocument
 - [ ] Inline rich text editing (TipTap/ProseMirror integration)
 - [x] Property panels for divider, spacer, social, and html blocks
 - [x] Wire asset manager, merge-tag picker, and layers panel into the default editor shell
-- [ ] Image upload with configurable adapter (URL, base64, S3 presigned)
+- [x] Image upload with configurable adapter (URL, base64, presigned PUT/POST, custom handler)
 - [x] Copy/paste blocks (Cmd/Ctrl+C / Cmd/Ctrl+V on a selected block; in-memory clipboard)
 - [x] Keyboard shortcuts (Cmd/Ctrl+Z undo, Shift+Cmd/Ctrl+Z or Ctrl+Y redo, Delete, Cmd/Ctrl+D duplicate, Cmd/Ctrl+C / Cmd/Ctrl+V copy/paste, Escape deselect, ArrowUp/Down navigate blocks/rows)
 - [x] Arrow-key row navigation
