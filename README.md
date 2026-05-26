@@ -60,6 +60,7 @@ There is no truly open-source, self-hosted, framework-agnostic drag-and-drop ema
 | [`@lit-pigeon/parser-mjml`](./packages/parser-mjml) | MJML → JSON document parser — import existing MJML into the editor | ~2.9 kB |
 | [`@lit-pigeon/react`](./packages/react) | React wrapper via `@lit/react` | 0.5 kB |
 | [`@lit-pigeon/angular`](./packages/angular) | Angular component wrapper | ~1 kB |
+| [`@lit-pigeon/mcp-server`](./packages/mcp-server) | Model Context Protocol server — exposes authoring + rendering as MCP tools for AI clients (Claude Code, Cursor, etc.) | Node.js |
 
 Sizes are measured by `pnpm size` and enforced in CI via [size-limit](https://github.com/ai/size-limit), excluding peer dependencies. See [`.size-limit.json`](./.size-limit.json) for the budgets.
 
@@ -304,8 +305,10 @@ Lit Pigeon publishes a versioned **AI authoring specification** at
 [`docs/ai-spec/`](./docs/ai-spec/) — a JSON Schema, prompting guide, and
 example documents that let any AI tool (LLMs via JSON output, MCP-compatible
 clients, custom agents) author Lit Pigeon emails as JSON. The spec is the
-canonical contract; the upcoming `@lit-pigeon/mcp-server` and
-`@lit-pigeon/figma-import` packages implement against it.
+canonical contract. [`@lit-pigeon/mcp-server`](./packages/mcp-server) is the
+runtime implementation: plug it into Claude Code, Cursor, or any MCP client
+and ask the model to build emails for you. `@lit-pigeon/figma-import`
+(coming soon) will convert Figma frames into the same `PigeonDocument` shape.
 
 ```bash
 docs/ai-spec/
