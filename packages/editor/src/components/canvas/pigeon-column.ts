@@ -25,6 +25,9 @@ export class PigeonColumn extends LitElement {
   @property({ type: Object })
   selection: Selection | null = null;
 
+  @property({ type: String, attribute: 'editing-block-id' })
+  editingBlockId: string | null = null;
+
   @state()
   private _dropIndex = -1;
 
@@ -107,10 +110,15 @@ export class PigeonColumn extends LitElement {
 
   private _renderBlock(block: ContentBlock) {
     const isSelected = this.selection?.type === 'block' && this.selection.blockId === block.id;
+    const isEditing = this.editingBlockId === block.id;
 
     switch (block.type) {
       case 'text':
-        return html`<pigeon-text-block .block=${block} ?selected=${isSelected}></pigeon-text-block>`;
+        return html`<pigeon-text-block
+          .block=${block}
+          ?selected=${isSelected}
+          ?editing=${isEditing}
+        ></pigeon-text-block>`;
       case 'image':
         return html`<pigeon-image-block .block=${block} ?selected=${isSelected}></pigeon-image-block>`;
       case 'button':

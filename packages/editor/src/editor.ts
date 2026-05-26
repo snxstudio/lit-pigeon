@@ -98,6 +98,8 @@ export class PigeonEditor extends LitElement {
   @state() private _device: 'desktop' | 'mobile' = 'desktop';
   @state() private _fullscreen = false;
   @state() private _previewOpen = false;
+  /** Block currently in inline rich-text editing mode, or null when none. */
+  @state() private _editingBlockId: string | null = null;
 
   /** In-memory clipboard for Cmd/Ctrl+C / Cmd/Ctrl+V on blocks. */
   private _clipboard: ContentBlock | null = null;
@@ -295,6 +297,7 @@ export class PigeonEditor extends LitElement {
           part="canvas"
           .doc=${doc}
           .selection=${sel}
+          .editingBlockId=${this._editingBlockId}
           .previewWidth=${previewWidth}
           @block-select=${this._handleBlockSelect}
           @row-select=${this._handleRowSelect}
@@ -305,6 +308,8 @@ export class PigeonEditor extends LitElement {
           @row-drop=${this._handleRowDrop}
           @block-drop=${this._handleBlockDrop}
           @block-drop-new-row=${this._handleBlockDropNewRow}
+          @block-enter-edit=${this._handleBlockEnterEdit}
+          @block-exit-edit=${this._handleBlockExitEdit}
         ></pigeon-canvas>
 
         <pigeon-properties
@@ -444,8 +449,52 @@ export class PigeonEditor extends LitElement {
   /*  Selection handlers                                                 */
   /* ------------------------------------------------------------------ */
 
+  private _handleBlockEnterEdit(e: CustomEvent<{ blockId: string }>) {
+    e.stopPropagation();
+    // Ensure the block is selected so the property panel reflects it.
+    const blockId = e.detail.blockId;
+    for (const row of this._state.doc.body.rows) {
+      for (const col of row.columns) {
+        const block = col.blocks.find(b => b.id === blockId);
+        if (block) {
+          const tr = this._state.createTransaction();
+          tr.setSelection(createBlockSelection(row.id, col.id, blockId));
+          this._dispatch(tr);
+          this._editingBlockId = blockId;
+          return;
+        }
+      }
+    }
+  }
+
+  private _handleBlockExitEdit(e: CustomEvent<{ blockId: string; content: string }>) {
+    e.stopPropagation();
+    if (this._editingBlockId !== e.detail.blockId) return;
+    // Locate the block to commit the new content into.
+    for (const row of this._state.doc.body.rows) {
+      for (const col of row.columns) {
+        const block = col.blocks.find(b => b.id === e.detail.blockId);
+        if (!block) continue;
+        // Only commit if content actually changed; this avoids creating
+        // a useless undo entry every time the user double-clicks + blurs.
+        const current = (block.values as Record<string, unknown>).content;
+        if (typeof current === 'string' && current !== e.detail.content) {
+          const cmd = updateBlock(row.id, col.id, block.id, { content: e.detail.content });
+          cmd(this._state, this._dispatch);
+        }
+        this._editingBlockId = null;
+        return;
+      }
+    }
+    this._editingBlockId = null;
+  }
+
   private _handleBlockSelect(e: CustomEvent<{ blockId: string }>) {
     const blockId = e.detail.blockId;
+    // Selecting a different block exits any inline edit on the previous one.
+    if (this._editingBlockId !== null && this._editingBlockId !== blockId) {
+      this._editingBlockId = null;
+    }
     // Find rowId and columnId for this block
     for (const row of this._state.doc.body.rows) {
       for (const col of row.columns) {
@@ -467,6 +516,7 @@ export class PigeonEditor extends LitElement {
   }
 
   private _handleBodySelect() {
+    this._editingBlockId = null;
     const tr = this._state.createTransaction();
     tr.setSelection(createBodySelection());
     this._dispatch(tr);
@@ -514,6 +564,8 @@ export class PigeonEditor extends LitElement {
   private _handleKeyDown = (e: KeyboardEvent) => {
     if (!this._state) return;
     if (this._isInTextInput(e)) return;
+    // TipTap owns key input while a block is in inline edit mode.
+    if (this._editingBlockId !== null) return;
 
     const mod = e.metaKey || e.ctrlKey;
     const sel = this._state.selection;

@@ -14,6 +14,9 @@ export class PigeonCanvas extends LitElement {
   @property({ type: Object })
   selection: Selection | null = null;
 
+  @property({ type: String, attribute: 'editing-block-id' })
+  editingBlockId: string | null = null;
+
   @property({ type: Number, attribute: 'preview-width' })
   previewWidth = 0;
 
@@ -136,6 +139,7 @@ export class PigeonCanvas extends LitElement {
                     .index=${index}
                     .totalRows=${rows.length}
                     .selection=${this.selection}
+                    .editingBlockId=${this.editingBlockId}
                   ></pigeon-row>
                 `)}
                 <pigeon-drop-indicator

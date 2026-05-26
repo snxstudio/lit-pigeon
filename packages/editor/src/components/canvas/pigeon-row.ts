@@ -18,6 +18,9 @@ export class PigeonRow extends LitElement {
   @property({ type: Object })
   selection: Selection | null = null;
 
+  @property({ type: String, attribute: 'editing-block-id' })
+  editingBlockId: string | null = null;
+
   @state()
   private _dragging = false;
 
@@ -169,6 +172,7 @@ export class PigeonRow extends LitElement {
                   .column=${col}
                   row-id="${this.row.id}"
                   .selection=${this.selection}
+                  .editingBlockId=${this.editingBlockId}
                 ></pigeon-column>
               </div>
             `;

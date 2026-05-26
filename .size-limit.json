@@ -9,8 +9,15 @@
   {
     "name": "@lit-pigeon/editor (ESM, excluding lit)",
     "path": "packages/editor/dist/index.js",
-    "ignore": ["lit", "lit/decorators.js", "lit/directives/ref.js", "@lit-pigeon/core"],
+    "ignore": ["lit", "lit/decorators.js", "lit/directives/ref.js", "lit/directives/unsafe-html.js", "@lit-pigeon/core", "./rich-text.js"],
     "limit": "35 kB",
+    "gzip": true
+  },
+  {
+    "name": "@lit-pigeon/editor (lazy rich-text chunk)",
+    "path": "packages/editor/dist/rich-text.js",
+    "ignore": ["@lit-pigeon/core"],
+    "limit": "140 kB",
     "gzip": true
   },
   {

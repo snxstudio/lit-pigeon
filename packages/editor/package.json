@@ -24,6 +24,11 @@
   },
   "dependencies": {
     "@lit-pigeon/core": "workspace:*",
+    "@tiptap/core": "^2.10.0",
+    "@tiptap/extension-link": "^2.10.0",
+    "@tiptap/extension-underline": "^2.10.0",
+    "@tiptap/pm": "^2.10.0",
+    "@tiptap/starter-kit": "^2.10.0",
     "lit": "^3.1.0"
   },
   "devDependencies": {
