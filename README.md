@@ -298,6 +298,27 @@ editor.config = {
 
 ---
 
+## AI authoring specification
+
+Lit Pigeon publishes a versioned **AI authoring specification** at
+[`docs/ai-spec/`](./docs/ai-spec/) — a JSON Schema, prompting guide, and
+example documents that let any AI tool (LLMs via JSON output, MCP-compatible
+clients, custom agents) author Lit Pigeon emails as JSON. The spec is the
+canonical contract; the upcoming `@lit-pigeon/mcp-server` and
+`@lit-pigeon/figma-import` packages implement against it.
+
+```bash
+docs/ai-spec/
+├── README.md                          # Overview + how to consume the spec
+├── lit-pigeon-ai-spec.schema.json     # Machine-readable JSON Schema (2020-12)
+├── prompting-guide.md                 # System-prompt template + invariants
+└── examples/
+    ├── welcome-email.json
+    └── promo-email.json
+```
+
+---
+
 ## Architecture
 
 ```

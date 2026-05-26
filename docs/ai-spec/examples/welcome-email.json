@@ -1,0 +1,163 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "name": "Welcome to Lumen",
+    "previewText": "We're glad you're here — let's get you set up.",
+    "createdAt": "2026-05-26T10:00:00.000Z",
+    "updatedAt": "2026-05-26T10:00:00.000Z"
+  },
+  "body": {
+    "attributes": {
+      "width": 600,
+      "backgroundColor": "#f5f7fb",
+      "fontFamily": "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      "contentAlignment": "center"
+    },
+    "rows": [
+      {
+        "id": "row-hero",
+        "type": "row",
+        "attributes": {
+          "padding": { "top": 0, "right": 0, "bottom": 0, "left": 0 },
+          "fullWidth": true
+        },
+        "columns": [
+          {
+            "id": "col-hero",
+            "type": "column",
+            "attributes": {
+              "padding": { "top": 0, "right": 0, "bottom": 0, "left": 0 },
+              "verticalAlign": "top"
+            },
+            "blocks": [
+              {
+                "id": "block-hero",
+                "type": "hero",
+                "values": {
+                  "backgroundUrl": "https://lumen.app/assets/hero-welcome.jpg",
+                  "backgroundPosition": "center center",
+                  "mode": "fixed-height",
+                  "width": 600,
+                  "height": 280,
+                  "verticalAlign": "middle",
+                  "padding": { "top": 0, "right": 0, "bottom": 0, "left": 0 },
+                  "innerPadding": { "top": 40, "right": 40, "bottom": 40, "left": 40 },
+                  "backgroundColor": "#0f172a",
+                  "content": "<h1 style=\"color:#ffffff;font-size:32px;\">Welcome to Lumen, {{firstName}}</h1>"
+                }
+              }
+            ]
+          }
+        ],
+        "columnRatios": [12],
+        "locked": false
+      },
+      {
+        "id": "row-intro",
+        "type": "row",
+        "attributes": {
+          "backgroundColor": "#ffffff",
+          "padding": { "top": 32, "right": 24, "bottom": 8, "left": 24 },
+          "fullWidth": false
+        },
+        "columns": [
+          {
+            "id": "col-intro",
+            "type": "column",
+            "attributes": {
+              "padding": { "top": 0, "right": 0, "bottom": 0, "left": 0 },
+              "verticalAlign": "top"
+            },
+            "blocks": [
+              {
+                "id": "block-thanks",
+                "type": "text",
+                "values": {
+                  "content": "<p>Thanks for signing up. Lumen helps you organise tasks, notes, and team docs in one place — let's get you started.</p>",
+                  "padding": { "top": 0, "right": 0, "bottom": 0, "left": 0 },
+                  "lineHeight": "1.6",
+                  "textAlign": "left"
+                }
+              }
+            ]
+          }
+        ],
+        "columnRatios": [12],
+        "locked": false
+      },
+      {
+        "id": "row-cta",
+        "type": "row",
+        "attributes": {
+          "backgroundColor": "#ffffff",
+          "padding": { "top": 16, "right": 24, "bottom": 32, "left": 24 },
+          "fullWidth": false
+        },
+        "columns": [
+          {
+            "id": "col-cta",
+            "type": "column",
+            "attributes": {
+              "padding": { "top": 0, "right": 0, "bottom": 0, "left": 0 },
+              "verticalAlign": "top"
+            },
+            "blocks": [
+              {
+                "id": "block-cta",
+                "type": "button",
+                "values": {
+                  "content": "<p>Get started</p>",
+                  "href": "https://lumen.app/start",
+                  "backgroundColor": "#3b82f6",
+                  "textColor": "#ffffff",
+                  "borderRadius": 6,
+                  "padding": { "top": 8, "right": 8, "bottom": 8, "left": 8 },
+                  "innerPadding": { "top": 12, "right": 24, "bottom": 12, "left": 24 },
+                  "fontSize": 16,
+                  "fontWeight": "600",
+                  "alignment": "center",
+                  "fullWidth": false
+                }
+              }
+            ]
+          }
+        ],
+        "columnRatios": [12],
+        "locked": false
+      },
+      {
+        "id": "row-footer",
+        "type": "row",
+        "attributes": {
+          "backgroundColor": "#f5f7fb",
+          "padding": { "top": 16, "right": 24, "bottom": 16, "left": 24 },
+          "fullWidth": false
+        },
+        "columns": [
+          {
+            "id": "col-footer",
+            "type": "column",
+            "attributes": {
+              "padding": { "top": 0, "right": 0, "bottom": 0, "left": 0 },
+              "verticalAlign": "top"
+            },
+            "blocks": [
+              {
+                "id": "block-footer",
+                "type": "text",
+                "values": {
+                  "content": "<p style=\"color:#64748b;font-size:12px;\">© Lumen · <a href=\"https://lumen.app/unsubscribe?u={{userId}}\">Unsubscribe</a></p>",
+                  "padding": { "top": 0, "right": 0, "bottom": 0, "left": 0 },
+                  "lineHeight": "1.5",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          }
+        ],
+        "columnRatios": [12],
+        "locked": false
+      }
+    ]
+  }
+}

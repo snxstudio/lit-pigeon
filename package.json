@@ -22,6 +22,8 @@
     "@size-limit/preset-small-lib": "12.1.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
     "eslint": "^8.57.0",
     "prettier": "^3.2.0",
     "size-limit": "12.1.0",

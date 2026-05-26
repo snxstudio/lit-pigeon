@@ -1,0 +1,214 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "name": "Spring sale — 30% off",
+    "previewText": "Two days only. Use SPRING30 at checkout.",
+    "createdAt": "2026-05-26T10:00:00.000Z",
+    "updatedAt": "2026-05-26T10:00:00.000Z"
+  },
+  "body": {
+    "attributes": {
+      "width": 600,
+      "backgroundColor": "#fdf6ee",
+      "fontFamily": "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      "contentAlignment": "center"
+    },
+    "rows": [
+      {
+        "id": "row-hero",
+        "type": "row",
+        "attributes": {
+          "padding": { "top": 0, "right": 0, "bottom": 0, "left": 0 },
+          "fullWidth": true
+        },
+        "columns": [
+          {
+            "id": "col-hero",
+            "type": "column",
+            "attributes": {
+              "padding": { "top": 0, "right": 0, "bottom": 0, "left": 0 },
+              "verticalAlign": "middle"
+            },
+            "blocks": [
+              {
+                "id": "block-hero",
+                "type": "hero",
+                "values": {
+                  "backgroundUrl": "https://shop.example/assets/spring-banner.jpg",
+                  "backgroundPosition": "center center",
+                  "mode": "fluid-height",
+                  "width": 600,
+                  "height": 240,
+                  "verticalAlign": "middle",
+                  "padding": { "top": 0, "right": 0, "bottom": 0, "left": 0 },
+                  "innerPadding": { "top": 32, "right": 32, "bottom": 32, "left": 32 },
+                  "backgroundColor": "#e76f51",
+                  "content": "<h1 style=\"color:#ffffff;font-size:36px;margin:0 0 8px;\">30% off, this weekend only</h1><p style=\"color:#ffffff;font-size:16px;margin:0;\">Code <strong>SPRING30</strong> at checkout.</p>"
+                }
+              }
+            ]
+          }
+        ],
+        "columnRatios": [12],
+        "locked": false
+      },
+      {
+        "id": "row-grid",
+        "type": "row",
+        "attributes": {
+          "backgroundColor": "#ffffff",
+          "padding": { "top": 24, "right": 16, "bottom": 24, "left": 16 },
+          "fullWidth": false
+        },
+        "columns": [
+          {
+            "id": "col-left",
+            "type": "column",
+            "attributes": {
+              "padding": { "top": 0, "right": 8, "bottom": 0, "left": 0 },
+              "verticalAlign": "top"
+            },
+            "blocks": [
+              {
+                "id": "block-img-left",
+                "type": "image",
+                "values": {
+                  "src": "https://shop.example/assets/product-a.jpg",
+                  "alt": "Linen shirt",
+                  "width": "auto",
+                  "href": "https://shop.example/p/linen-shirt",
+                  "padding": { "top": 0, "right": 0, "bottom": 8, "left": 0 },
+                  "alignment": "center",
+                  "borderRadius": 6
+                }
+              },
+              {
+                "id": "block-txt-left",
+                "type": "text",
+                "values": {
+                  "content": "<p style=\"text-align:center;margin:0;\"><strong>Linen shirt</strong><br><span style=\"color:#64748b;\">$48 · was $69</span></p>",
+                  "padding": { "top": 0, "right": 0, "bottom": 0, "left": 0 },
+                  "lineHeight": "1.5",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          },
+          {
+            "id": "col-right",
+            "type": "column",
+            "attributes": {
+              "padding": { "top": 0, "right": 0, "bottom": 0, "left": 8 },
+              "verticalAlign": "top"
+            },
+            "blocks": [
+              {
+                "id": "block-img-right",
+                "type": "image",
+                "values": {
+                  "src": "https://shop.example/assets/product-b.jpg",
+                  "alt": "Wool jumper",
+                  "width": "auto",
+                  "href": "https://shop.example/p/wool-jumper",
+                  "padding": { "top": 0, "right": 0, "bottom": 8, "left": 0 },
+                  "alignment": "center",
+                  "borderRadius": 6
+                }
+              },
+              {
+                "id": "block-txt-right",
+                "type": "text",
+                "values": {
+                  "content": "<p style=\"text-align:center;margin:0;\"><strong>Wool jumper</strong><br><span style=\"color:#64748b;\">$84 · was $120</span></p>",
+                  "padding": { "top": 0, "right": 0, "bottom": 0, "left": 0 },
+                  "lineHeight": "1.5",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          }
+        ],
+        "columnRatios": [6, 6],
+        "locked": false
+      },
+      {
+        "id": "row-cta",
+        "type": "row",
+        "attributes": {
+          "backgroundColor": "#ffffff",
+          "padding": { "top": 8, "right": 16, "bottom": 24, "left": 16 },
+          "fullWidth": false
+        },
+        "columns": [
+          {
+            "id": "col-cta",
+            "type": "column",
+            "attributes": {
+              "padding": { "top": 0, "right": 0, "bottom": 0, "left": 0 },
+              "verticalAlign": "top"
+            },
+            "blocks": [
+              {
+                "id": "block-cta",
+                "type": "button",
+                "values": {
+                  "content": "<p>Shop the sale</p>",
+                  "href": "https://shop.example/sale",
+                  "backgroundColor": "#0f172a",
+                  "textColor": "#ffffff",
+                  "borderRadius": 6,
+                  "padding": { "top": 8, "right": 0, "bottom": 8, "left": 0 },
+                  "innerPadding": { "top": 14, "right": 28, "bottom": 14, "left": 28 },
+                  "fontSize": 16,
+                  "fontWeight": "600",
+                  "alignment": "center",
+                  "fullWidth": true
+                }
+              }
+            ]
+          }
+        ],
+        "columnRatios": [12],
+        "locked": false
+      },
+      {
+        "id": "row-social",
+        "type": "row",
+        "attributes": {
+          "backgroundColor": "#fdf6ee",
+          "padding": { "top": 16, "right": 16, "bottom": 16, "left": 16 },
+          "fullWidth": false
+        },
+        "columns": [
+          {
+            "id": "col-social",
+            "type": "column",
+            "attributes": {
+              "padding": { "top": 0, "right": 0, "bottom": 0, "left": 0 },
+              "verticalAlign": "top"
+            },
+            "blocks": [
+              {
+                "id": "block-social",
+                "type": "social",
+                "values": {
+                  "icons": [
+                    { "type": "instagram", "href": "https://instagram.com/shop_example" },
+                    { "type": "twitter",   "href": "https://twitter.com/shop_example" },
+                    { "type": "tiktok",    "href": "https://tiktok.com/@shop_example" }
+                  ],
+                  "iconSize": 28,
+                  "spacing": 12,
+                  "alignment": "center",
+                  "padding": { "top": 0, "right": 0, "bottom": 0, "left": 0 }
+                }
+              }
+            ]
+          }
+        ],
+        "columnRatios": [12],
+        "locked": false
+      }
+    ]
+  }
+}

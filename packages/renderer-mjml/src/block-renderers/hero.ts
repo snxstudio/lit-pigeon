@@ -25,11 +25,16 @@ export function renderHeroSection(block: HeroBlock): string {
 
   const attrs: string[] = [
     `mode="${v.mode}"`,
-    `width="${v.width}px"`,
     `height="${v.height}px"`,
     `vertical-align="${v.verticalAlign}"`,
     `padding="${spacingToMjml(v.padding)}"`,
   ];
+
+  // MJML doesn't accept `width` on mj-hero — section width is inherited
+  // from mj-body. background-width controls the bg image, not the section.
+  if (v.backgroundUrl) {
+    attrs.push(`background-width="${v.width}px"`);
+  }
 
   if (v.backgroundUrl) {
     attrs.push(`background-url="${escapeAttr(v.backgroundUrl)}"`);
