@@ -64,13 +64,23 @@ describe('documentToMjml', () => {
 
   it('should render button block as mj-button', () => {
     const doc = createDefaultDocument('Test');
-    const btnBlock = createBlock('button', { text: 'Click me', href: 'https://example.com' });
+    const btnBlock = createBlock('button', { content: '<p>Click me</p>', href: 'https://example.com' });
     doc.body.rows = [createRow([createColumn([btnBlock])])];
     const mjml = documentToMjml(doc);
 
     expect(mjml).toContain('<mj-button');
     expect(mjml).toContain('Click me');
     expect(mjml).toContain('href="https://example.com"');
+    // Outer <p> is stripped — mj-button renders inline.
+    expect(mjml).not.toMatch(/<mj-button[^>]*>\s*<p>/);
+  });
+
+  it('preserves inline HTML formatting inside the button content', () => {
+    const doc = createDefaultDocument('Test');
+    const btnBlock = createBlock('button', { content: '<p><strong>Buy</strong> now</p>' });
+    doc.body.rows = [createRow([createColumn([btnBlock])])];
+    const mjml = documentToMjml(doc);
+    expect(mjml).toContain('<strong>Buy</strong> now');
   });
 
   it('should render divider block as mj-divider', () => {

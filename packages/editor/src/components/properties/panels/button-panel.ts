@@ -149,7 +149,7 @@ export class PigeonButtonPanel extends LitElement {
         <label>Button Text</label>
         <input
           type="text"
-          .value=${v.text}
+          .value=${this._contentToText(v.content)}
           @change=${this._onTextChange}
         />
       </div>
@@ -250,7 +250,24 @@ export class PigeonButtonPanel extends LitElement {
   }
 
   private _onTextChange(e: Event) {
-    this._emit({ text: (e.target as HTMLInputElement).value });
+    const raw = (e.target as HTMLInputElement).value;
+    const escaped = raw
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+    this._emit({ content: `<p>${escaped}</p>` });
+  }
+
+  private _contentToText(content: string): string {
+    // Strip a single wrapping <p> and any other HTML tags, then unescape
+    // the common entities we ourselves emit. Good enough until inline
+    // rich-text editing lands and this panel grows real format controls.
+    return content
+      .replace(/^\s*<p>([\s\S]*?)<\/p>\s*$/i, '$1')
+      .replace(/<[^>]+>/g, '')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&amp;/g, '&');
   }
 
   private _onHrefChange(e: Event) {

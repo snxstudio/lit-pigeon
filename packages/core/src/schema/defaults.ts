@@ -42,7 +42,7 @@ export function defaultImageValues(): ImageBlock['values'] {
 
 export function defaultButtonValues(): ButtonBlock['values'] {
   return {
-    text: 'Click me',
+    content: '<p>Click me</p>',
     href: '#',
     backgroundColor: '#3b82f6',
     textColor: '#ffffff',

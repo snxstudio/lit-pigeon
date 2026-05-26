@@ -97,9 +97,28 @@ describe('mjmlToDocument', () => {
     const block = result.document.body.rows[0].columns[0].blocks[0];
     expect(block.type).toBe('button');
     if (block.type === 'button') {
-      expect(block.values.text).toBe('Click me');
+      expect(block.values.content).toBe('<p>Click me</p>');
       expect(block.values.href).toBe('https://example.com');
       expect(block.values.backgroundColor).toBe('#ff0000');
+    }
+  });
+
+  it('preserves inline HTML inside an mj-button when parsing', () => {
+    const mjml = `<mjml>
+      <mj-body>
+        <mj-section>
+          <mj-column>
+            <mj-button href="#"><strong>Buy</strong> now</mj-button>
+          </mj-column>
+        </mj-section>
+      </mj-body>
+    </mjml>`;
+
+    const result = mjmlToDocument(mjml);
+    const block = result.document.body.rows[0].columns[0].blocks[0];
+    expect(block.type).toBe('button');
+    if (block.type === 'button') {
+      expect(block.values.content).toBe('<p><strong>Buy</strong> now</p>');
     }
   });
 

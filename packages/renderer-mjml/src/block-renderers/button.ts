@@ -6,7 +6,7 @@ import { spacingToMjml } from '../utils/spacing.js';
  */
 export function renderButtonBlock(block: ButtonBlock): string {
   const {
-    text,
+    content,
     href,
     backgroundColor,
     textColor,
@@ -35,20 +35,17 @@ export function renderButtonBlock(block: ButtonBlock): string {
     attrs.push('width="100%"');
   }
 
-  return `<mj-button ${attrs.join(' ')}>${escapeHtml(text)}</mj-button>`;
+  // mj-button accepts inline HTML — pass content through unmodified.
+  // The single wrapping <p> (TipTap's default block element) is stripped
+  // so the button renders on one line.
+  const body = content.replace(/^\s*<p>([\s\S]*?)<\/p>\s*$/i, '$1');
+  return `<mj-button ${attrs.join(' ')}>${body}</mj-button>`;
 }
 
 function escapeAttr(value: string): string {
   return value
     .replace(/&/g, '&amp;')
     .replace(/"/g, '&quot;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-}
-
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
 }

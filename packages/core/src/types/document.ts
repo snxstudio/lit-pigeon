@@ -41,7 +41,7 @@ export interface ButtonBlock {
   id: string;
   type: 'button';
   values: {
-    text: string;
+    content: string;
     href: string;
     backgroundColor: string;
     textColor: string;

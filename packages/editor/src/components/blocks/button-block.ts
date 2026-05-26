@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import type { ButtonBlock } from '@lit-pigeon/core';
 
 @customElement('pigeon-button-block')
@@ -63,6 +64,10 @@ export class PigeonButtonBlock extends LitElement {
       padding: ${innerPad};
     `;
 
+    // Stored content is HTML (e.g. <p>Click me</p>); strip the wrapping
+    // <p> so the button renders inline.
+    const inner = v.content.replace(/^\s*<p>([\s\S]*?)<\/p>\s*$/i, '$1');
+
     return html`
       <div
         class="wrapper"
@@ -74,7 +79,7 @@ export class PigeonButtonBlock extends LitElement {
           href="${v.href}"
           style="${btnStyle}"
           @click=${this._preventNav}
-        >${v.text}</a>
+        >${unsafeHTML(inner)}</a>
       </div>
     `;
   }

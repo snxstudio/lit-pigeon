@@ -359,6 +359,14 @@ PigeonDocument
 - [x] Playground app + landing page
 
 ### v0.2 -- Rich Editing & UX
+
+> **Breaking change (pre-1.0):** `ButtonBlock.values.text: string` has been
+> renamed to `ButtonBlock.values.content: string` and now stores HTML
+> (e.g. `<p>Click me</p>`). The MJML renderer strips the wrapping `<p>` so
+> existing emails render identically, and the parser re-wraps plain inner
+> text on read. There is no automatic migration helper — update stored
+> documents by renaming the field and wrapping the value in `<p>...</p>`.
+
 - [ ] Inline rich text editing (TipTap/ProseMirror integration)
 - [x] Property panels for divider, spacer, social, and html blocks
 - [x] Wire asset manager, merge-tag picker, and layers panel into the default editor shell

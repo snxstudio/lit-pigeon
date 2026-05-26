@@ -4,11 +4,16 @@ import { parseSpacing } from '../../utils/parse-spacing.js';
 import { getAttr, getNumericAttr } from '../../utils/parse-attributes.js';
 
 export function parseButtonBlock(attrs: Record<string, string>, innerText: string): ButtonBlock {
+  // Inner content may already be HTML (rich-text round-trip) or plain text
+  // (hand-written MJML, legacy renderer output). Wrap bare content in <p> so
+  // the stored shape always matches the schema's HTML invariant.
+  const inner = innerText.trim();
+  const content = /^<p[\s>]/i.test(inner) ? inner : `<p>${inner}</p>`;
   return {
     id: generateId(),
     type: 'button',
     values: {
-      text: innerText.trim(),
+      content,
       href: getAttr(attrs, 'href', '#'),
       backgroundColor: getAttr(attrs, 'background-color', '#3b82f6'),
       textColor: getAttr(attrs, 'color', '#ffffff'),
