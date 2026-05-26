@@ -298,6 +298,85 @@ describe('pigeon-editor keyboard shortcuts', () => {
     });
   });
 
+  describe('ArrowDown / ArrowUp row navigation', () => {
+    async function makeMultiRowEditor() {
+      const doc = createDefaultDocument('Test');
+      const r1 = createRow([createColumn([createBlock('text', { content: 'a' })])]);
+      const r2 = createRow([createColumn([createBlock('text', { content: 'b' })])]);
+      const r3 = createRow([createColumn([createBlock('text', { content: 'c' })])]);
+      doc.body.rows = [r1, r2, r3];
+      const editor = await mountEditor(doc);
+      return { editor, r1: r1.id, r2: r2.id, r3: r3.id };
+    }
+
+    it('ArrowDown moves selection to the next row', async () => {
+      const { editor, r1, r2 } = await makeMultiRowEditor();
+      selectRowOnEditor(editor, r1);
+      await editor.updateComplete;
+
+      let sel: { type?: string; rowId?: string } | null = null;
+      editor.addEventListener('pigeon:select', (e) => {
+        sel = (e as CustomEvent).detail.selection;
+      });
+
+      pressKey({ key: 'ArrowDown' });
+      await editor.updateComplete;
+
+      expect(sel).not.toBeNull();
+      expect(sel!.type).toBe('row');
+      expect(sel!.rowId).toBe(r2);
+    });
+
+    it('ArrowUp moves selection to the previous row', async () => {
+      const { editor, r2, r3 } = await makeMultiRowEditor();
+      selectRowOnEditor(editor, r3);
+      await editor.updateComplete;
+
+      let sel: { type?: string; rowId?: string } | null = null;
+      editor.addEventListener('pigeon:select', (e) => {
+        sel = (e as CustomEvent).detail.selection;
+      });
+
+      pressKey({ key: 'ArrowUp' });
+      await editor.updateComplete;
+
+      expect(sel!.type).toBe('row');
+      expect(sel!.rowId).toBe(r2);
+    });
+
+    it('ArrowDown at the last row is a no-op', async () => {
+      const { editor, r3 } = await makeMultiRowEditor();
+      selectRowOnEditor(editor, r3);
+      await editor.updateComplete;
+
+      let selectChangeCount = 0;
+      editor.addEventListener('pigeon:select', () => {
+        selectChangeCount++;
+      });
+
+      pressKey({ key: 'ArrowDown' });
+      await editor.updateComplete;
+
+      expect(selectChangeCount).toBe(0);
+    });
+
+    it('ArrowUp at the first row is a no-op', async () => {
+      const { editor, r1 } = await makeMultiRowEditor();
+      selectRowOnEditor(editor, r1);
+      await editor.updateComplete;
+
+      let selectChangeCount = 0;
+      editor.addEventListener('pigeon:select', () => {
+        selectChangeCount++;
+      });
+
+      pressKey({ key: 'ArrowUp' });
+      await editor.updateComplete;
+
+      expect(selectChangeCount).toBe(0);
+    });
+  });
+
   describe('Cmd/Ctrl+C and Cmd/Ctrl+V copy + paste', () => {
     it('Cmd+C copies the block and Cmd+V pastes it after the selection', async () => {
       const { doc, rowId, blockId } = makeDoc();

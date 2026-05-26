@@ -40,3 +40,7 @@ package-lock.json
 # Misc
 .cache/
 tmp/
+
+# Local-only working notes
+WIP.md
+TASKS.md

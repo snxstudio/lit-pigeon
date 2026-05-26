@@ -570,11 +570,15 @@ export class PigeonEditor extends LitElement {
       return;
     }
 
-    // ArrowUp / ArrowDown: navigate between blocks in document order
+    // ArrowUp / ArrowDown: navigate between blocks or rows in document order
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      const delta = e.key === 'ArrowDown' ? 1 : -1;
       if (sel.type === 'block' && sel.blockId) {
         e.preventDefault();
-        this._moveBlockSelection(e.key === 'ArrowDown' ? 1 : -1);
+        this._moveBlockSelection(delta);
+      } else if (sel.type === 'row' && sel.rowId) {
+        e.preventDefault();
+        this._moveRowSelection(delta);
       }
       return;
     }
@@ -640,6 +644,22 @@ export class PigeonEditor extends LitElement {
     const target = flat[nextIdx];
     const tr = this._state.createTransaction();
     tr.setSelection(createBlockSelection(target.rowId, target.columnId, target.blockId));
+    this._dispatch(tr);
+  }
+
+  private _moveRowSelection(delta: -1 | 1) {
+    const sel = this._state.selection;
+    if (!sel || sel.type !== 'row' || !sel.rowId) return;
+
+    const rows = this._state.doc.body.rows;
+    const currentIdx = rows.findIndex(r => r.id === sel.rowId);
+    if (currentIdx === -1) return;
+
+    const nextIdx = currentIdx + delta;
+    if (nextIdx < 0 || nextIdx >= rows.length) return;
+
+    const tr = this._state.createTransaction();
+    tr.setSelection(createRowSelection(rows[nextIdx].id));
     this._dispatch(tr);
   }
 
