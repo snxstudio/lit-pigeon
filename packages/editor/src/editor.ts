@@ -335,6 +335,8 @@ export class PigeonEditor extends LitElement {
           }
         }}
       ></pigeon-preview>
+
+      <pigeon-rich-text-bubble></pigeon-rich-text-bubble>
     `;
   }
 

@@ -195,6 +195,8 @@ export class PigeonHeroPanel extends LitElement {
         .value=${v.innerPadding}
         @spacing-change=${this._onInnerPaddingChange}
       ></pigeon-spacing-input>
+
+      <pigeon-rich-text-format></pigeon-rich-text-format>
     `;
   }
 

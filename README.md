@@ -367,7 +367,7 @@ PigeonDocument
 > text on read. There is no automatic migration helper — update stored
 > documents by renaming the field and wrapping the value in `<p>...</p>`.
 
-- [ ] Inline rich text editing (TipTap/ProseMirror integration)
+- [x] Inline rich text editing (TipTap/ProseMirror integration — double-click to edit text/hero/button blocks, bubble menu, sidebar Format panel, merge-tag chips, allowlist sanitiser)
 - [x] Property panels for divider, spacer, social, and html blocks
 - [x] Wire asset manager, merge-tag picker, and layers panel into the default editor shell
 - [x] Image upload with configurable adapter (URL, base64, presigned PUT/POST, custom handler)

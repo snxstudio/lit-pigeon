@@ -25,7 +25,11 @@
   "dependencies": {
     "@lit-pigeon/core": "workspace:*",
     "@tiptap/core": "^2.10.0",
+    "@tiptap/extension-bubble-menu": "^2.10.0",
+    "@tiptap/extension-color": "^2.10.0",
+    "@tiptap/extension-font-family": "^2.10.0",
     "@tiptap/extension-link": "^2.10.0",
+    "@tiptap/extension-text-style": "^2.10.0",
     "@tiptap/extension-underline": "^2.10.0",
     "@tiptap/pm": "^2.10.0",
     "@tiptap/starter-kit": "^2.10.0",

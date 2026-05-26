@@ -26,8 +26,10 @@ const ALLOWED_TAGS = new Set([
 
 const ALLOWED_ATTRS_BY_TAG: Record<string, ReadonlySet<string>> = {
   a: new Set(['href', 'target', 'rel']),
-  span: new Set(['style', 'data-merge-tag']),
+  span: new Set(['style']),
 };
+
+const MERGE_TAG_IDENTIFIER = /^[A-Za-z_][A-Za-z0-9_]*$/;
 
 const ALLOWED_STYLE_PROPS = new Set(['color', 'font-family', 'font-size']);
 
@@ -64,6 +66,18 @@ function serializeNode(node: Node): string {
   if (node.nodeType !== 1 /* ELEMENT_NODE */) return '';
   const el = node as Element;
   const tag = el.tagName.toLowerCase();
+
+  // Merge-tag spans round-trip as plain `{{name}}` text so MJML output is
+  // unchanged. The chip rendering is rebuilt on next load via preprocess.
+  // Bad identifiers are dropped (span unwrapped, attr discarded).
+  if (tag === 'span' && el.hasAttribute('data-merge-tag')) {
+    const name = el.getAttribute('data-merge-tag') ?? '';
+    if (MERGE_TAG_IDENTIFIER.test(name)) {
+      return `{{${name}}}`;
+    }
+    return serializeChildren(el);
+  }
+
   if (!ALLOWED_TAGS.has(tag)) {
     // Drop the wrapper but keep textual children.
     return serializeChildren(el);

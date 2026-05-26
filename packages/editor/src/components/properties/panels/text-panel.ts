@@ -6,6 +6,7 @@ import '../controls/alignment-picker.js';
 import '../controls/spacing-input.js';
 import '../controls/slider-input.js';
 import '../../merge-tags/pigeon-merge-tag-picker.js';
+import { richTextController } from '../../../rich-text/controller.js';
 
 @customElement('pigeon-text-panel')
 export class PigeonTextPanel extends LitElement {
@@ -184,6 +185,8 @@ export class PigeonTextPanel extends LitElement {
           @merge-tag-insert=${this._onMergeTagInsert}
         ></pigeon-merge-tag-picker>
       ` : ''}
+
+      <pigeon-rich-text-format></pigeon-rich-text-format>
     `;
   }
 
@@ -199,6 +202,17 @@ export class PigeonTextPanel extends LitElement {
   }
 
   private _onMergeTagInsert(e: CustomEvent<{ tag: MergeTag }>) {
+    // If a TipTap inline editor is focused on the canvas, insert a chip
+    // node there. The picker is a sidebar control but it should target
+    // the active editor when one exists.
+    const active = richTextController.getActive();
+    if (active && !active.isDestroyed) {
+      const name = this._extractTagName(e.detail.tag.name);
+      active.chain().focus().insertContent({ type: 'mergeTag', attrs: { name } }).run();
+      this._pickerOpen = false;
+      return;
+    }
+
     const textarea = this._textareaRef.value;
     if (!textarea) return;
     const start = textarea.selectionStart;
@@ -212,6 +226,12 @@ export class PigeonTextPanel extends LitElement {
     textarea.focus();
     this._emit({ content: newValue });
     this._pickerOpen = false;
+  }
+
+  /** Strip `{{` and `}}` from a tag name string. */
+  private _extractTagName(raw: string): string {
+    const m = raw.match(/^\{\{([A-Za-z_][A-Za-z0-9_]*)\}\}$/);
+    return m ? m[1] : raw;
   }
 
   private _emit(values: Record<string, unknown>) {

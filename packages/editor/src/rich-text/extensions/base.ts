@@ -1,6 +1,11 @@
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
+import TextStyle from '@tiptap/extension-text-style';
+import Color from '@tiptap/extension-color';
+import FontFamily from '@tiptap/extension-font-family';
+import { FontSize } from './font-size.js';
 import { buildLinkExtension } from './link.js';
+import { MergeTag } from './merge-tag.js';
 
 /**
  * Returns the base extension set used by every Pigeon rich-text editor.
@@ -16,6 +21,11 @@ export function buildBaseExtensions() {
       // outer history-plugin records the whole edit atomically.
     }),
     Underline,
+    TextStyle,
+    Color,
+    FontFamily,
+    FontSize,
     buildLinkExtension(),
+    MergeTag,
   ];
 }
