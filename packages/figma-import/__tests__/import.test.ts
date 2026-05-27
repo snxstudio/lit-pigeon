@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { isValidDocument } from '@lit-pigeon/core';
 import { figmaFrameToDocument, importFromFigma } from '../src/index.js';
 import { widthsToRatios } from '../src/converters/layout.js';
+import { looksLikeHero, heroNodeToBlock } from '../src/converters/hero.js';
 import type { FigmaNode } from '../src/types.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -87,6 +88,122 @@ describe('figmaFrameToDocument', () => {
     expect(document.body.rows).toHaveLength(1);
     expect(warnings).toHaveLength(1);
     expect(warnings[0]).toContain('Icon');
+  });
+});
+
+describe('hero-block detection', () => {
+  it('imports a hero-frame fixture as a single hero block (not separate image + text)', () => {
+    const { document, warnings } = figmaFrameToDocument(readFixture('hero-frame'), {
+      imageUrls: { 'hero-1': 'https://cdn/hero.png' },
+    });
+    expect(isValidDocument(document)).toBe(true);
+    expect(warnings).toEqual([]);
+
+    // First row must be a hero, not an image followed by a text row.
+    const firstRow = document.body.rows[0];
+    expect(firstRow.columns).toHaveLength(1);
+    expect(firstRow.columns[0].blocks).toHaveLength(1);
+    const heroBlock = firstRow.columns[0].blocks[0];
+    expect(heroBlock.type).toBe('hero');
+
+    // Body text rows should still appear after the hero (two body texts in fixture).
+    const textRows = document.body.rows.slice(1);
+    expect(textRows.length).toBe(2);
+    expect(textRows[0].columns[0].blocks[0].type).toBe('text');
+  });
+
+  it("places the hero block in a full-width row with zero padding", () => {
+    const { document } = figmaFrameToDocument(readFixture('hero-frame'), {
+      imageUrls: { 'hero-1': 'https://cdn/hero.png' },
+    });
+    const heroRow = document.body.rows[0];
+    expect(heroRow.attributes.fullWidth).toBe(true);
+    expect(heroRow.attributes.padding).toEqual({ top: 0, right: 0, bottom: 0, left: 0 });
+  });
+
+  it("hero content HTML carries the headline as <h1> and sub-line as <p>", () => {
+    const { document } = figmaFrameToDocument(readFixture('hero-frame'), {
+      imageUrls: { 'hero-1': 'https://cdn/hero.png' },
+    });
+    const heroBlock = document.body.rows[0].columns[0].blocks[0];
+    expect(heroBlock.type).toBe('hero');
+    if (heroBlock.type === 'hero') {
+      expect(heroBlock.values.backgroundUrl).toBe('https://cdn/hero.png');
+      expect(heroBlock.values.content).toContain('<h1');
+      expect(heroBlock.values.content).toContain('Welcome to Lumen');
+      expect(heroBlock.values.content).toContain('font-size:32px');
+      expect(heroBlock.values.content).toContain('color:#ffffff');
+      expect(heroBlock.values.content).toContain('<p');
+      expect(heroBlock.values.content).toContain('The fastest way to send beautiful email.');
+      // Vertical align maps from counterAxisAlignItems=CENTER → 'middle'.
+      expect(heroBlock.values.verticalAlign).toBe('middle');
+      // Has autolayout → fluid-height.
+      expect(heroBlock.values.mode).toBe('fluid-height');
+      // Inner padding from the frame.
+      expect(heroBlock.values.innerPadding).toEqual({ top: 48, right: 32, bottom: 48, left: 32 });
+      // Outer padding always zero (managed by row).
+      expect(heroBlock.values.padding).toEqual({ top: 0, right: 0, bottom: 0, left: 0 });
+    }
+  });
+
+  it('does NOT misclassify a button-like frame as a hero', () => {
+    const buttonFrame: FigmaNode = {
+      id: 'btn',
+      name: 'CTA',
+      type: 'FRAME',
+      layoutMode: 'HORIZONTAL',
+      cornerRadius: 6,
+      paddingTop: 12, paddingBottom: 12, paddingLeft: 24, paddingRight: 24,
+      fills: [{ type: 'SOLID', color: { r: 0.23, g: 0.51, b: 0.96 } }],
+      absoluteBoundingBox: { x: 0, y: 0, width: 320, height: 48 },
+      children: [
+        {
+          id: 'btn:label', name: 'Label', type: 'TEXT', characters: 'Click me',
+          fills: [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }],
+          style: { fontSize: 16, fontWeight: 600 },
+        },
+      ],
+    };
+    expect(looksLikeHero(buttonFrame)).toBe(false);
+  });
+
+  it('does NOT classify a tiny frame (h < 120) as a hero, even with an image fill', () => {
+    const tinyFrame: FigmaNode = {
+      id: 'banner', name: 'Promo banner', type: 'FRAME',
+      fills: [{ type: 'IMAGE', imageRef: 'tiny-1' }],
+      absoluteBoundingBox: { x: 0, y: 0, width: 600, height: 80 },
+      children: [
+        { id: 't', name: 'Tag', type: 'TEXT', characters: 'Hello', fills: [{ type: 'SOLID', color: { r: 0, g: 0, b: 0 } }] },
+      ],
+    };
+    expect(looksLikeHero(tinyFrame)).toBe(false);
+  });
+
+  it('solid-fill hero falls through to backgroundColor (no imageUrls map needed)', () => {
+    const solidHero: FigmaNode = {
+      id: 'solid-hero', name: 'Solid Hero', type: 'FRAME',
+      layoutMode: 'VERTICAL',
+      counterAxisAlignItems: 'MAX',
+      paddingTop: 24, paddingBottom: 24, paddingLeft: 16, paddingRight: 16,
+      fills: [{ type: 'SOLID', color: { r: 0.06, g: 0.09, b: 0.16 } }],
+      absoluteBoundingBox: { x: 0, y: 0, width: 600, height: 240 },
+      children: [
+        {
+          id: 'h', name: 'Headline', type: 'TEXT', characters: 'Big news',
+          fills: [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }],
+          style: { fontSize: 28, fontWeight: 700 },
+        },
+      ],
+    };
+    expect(looksLikeHero(solidHero)).toBe(true);
+    const block = heroNodeToBlock(solidHero, {});
+    expect(block.type).toBe('hero');
+    expect(block.values.backgroundUrl).toBe('');
+    // rgb(0.06,0.09,0.16) → #0f1729
+    expect(block.values.backgroundColor).toMatch(/^#[0-9a-f]{6}$/);
+    expect(block.values.verticalAlign).toBe('bottom');
+    expect(block.values.content).toContain('Big news');
+    expect(block.values.content).toContain('<h1');
   });
 });
 
