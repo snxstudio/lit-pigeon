@@ -1,4 +1,5 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { TemplateStorage } from '@lit-pigeon/core';
 import { DocumentStore } from './store/document-store.js';
 import { registerDocumentTools } from './tools/document.js';
 import { registerStructureTools } from './tools/structure.js';
@@ -9,6 +10,12 @@ import { registerTemplateTools } from './tools/templates.js';
 export interface BuildServerOptions {
   /** Override the default in-memory store (e.g. for tests or persistence). */
   store?: DocumentStore;
+  /**
+   * Override the default in-memory template storage. Pass `FsTemplateStorage`
+   * (or any `TemplateStorage` implementation) to persist saved templates
+   * across server restarts.
+   */
+  templateStorage?: TemplateStorage;
   /** Server name reported in initialize. Default: `lit-pigeon`. */
   name?: string;
   /** Server version reported in initialize. Default: package version. */
@@ -30,7 +37,7 @@ export function buildServer(opts: BuildServerOptions = {}): { server: McpServer;
   registerStructureTools(server, store);
   registerRenderTools(server, store);
   registerFigmaTools(server, store);
-  registerTemplateTools(server, store);
+  registerTemplateTools(server, store, opts.templateStorage);
 
   return { server, store };
 }

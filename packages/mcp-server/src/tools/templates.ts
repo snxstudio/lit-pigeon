@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { InMemoryTemplateStorage, type Template } from '@lit-pigeon/core';
+import { InMemoryTemplateStorage, type Template, type TemplateStorage } from '@lit-pigeon/core';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { DocumentStore } from '../store/document-store.js';
 import { jsonResult, textResult } from './reply.js';
@@ -13,8 +13,15 @@ const TemplateCategoryEnum = z.enum([
   'other',
 ]);
 
-export function registerTemplateTools(server: McpServer, store: DocumentStore): void {
-  const templates = new InMemoryTemplateStorage();
+export function registerTemplateTools(
+  server: McpServer,
+  store: DocumentStore,
+  storage?: TemplateStorage,
+): void {
+  // Default to the in-memory implementation so existing embedders keep their
+  // session-scoped behaviour. Embedders that want persistence pass an explicit
+  // storage (e.g. `FsTemplateStorage`).
+  const templates: TemplateStorage = storage ?? new InMemoryTemplateStorage();
 
   server.registerTool(
     'list_templates',
