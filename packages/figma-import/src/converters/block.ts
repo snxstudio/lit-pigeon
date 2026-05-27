@@ -4,6 +4,7 @@ import { isVisible } from '../utils.js';
 import { textNodeToBlock } from './text.js';
 import { imageNodeToBlock } from './image.js';
 import { looksLikeButton, buttonNodeToBlock } from './button.js';
+import { looksLikeHero, heroNodeToBlock } from './hero.js';
 
 /**
  * Convert a single Figma node into a Lit Pigeon block.
@@ -23,6 +24,13 @@ export function nodeToBlock(
 
   if (looksLikeButton(node)) {
     return buttonNodeToBlock(node);
+  }
+
+  // Hero detection runs after button (don't double-detect a CTA) but BEFORE
+  // the image fallback so we don't shred image-backed text frames into a
+  // bare image block + the orphaned overlay text.
+  if (looksLikeHero(node, opts)) {
+    return heroNodeToBlock(node, opts);
   }
 
   // RECTANGLE or FRAME with an IMAGE fill — treat as an image block.

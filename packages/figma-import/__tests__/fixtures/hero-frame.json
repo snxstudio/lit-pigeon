@@ -1,0 +1,59 @@
+{
+  "id": "0:1",
+  "name": "Hero email",
+  "type": "FRAME",
+  "absoluteBoundingBox": { "x": 0, "y": 0, "width": 600, "height": 800 },
+  "fills": [{ "type": "SOLID", "color": { "r": 1, "g": 1, "b": 1 }, "visible": true }],
+  "layoutMode": "VERTICAL",
+  "children": [
+    {
+      "id": "hero:1",
+      "name": "Hero",
+      "type": "FRAME",
+      "layoutMode": "VERTICAL",
+      "counterAxisAlignItems": "CENTER",
+      "primaryAxisAlignItems": "CENTER",
+      "paddingTop": 48, "paddingRight": 32, "paddingBottom": 48, "paddingLeft": 32,
+      "fills": [{ "type": "IMAGE", "imageRef": "hero-1", "scaleMode": "FILL", "visible": true }],
+      "absoluteBoundingBox": { "x": 0, "y": 0, "width": 600, "height": 320 },
+      "children": [
+        {
+          "id": "hero:1:headline",
+          "name": "Headline",
+          "type": "TEXT",
+          "characters": "Welcome to Lumen",
+          "fills": [{ "type": "SOLID", "color": { "r": 1, "g": 1, "b": 1 } }],
+          "style": { "fontFamily": "Inter", "fontWeight": 700, "fontSize": 32, "textAlignHorizontal": "CENTER" },
+          "absoluteBoundingBox": { "x": 32, "y": 120, "width": 536, "height": 40 }
+        },
+        {
+          "id": "hero:1:sub",
+          "name": "Sub-line",
+          "type": "TEXT",
+          "characters": "The fastest way to send beautiful email.",
+          "fills": [{ "type": "SOLID", "color": { "r": 0.93, "g": 0.95, "b": 0.99 } }],
+          "style": { "fontFamily": "Inter", "fontWeight": 400, "fontSize": 18, "textAlignHorizontal": "CENTER" },
+          "absoluteBoundingBox": { "x": 32, "y": 170, "width": 536, "height": 24 }
+        }
+      ]
+    },
+    {
+      "id": "body:1",
+      "name": "Body intro",
+      "type": "TEXT",
+      "characters": "Thanks for signing up. Let's get you started.",
+      "fills": [{ "type": "SOLID", "color": { "r": 0.13, "g": 0.18, "b": 0.27 } }],
+      "style": { "fontSize": 16, "fontWeight": 400, "textAlignHorizontal": "LEFT" },
+      "absoluteBoundingBox": { "x": 24, "y": 360, "width": 552, "height": 24 }
+    },
+    {
+      "id": "body:2",
+      "name": "Body outro",
+      "type": "TEXT",
+      "characters": "Check your inbox for next steps.",
+      "fills": [{ "type": "SOLID", "color": { "r": 0.39, "g": 0.45, "b": 0.55 } }],
+      "style": { "fontSize": 16, "fontWeight": 400, "textAlignHorizontal": "LEFT" },
+      "absoluteBoundingBox": { "x": 24, "y": 400, "width": 552, "height": 24 }
+    }
+  ]
+}
