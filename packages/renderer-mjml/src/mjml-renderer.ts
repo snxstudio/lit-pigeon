@@ -23,7 +23,9 @@ export class MjmlRenderer implements Renderer {
    * @returns A promise resolving to the rendered HTML and any errors
    */
   async render(doc: PigeonDocument, options?: RenderOptions): Promise<RenderResult> {
-    const mjmlMarkup = documentToMjml(doc);
+    const mjmlMarkup = documentToMjml(doc, {
+      outlookWorkarounds: options?.outlookWorkarounds,
+    });
 
     const mjmlOptions: Record<string, unknown> = {
       // By default MJML inlines CSS; respect the option if provided
