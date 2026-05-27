@@ -46,6 +46,9 @@ export { PigeonNavBarBlock } from './components/blocks/navbar-block.js';
 // Asset Manager
 export { PigeonAssetManager } from './components/asset-manager/pigeon-asset-manager.js';
 
+// Templates
+export { PigeonTemplatePicker } from './components/templates/pigeon-template-picker.js';
+
 // Preview
 export { PigeonPreview } from './components/preview/pigeon-preview.js';
 

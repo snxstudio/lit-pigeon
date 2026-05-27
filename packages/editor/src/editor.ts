@@ -8,6 +8,9 @@ import {
   type ContentBlock,
   type Renderer,
   type MergeTag,
+  type Template,
+  type TemplateCategory,
+  type TemplateStorage,
   createHistoryPlugin,
   createDefaultDocument,
   createBlock,
@@ -34,6 +37,7 @@ import {
   canUndo as coreCanUndo,
   canRedo as coreCanRedo,
   HISTORY_PLUGIN_NAME,
+  InMemoryTemplateStorage,
   createDocStep,
   generateId,
 } from '@lit-pigeon/core';
@@ -45,7 +49,40 @@ import './components/canvas/pigeon-canvas.js';
 import './components/properties/pigeon-properties.js';
 import './components/preview/pigeon-preview.js';
 import './components/merge-tags/pigeon-merge-tag-picker.js';
+import type { PigeonTemplatePicker } from './components/templates/pigeon-template-picker.js';
 import type { DragData } from './dnd/drag-manager.js';
+
+/**
+ * Lazily import the templates picker module. The dynamic `import` is what
+ * tells Vite/Rollup to code-split the picker into a separate chunk so the
+ * editor's base bundle stays under its size budget. The resolved promise is
+ * memoised so subsequent opens do not re-import.
+ */
+let _templatePickerPromise: Promise<unknown> | null = null;
+function loadTemplatePicker(): Promise<unknown> {
+  if (!_templatePickerPromise) {
+    _templatePickerPromise = import(
+      './components/templates/pigeon-template-picker.js'
+    );
+  }
+  return _templatePickerPromise;
+}
+
+/**
+ * Kebab-case slug from arbitrary user-supplied text. Used to derive a stable
+ * `Template.id` from the user's chosen name. Falls back to a generated id if
+ * the input slugifies to an empty string (e.g. all-emoji name).
+ */
+function slugify(input: string): string {
+  const slug = input
+    .toLowerCase()
+    .normalize('NFKD')
+    // Strip Unicode combining marks (accents) introduced by NFKD decomposition.
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return slug || `template-${Date.now()}`;
+}
 
 /**
  * `<pigeon-editor>` -- the main shell component for the Pigeon email editor.
@@ -88,6 +125,14 @@ export class PigeonEditor extends LitElement {
   @property({ type: Object })
   documentToMjml?: (doc: PigeonDocument) => string;
 
+  /**
+   * Optional template storage backend. When unset, the editor falls back to
+   * an in-memory storage seeded with the starter templates so the picker is
+   * useful out of the box.
+   */
+  @property({ attribute: false })
+  templateStorage?: TemplateStorage;
+
   /* ------------------------------------------------------------------ */
   /*  Internal state                                                     */
   /* ------------------------------------------------------------------ */
@@ -98,8 +143,13 @@ export class PigeonEditor extends LitElement {
   @state() private _device: 'desktop' | 'mobile' = 'desktop';
   @state() private _fullscreen = false;
   @state() private _previewOpen = false;
+  @state() private _templatePickerOpen = false;
+  @state() private _templatePickerLoaded = false;
   /** Block currently in inline rich-text editing mode, or null when none. */
   @state() private _editingBlockId: string | null = null;
+
+  /** Lazily-initialised default template storage. */
+  private _defaultTemplateStorage?: TemplateStorage;
 
   /** In-memory clipboard for Cmd/Ctrl+C / Cmd/Ctrl+V on blocks. */
   private _clipboard: ContentBlock | null = null;
@@ -278,6 +328,7 @@ export class PigeonEditor extends LitElement {
         @toolbar-redo=${this._handleRedo}
         @toolbar-device=${this._handleDevice}
         @toolbar-fullscreen=${this._handleFullscreen}
+        @toolbar-templates=${this._handleTemplatesOpen}
         @pigeon:preview=${this._handlePreview}
         @pigeon:export-html=${this._handleExportHtml}
         @pigeon:export-mjml=${this._handleExportMjml}
@@ -336,8 +387,78 @@ export class PigeonEditor extends LitElement {
         }}
       ></pigeon-preview>
 
+      ${this._templatePickerLoaded
+        ? html`<pigeon-template-picker
+            ?open=${this._templatePickerOpen}
+            .storage=${this._resolveTemplateStorage()}
+            @template-load=${this._handleTemplateLoad}
+            @template-save=${this._handleTemplateSave}
+          ></pigeon-template-picker>`
+        : ''}
+
       <pigeon-rich-text-bubble></pigeon-rich-text-bubble>
     `;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  Templates                                                          */
+  /* ------------------------------------------------------------------ */
+
+  private _resolveTemplateStorage(): TemplateStorage {
+    if (this.templateStorage) return this.templateStorage;
+    if (!this._defaultTemplateStorage) {
+      this._defaultTemplateStorage = new InMemoryTemplateStorage();
+    }
+    return this._defaultTemplateStorage;
+  }
+
+  private async _handleTemplatesOpen() {
+    if (!this._templatePickerLoaded) {
+      await loadTemplatePicker();
+      this._templatePickerLoaded = true;
+    }
+    this._templatePickerOpen = true;
+  }
+
+  private _handleTemplateLoad(
+    e: CustomEvent<{ template: Template }>,
+  ) {
+    e.stopPropagation();
+    const template = e.detail?.template;
+    if (template?.document) {
+      this.loadDocument(structuredClone(template.document));
+    }
+    this._templatePickerOpen = false;
+  }
+
+  private async _handleTemplateSave(
+    e: CustomEvent<{
+      name: string;
+      description?: string;
+      category?: TemplateCategory;
+    }>,
+  ) {
+    e.stopPropagation();
+    const { name, description, category } = e.detail;
+    const storage = this._resolveTemplateStorage();
+    const now = new Date().toISOString();
+    const template: Template = {
+      id: slugify(name),
+      name,
+      description,
+      category,
+      document: structuredClone(this.getDocument()),
+      createdAt: now,
+      updatedAt: now,
+    };
+    await storage.save(template);
+    // Refresh the picker's list so the new template is visible the next time
+    // it opens.
+    const picker = this.renderRoot.querySelector(
+      'pigeon-template-picker',
+    ) as PigeonTemplatePicker | null;
+    if (picker) await picker.refresh();
+    this._templatePickerOpen = false;
   }
 
   /* ------------------------------------------------------------------ */
