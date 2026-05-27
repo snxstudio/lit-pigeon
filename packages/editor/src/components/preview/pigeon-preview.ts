@@ -48,7 +48,8 @@ export class PigeonPreview extends LitElement {
     .overlay {
       position: absolute;
       inset: 0;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(2px);
     }
 
     .modal {
@@ -60,8 +61,9 @@ export class PigeonPreview extends LitElement {
       height: 85vh;
       max-width: 1200px;
       background: var(--pigeon-bg, #ffffff);
-      border-radius: var(--pigeon-radius, 6px);
-      box-shadow: var(--pigeon-shadow-md);
+      border: 1px solid var(--pigeon-border, #e2e8f0);
+      border-radius: var(--pigeon-radius-lg, 12px);
+      box-shadow: var(--pigeon-shadow-lg);
       display: flex;
       flex-direction: column;
       font-family: var(--pigeon-font);
@@ -105,8 +107,13 @@ export class PigeonPreview extends LitElement {
       transition: background 0.15s, color 0.15s;
     }
 
+    .tab:focus-visible {
+      outline: none;
+      box-shadow: var(--pigeon-ring-shadow);
+    }
+
     .tab.active {
-      background: white;
+      background: var(--pigeon-bg, #ffffff);
       color: var(--pigeon-text, #1e293b);
       box-shadow: var(--pigeon-shadow-sm);
     }
@@ -124,13 +131,19 @@ export class PigeonPreview extends LitElement {
       padding: 4px 8px;
       border: none;
       background: transparent;
+      color: var(--pigeon-text-secondary, #64748b);
       cursor: pointer;
       font-size: 14px;
     }
 
+    .device-toggle button:focus-visible {
+      outline: none;
+      box-shadow: inset var(--pigeon-ring-shadow);
+    }
+
     .device-toggle button.active {
-      background: var(--pigeon-primary, #3b82f6);
-      color: white;
+      background: var(--pigeon-accent, #eef2ff);
+      color: var(--pigeon-accent-foreground, #4338ca);
     }
 
     .close-btn {
@@ -142,6 +155,18 @@ export class PigeonPreview extends LitElement {
       font-size: 18px;
       line-height: 1;
       margin-left: 8px;
+      border-radius: var(--pigeon-radius-sm, 4px);
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .close-btn:hover {
+      background: var(--pigeon-surface-hover, #f1f5f9);
+      color: var(--pigeon-text, #1e293b);
+    }
+
+    .close-btn:focus-visible {
+      outline: none;
+      box-shadow: var(--pigeon-ring-shadow);
     }
 
     .content {
@@ -150,7 +175,7 @@ export class PigeonPreview extends LitElement {
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      background: #e2e8f0;
+      background: var(--pigeon-canvas-bg, #e2e8f0);
       padding: 20px;
     }
 
@@ -186,32 +211,110 @@ export class PigeonPreview extends LitElement {
     }
   `;
 
+  connectedCallback() {
+    super.connectedCallback();
+    document.addEventListener('keydown', this._onKeyDown);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    document.removeEventListener('keydown', this._onKeyDown);
+  }
+
+  /** Element focused before the dialog opened, restored on close. */
+  private _previouslyFocused: HTMLElement | null = null;
+
   async updated(changed: Map<string, unknown>) {
-    if (changed.has('open') && this.open) {
+    if (!changed.has('open')) return;
+    if (this.open) {
+      // Remember where focus was so we can return it on close.
+      this._previouslyFocused = this._deepActiveElement();
       await this._loadPreview();
+      // Move focus into the dialog so Escape/Tab work and SRs announce it.
+      const modal = this.renderRoot.querySelector('.modal') as HTMLElement | null;
+      modal?.focus();
+    } else if (this._previouslyFocused) {
+      // Restore focus to the trigger when the dialog closes.
+      this._previouslyFocused.focus?.();
+      this._previouslyFocused = null;
+    }
+  }
+
+  private _onKeyDown = (e: KeyboardEvent) => {
+    if (!this.open) return;
+    if (e.key === 'Escape') {
+      e.stopPropagation();
+      this._close();
+    } else if (e.key === 'Tab') {
+      this._trapTab(e);
+    }
+  };
+
+  /** The deepest focused element, descending through shadow roots. */
+  private _deepActiveElement(): HTMLElement | null {
+    let el = document.activeElement as HTMLElement | null;
+    while (el?.shadowRoot?.activeElement) {
+      el = el.shadowRoot.activeElement as HTMLElement;
+    }
+    return el;
+  }
+
+  /** Focusable controls inside the modal (the dialog's own chrome). */
+  private _focusable(): HTMLElement[] {
+    const modal = this.renderRoot.querySelector('.modal');
+    if (!modal) return [];
+    return Array.from(
+      modal.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      ),
+    ).filter((el) => !el.hasAttribute('disabled'));
+  }
+
+  /** Keep Tab focus within the dialog (WCAG modal pattern). */
+  private _trapTab(e: KeyboardEvent) {
+    const focusables = this._focusable();
+    if (focusables.length === 0) {
+      e.preventDefault();
+      return;
+    }
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    const active = this._deepActiveElement();
+    if (e.shiftKey && (active === first || active === null)) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && active === last) {
+      e.preventDefault();
+      first.focus();
     }
   }
 
   render() {
     return html`
       <div class="overlay" @click=${this._close}></div>
-      <div class="modal">
+      <div
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="pigeon-preview-title"
+        tabindex="-1"
+      >
         <div class="header">
-          <h3>Preview</h3>
-          <div class="tabs">
-            <button class="tab ${this._viewMode === 'preview' ? 'active' : ''}" @click=${() => this._setView('preview')}>Preview</button>
-            <button class="tab ${this._viewMode === 'html' ? 'active' : ''}" @click=${() => this._setView('html')}>HTML</button>
-            <button class="tab ${this._viewMode === 'mjml' ? 'active' : ''}" @click=${() => this._setView('mjml')}>MJML</button>
-            <button class="tab ${this._viewMode === 'json' ? 'active' : ''}" @click=${() => this._setView('json')}>JSON</button>
+          <h3 id="pigeon-preview-title">Preview</h3>
+          <div class="tabs" role="tablist" aria-label="Preview format">
+            <button role="tab" aria-selected=${this._viewMode === 'preview'} class="tab ${this._viewMode === 'preview' ? 'active' : ''}" @click=${() => this._setView('preview')}>Preview</button>
+            <button role="tab" aria-selected=${this._viewMode === 'html'} class="tab ${this._viewMode === 'html' ? 'active' : ''}" @click=${() => this._setView('html')}>HTML</button>
+            <button role="tab" aria-selected=${this._viewMode === 'mjml'} class="tab ${this._viewMode === 'mjml' ? 'active' : ''}" @click=${() => this._setView('mjml')}>MJML</button>
+            <button role="tab" aria-selected=${this._viewMode === 'json'} class="tab ${this._viewMode === 'json' ? 'active' : ''}" @click=${() => this._setView('json')}>JSON</button>
           </div>
           <div class="spacer"></div>
           ${this._viewMode === 'preview' ? html`
-            <div class="device-toggle">
-              <button class="${this._device === 'desktop' ? 'active' : ''}" @click=${() => this._device = 'desktop'} title="Desktop">&#128187;</button>
-              <button class="${this._device === 'mobile' ? 'active' : ''}" @click=${() => this._device = 'mobile'} title="Mobile">&#128241;</button>
+            <div class="device-toggle" role="group" aria-label="Preview device">
+              <button class="${this._device === 'desktop' ? 'active' : ''}" aria-label="Desktop preview" aria-pressed=${this._device === 'desktop'} @click=${() => this._device = 'desktop'} title="Desktop">&#128187;</button>
+              <button class="${this._device === 'mobile' ? 'active' : ''}" aria-label="Mobile preview" aria-pressed=${this._device === 'mobile'} @click=${() => this._device = 'mobile'} title="Mobile">&#128241;</button>
             </div>
           ` : ''}
-          <button class="close-btn" @click=${this._close}>&times;</button>
+          <button class="close-btn" aria-label="Close preview" @click=${this._close}>&times;</button>
         </div>
         <div class="content">
           ${this._loading ? html`<div class="loading">Rendering...</div>` : this._renderContent()}

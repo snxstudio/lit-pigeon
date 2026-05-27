@@ -49,7 +49,7 @@ export class PigeonLayers extends LitElement {
     }
 
     .tree-item.selected {
-      background: rgba(59, 130, 246, 0.1);
+      background: color-mix(in srgb, var(--pigeon-primary) 10%, transparent);
       color: var(--pigeon-primary, #3b82f6);
     }
 

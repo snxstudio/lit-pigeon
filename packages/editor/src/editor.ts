@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { themeStyles } from './themes/tokens.js';
 import {
   EditorState,
   type PigeonDocument,
@@ -102,6 +103,20 @@ function slugify(input: string): string {
  * @csspart palette - The left palette area
  * @csspart canvas  - The central canvas area
  * @csspart properties - The right property panel area
+ * @csspart canvas-area - The email "sheet" inside the canvas (the rendered body)
+ * @csspart panel - The active property-panel wrapper
+ * @csspart palette-tab - A palette tab button (Content / Layers)
+ * @csspart palette-item - A draggable block/layout chip in the palette
+ * @csspart toolbar-button - Any toolbar button; also has a per-action part:
+ *   toolbar-button-{undo,redo,fullscreen,templates,preview,export}
+ *
+ * @cssprop [--pigeon-primary] - Brand / primary action colour
+ * @cssprop [--pigeon-bg] - Editor surface background
+ * @cssprop [--pigeon-text] - Primary text colour
+ * @cssprop [--pigeon-border] - Hairline border colour
+ * @cssprop [--pigeon-ring] - Focus-ring colour
+ * @cssprop [--pigeon-radius] - Base corner radius
+ *   (see src/themes/tokens.ts for the full token set)
  */
 @customElement('pigeon-editor')
 export class PigeonEditor extends LitElement {
@@ -112,6 +127,28 @@ export class PigeonEditor extends LitElement {
   /** Optional initial document. If not set a blank document is created. */
   @property({ type: Object })
   document: PigeonDocument | undefined;
+
+  /**
+   * Colour theme for the editor chrome.
+   *
+   * - `light` (default) — light tokens.
+   * - `dark` — dark tokens applied unconditionally.
+   * - `auto` — follows the OS `prefers-color-scheme`.
+   *
+   * Reflected to an attribute so it can be set declaratively
+   * (`<pigeon-editor theme="dark">`). Override individual tokens with the
+   * `themeOverrides` map or plain CSS (`pigeon-editor { --pigeon-…: … }`).
+   */
+  @property({ type: String, reflect: true })
+  theme: 'light' | 'dark' | 'auto' = 'light';
+
+  /**
+   * Partial map of design-token overrides applied as inline custom properties
+   * on the host, e.g. `{ '--pigeon-primary': '#db2777' }`. Useful for
+   * white-labelling without writing CSS. Merged on top of the active theme.
+   */
+  @property({ attribute: false })
+  themeOverrides: Record<string, string> = {};
 
   /** Additional editor configuration passed to EditorState.create(). */
   @property({ type: Object })
@@ -140,7 +177,7 @@ export class PigeonEditor extends LitElement {
   @state() private _state!: EditorState;
   @state() private _canUndo = false;
   @state() private _canRedo = false;
-  @state() private _device: 'desktop' | 'mobile' = 'desktop';
+  @state() private _device: 'desktop' | 'tablet' | 'mobile' = 'desktop';
   @state() private _fullscreen = false;
   @state() private _previewOpen = false;
   @state() private _templatePickerOpen = false;
@@ -158,56 +195,34 @@ export class PigeonEditor extends LitElement {
   /*  Styles                                                             */
   /* ------------------------------------------------------------------ */
 
-  static styles = css`
-    /* Theme variables (default theme) */
-    :host {
-      --pigeon-primary: #3b82f6;
-      --pigeon-primary-hover: #2563eb;
-      --pigeon-bg: #ffffff;
-      --pigeon-surface: #f8fafc;
-      --pigeon-surface-hover: #f1f5f9;
-      --pigeon-text: #1e293b;
-      --pigeon-text-secondary: #64748b;
-      --pigeon-border: #e2e8f0;
-      --pigeon-border-focus: #3b82f6;
-      --pigeon-radius: 6px;
-      --pigeon-radius-sm: 4px;
-      --pigeon-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      --pigeon-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-      --pigeon-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-      --pigeon-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
-      --pigeon-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-      --pigeon-canvas-bg: #e2e8f0;
-      --pigeon-palette-width: 240px;
-      --pigeon-properties-width: 300px;
-      --pigeon-toolbar-height: 48px;
-      --pigeon-drop-color: #3b82f6;
-      --pigeon-selected-outline: #3b82f6;
-      --pigeon-danger: #ef4444;
-      --pigeon-success: #22c55e;
+  static styles = [
+    themeStyles,
+    css`
+      :host {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+        font-family: var(--pigeon-font);
+        color: var(--pigeon-text);
+        background: var(--pigeon-bg);
+        overflow: hidden;
+        box-sizing: border-box;
+      }
 
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      height: 100%;
-      font-family: var(--pigeon-font);
-      color: var(--pigeon-text);
-      overflow: hidden;
-      box-sizing: border-box;
-    }
+      :host([fullscreen]) {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+      }
 
-    :host([fullscreen]) {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-    }
-
-    .editor-body {
-      display: flex;
-      flex: 1;
-      overflow: hidden;
-    }
-  `;
+      .editor-body {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+      }
+    `,
+  ];
 
   /* ------------------------------------------------------------------ */
   /*  Lifecycle                                                          */
@@ -216,6 +231,7 @@ export class PigeonEditor extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     this._initState();
+    this._applyTheme();
     document.addEventListener('keydown', this._handleKeyDown);
   }
 
@@ -237,6 +253,21 @@ export class PigeonEditor extends LitElement {
       } else {
         this.removeAttribute('fullscreen');
       }
+    }
+    if (changed.has('theme') || changed.has('themeOverrides')) {
+      this._applyTheme();
+    }
+  }
+
+  /**
+   * Sync the active `theme` to the host classes the token sheet keys off, and
+   * apply any `themeOverrides` as inline custom properties.
+   */
+  private _applyTheme() {
+    this.classList.toggle('pigeon-dark', this.theme === 'dark');
+    this.classList.toggle('pigeon-auto', this.theme === 'auto');
+    for (const [name, value] of Object.entries(this.themeOverrides)) {
+      this.style.setProperty(name, value);
     }
   }
 
@@ -315,11 +346,15 @@ export class PigeonEditor extends LitElement {
 
     const doc = this._state.doc;
     const sel = this._state.selection;
-    const previewWidth = this._device === 'mobile' ? 375 : 0;
+    // Device preset viewport widths. Desktop (0) lets the canvas use the
+    // document's own body width; tablet/mobile clamp to common breakpoints.
+    const previewWidth =
+      this._device === 'mobile' ? 375 : this._device === 'tablet' ? 768 : 0;
 
     return html`
       <pigeon-toolbar
         part="toolbar"
+        exportparts="toolbar-button, toolbar-button-undo, toolbar-button-redo, toolbar-button-fullscreen, toolbar-button-templates, toolbar-button-preview, toolbar-button-export"
         ?can-undo=${this._canUndo}
         ?can-redo=${this._canRedo}
         .device=${this._device}
@@ -338,17 +373,25 @@ export class PigeonEditor extends LitElement {
       <div class="editor-body">
         <pigeon-palette
           part="palette"
+          role="complementary"
+          aria-label="Content blocks and layers"
+          exportparts="palette-tab, palette-item"
           .doc=${doc}
           .selection=${sel}
           @row-select=${this._handleRowSelect}
           @block-select=${this._handleBlockSelect}
+          @palette-item-activate=${this._handlePaletteActivate}
         ></pigeon-palette>
 
         <pigeon-canvas
           part="canvas"
+          role="region"
+          aria-label="Email canvas"
+          exportparts="canvas-area"
           .doc=${doc}
           .selection=${sel}
           .editingBlockId=${this._editingBlockId}
+          .device=${this._device}
           .previewWidth=${previewWidth}
           @block-select=${this._handleBlockSelect}
           @row-select=${this._handleRowSelect}
@@ -365,6 +408,9 @@ export class PigeonEditor extends LitElement {
 
         <pigeon-properties
           part="properties"
+          role="complementary"
+          aria-label="Element properties"
+          exportparts="panel"
           .doc=${doc}
           .selection=${sel}
           .mergeTags=${this.config.mergeTags?.tags ?? []}
@@ -524,7 +570,9 @@ export class PigeonEditor extends LitElement {
     this.redo();
   }
 
-  private _handleDevice(e: CustomEvent<{ device: 'desktop' | 'mobile' }>) {
+  private _handleDevice(
+    e: CustomEvent<{ device: 'desktop' | 'tablet' | 'mobile' }>,
+  ) {
     this._device = e.detail.device;
   }
 
@@ -898,6 +946,38 @@ export class PigeonEditor extends LitElement {
     const row = createRow([col]);
     const cmd = insertRow(row, rowIndex);
     cmd(this._state, this._dispatch);
+  }
+
+  /**
+   * Keyboard equivalent of dragging a palette item onto the canvas: append the
+   * block/layout to the end of the document. Keeps the palette operable
+   * without a pointer (WCAG 2.1 — keyboard accessible).
+   */
+  private _handlePaletteActivate(
+    e: CustomEvent<{ type: string; blockType: string; columnCount: number }>,
+  ) {
+    const { type, blockType, columnCount } = e.detail;
+    const rows = this._state.doc.body.rows;
+
+    if (type === 'palette-row') {
+      const columns = Array.from({ length: columnCount }, () => createColumn());
+      insertRow(createRow(columns), rows.length)(this._state, this._dispatch);
+      return;
+    }
+
+    if (!blockType) return;
+    const block = createBlock(blockType as BlockType);
+    if (rows.length > 0) {
+      const lastRow = rows[rows.length - 1];
+      const col = lastRow.columns[0];
+      insertBlock(lastRow.id, col.id, block, col.blocks.length)(
+        this._state,
+        this._dispatch,
+      );
+    } else {
+      const col = createColumn([block]);
+      insertRow(createRow([col]), 0)(this._state, this._dispatch);
+    }
   }
 
   /* ------------------------------------------------------------------ */

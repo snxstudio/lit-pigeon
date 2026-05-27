@@ -1,6 +1,13 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import type { ColumnNode, ContentBlock, Selection } from '@lit-pigeon/core';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
+import type {
+  ColumnNode,
+  ContentBlock,
+  RegisteredBlock,
+  Selection,
+} from '@lit-pigeon/core';
+import { getBlockDefinition } from '@lit-pigeon/core';
 import { getDragData, clearDragData } from '../../dnd/drag-manager.js';
 import { calculateBlockDropIndex } from '../../dnd/drop-zones.js';
 import './pigeon-drop-indicator.js';
@@ -48,7 +55,7 @@ export class PigeonColumn extends LitElement {
     }
 
     .column-content.drag-over {
-      background: rgba(59, 130, 246, 0.04);
+      background: color-mix(in srgb, var(--pigeon-drop-color, #3b82f6) 6%, transparent);
     }
 
     .empty-hint {
@@ -67,7 +74,38 @@ export class PigeonColumn extends LitElement {
 
     .column-content.drag-over .empty-hint {
       border-color: var(--pigeon-drop-color, #3b82f6);
-      background: rgba(59, 130, 246, 0.06);
+      background: color-mix(in srgb, var(--pigeon-drop-color, #3b82f6) 8%, transparent);
+    }
+
+    .custom-block {
+      cursor: pointer;
+      border-radius: var(--pigeon-radius-sm, 4px);
+      outline: 1px dashed transparent;
+      outline-offset: 0;
+      transition: outline 0.15s ease;
+    }
+
+    .custom-block:hover:not(.selected) {
+      outline-color: var(--pigeon-border, #e2e8f0);
+    }
+
+    .custom-block.selected {
+      outline: 2px solid var(--pigeon-selected-outline, #3b82f6);
+    }
+
+    .custom-block--placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      margin: 4px;
+      padding: 12px;
+      border: 1px dashed var(--pigeon-border, #e2e8f0);
+      background: var(--pigeon-muted, #f1f5f9);
+      color: var(--pigeon-muted-foreground, #64748b);
+      font-family: var(--pigeon-font);
+      font-size: 12px;
+      text-align: center;
     }
   `;
 
@@ -144,8 +182,47 @@ export class PigeonColumn extends LitElement {
       case 'navbar':
         return html`<pigeon-navbar-block .block=${block} ?selected=${isSelected}></pigeon-navbar-block>`;
       default:
-        return html`<div>Unknown block type: ${(block as ContentBlock).type}</div>`;
+        return this._renderCustomBlock(block, isSelected);
     }
+  }
+
+  /**
+   * Render a registry-defined custom block. If its definition supplies a
+   * `renderCanvas` hook, its HTML is shown; otherwise we render a labelled
+   * placeholder so the block is still visible and selectable instead of
+   * failing with "Unknown block type".
+   */
+  private _renderCustomBlock(block: ContentBlock, isSelected: boolean) {
+    const def = getBlockDefinition(block.type);
+    const registered = block as unknown as RegisteredBlock;
+    const inner = def?.renderCanvas
+      ? unsafeHTML(def.renderCanvas(registered))
+      : html`<span class="custom-block__label"
+          >${def?.label ?? block.type}</span
+        >`;
+    return html`<div
+      class="custom-block ${isSelected ? 'selected' : ''} ${def?.renderCanvas
+        ? ''
+        : 'custom-block--placeholder'}"
+      data-block-id=${block.id}
+      @click=${this._onCustomBlockClick}
+    >
+      ${inner}
+    </div>`;
+  }
+
+  private _onCustomBlockClick(e: Event) {
+    e.stopPropagation();
+    const el = e.currentTarget as HTMLElement;
+    const blockId = el.getAttribute('data-block-id');
+    if (!blockId) return;
+    this.dispatchEvent(
+      new CustomEvent('block-select', {
+        detail: { blockId },
+        bubbles: true,
+        composed: true,
+      }),
+    );
   }
 
   private _onDragOver(e: DragEvent) {
@@ -167,7 +244,7 @@ export class PigeonColumn extends LitElement {
     // Calculate drop index
     const blockElements = Array.from(
       this.renderRoot.querySelectorAll(
-        'pigeon-text-block, pigeon-image-block, pigeon-button-block, pigeon-divider-block, pigeon-spacer-block, pigeon-social-block, pigeon-html-block, pigeon-hero-block, pigeon-navbar-block'
+        'pigeon-text-block, pigeon-image-block, pigeon-button-block, pigeon-divider-block, pigeon-spacer-block, pigeon-social-block, pigeon-html-block, pigeon-hero-block, pigeon-navbar-block, .custom-block'
       )
     ) as HTMLElement[];
 

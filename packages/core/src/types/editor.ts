@@ -62,11 +62,60 @@ export interface PigeonPlugin {
   commands?: Record<string, Command>;
 }
 
+/**
+ * The minimal block shape passed to a {@link BlockDefinition}'s render hooks.
+ * Structurally compatible with both built-in `ContentBlock`s and registry
+ * `CustomBlock`s.
+ */
+export interface RegisteredBlock {
+  id: string;
+  type: string;
+  values: Record<string, unknown>;
+}
+
+/**
+ * A single editable field in a custom block's property panel. The editor
+ * renders the matching control and writes changes back to `block.values[key]`.
+ */
+export interface PropertyField {
+  /** Key within the block's `values` this field reads and writes. */
+  key: string;
+  label: string;
+  type: 'text' | 'textarea' | 'number' | 'color' | 'checkbox' | 'select';
+  placeholder?: string;
+  /** For `number` fields. */
+  min?: number;
+  max?: number;
+  step?: number;
+  /** For `select` fields. */
+  options?: Array<{ label: string; value: string }>;
+}
+
 export interface BlockDefinition {
   type: string;
   label: string;
   icon: string;
   defaultValues: Record<string, unknown>;
+  /**
+   * Declarative property form for a custom block. When set, selecting the
+   * block in the editor renders these fields (instead of just its label) and
+   * writes edits back to the block's `values`. Pairs with `renderCanvas` /
+   * `renderMjml` to make a registry block fully editable without forking.
+   */
+  propertySchema?: PropertyField[];
+  /**
+   * Optional canvas renderer for a custom block. Returns an HTML string shown
+   * in the editor canvas. Without it, a custom block renders as a labelled
+   * placeholder chip instead of failing. Built-in blocks ignore this — they
+   * have dedicated canvas components.
+   */
+  renderCanvas?: (block: RegisteredBlock) => string;
+  /**
+   * Optional MJML renderer for a custom block, used on export. Returns an MJML
+   * fragment (e.g. `<mj-text>…</mj-text>`). Without it, the block is emitted as
+   * an MJML comment and effectively skipped.
+   */
+  renderMjml?: (block: RegisteredBlock) => string;
 }
 
 export type Command = (

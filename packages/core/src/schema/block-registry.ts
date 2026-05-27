@@ -1,6 +1,6 @@
 import type { BlockType } from '../types/document.js';
 import type { BlockDefinition } from '../types/editor.js';
-import { getDefaultValues } from './defaults.js';
+import { getDefaultValues, _setCustomDefaultsResolver } from './defaults.js';
 
 const registry = new Map<string, BlockDefinition>();
 
@@ -65,6 +65,10 @@ export function initBlockRegistry(): void {
   for (const def of BUILT_IN_BLOCKS) {
     registry.set(def.type, def);
   }
+  // Let createBlock() construct registry-defined custom blocks by resolving
+  // their default values here. Injected (not imported by defaults.ts) to keep
+  // the defaults ↔ registry dependency one-directional.
+  _setCustomDefaultsResolver((type) => registry.get(type)?.defaultValues);
 }
 
 export function registerBlock(definition: BlockDefinition): void {

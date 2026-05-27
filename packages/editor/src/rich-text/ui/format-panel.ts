@@ -103,7 +103,7 @@ export class PigeonRichTextFormat extends LitElement {
 
     .toggle-btn[data-active] {
       background: var(--pigeon-primary, #3b82f6);
-      color: white;
+      color: var(--pigeon-primary-foreground, #ffffff);
       border-color: var(--pigeon-primary, #3b82f6);
     }
 

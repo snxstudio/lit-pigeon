@@ -20,6 +20,13 @@ export class PigeonCanvas extends LitElement {
   @property({ type: Number, attribute: 'preview-width' })
   previewWidth = 0;
 
+  /**
+   * Active device preset. Drives the device-frame chrome around the canvas;
+   * `desktop` shows no frame, `tablet`/`mobile` wrap the sheet in a bezel.
+   */
+  @property({ type: String })
+  device: 'desktop' | 'tablet' | 'mobile' = 'desktop';
+
   @state()
   private _rowDropIndex = -1;
 
@@ -37,10 +44,70 @@ export class PigeonCanvas extends LitElement {
 
     .canvas-scroll {
       display: flex;
-      justify-content: center;
+      flex-direction: column;
+      align-items: center;
       padding: 24px;
       min-height: 100%;
       box-sizing: border-box;
+    }
+
+    /* Device-preview chrome (tablet / mobile) */
+    .device-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      padding: 4px 12px;
+      border-radius: var(--pigeon-radius-lg, 12px);
+      background: var(--pigeon-bg, #ffffff);
+      border: 1px solid var(--pigeon-border, #e2e8f0);
+      box-shadow: var(--pigeon-shadow-sm);
+      font-family: var(--pigeon-font);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--pigeon-text-secondary, #64748b);
+    }
+
+    .device-frame {
+      background: #0f172a;
+      box-shadow: var(--pigeon-shadow-lg);
+      display: inline-block;
+      position: relative;
+    }
+
+    .device-frame--mobile {
+      padding: 14px 12px;
+      border-radius: 40px;
+    }
+
+    .device-frame--tablet {
+      padding: 18px;
+      border-radius: 28px;
+    }
+
+    /* Speaker / camera notch */
+    .device-frame::before {
+      content: '';
+      position: absolute;
+      top: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 46px;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .device-frame .canvas-area {
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: none;
+      margin-top: 6px;
+    }
+
+    .device-frame--tablet .canvas-area {
+      border-radius: 8px;
+      margin-top: 4px;
     }
 
     .canvas-area {
@@ -90,7 +157,7 @@ export class PigeonCanvas extends LitElement {
     }
 
     .empty-state.drag-over {
-      background: rgba(59, 130, 246, 0.04);
+      background: color-mix(in srgb, var(--pigeon-drop-color, #3b82f6) 6%, transparent);
       border: 2px dashed var(--pigeon-drop-color, #3b82f6);
       border-radius: var(--pigeon-radius, 6px);
     }
@@ -101,53 +168,86 @@ export class PigeonCanvas extends LitElement {
 
     const bodyWidth = this.previewWidth || this.doc.body.attributes.width || 600;
     const bgColor = this.doc.body.attributes.backgroundColor;
-    const rows = this.doc.body.rows;
+    const framed = this.device !== 'desktop';
+    const area = this._renderCanvasArea(bodyWidth, framed ? bgColor : undefined);
 
     return html`
       <div
         class="canvas-scroll"
-        style="background: ${bgColor};"
+        style=${framed ? '' : `background: ${bgColor};`}
         @click=${this._onCanvasClick}
       >
-        <div
-          class="canvas-area"
-          style="--canvas-width: ${bodyWidth}px; max-width: ${bodyWidth}px; font-family: ${this.doc.body.attributes.fontFamily};"
-          @dragover=${this._onDragOver}
-          @dragleave=${this._onDragLeave}
-          @drop=${this._onDrop}
-        >
-          ${rows.length === 0
-            ? html`
-              <div class="empty-state ${this._isDragOver ? 'drag-over' : ''}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                  <line x1="12" y1="8" x2="12" y2="16"/>
-                  <line x1="8" y1="12" x2="16" y2="12"/>
-                </svg>
-                <h3>Start building your email</h3>
-                <p>Drag a layout or content block from the left panel,<br>or drop one here to get started.</p>
+        ${framed
+          ? html`
+              <div class="device-bar">
+                <span>${this.device === 'mobile' ? 'Mobile' : 'Tablet'}</span>
+                <span aria-hidden="true">·</span>
+                <span>${bodyWidth}px</span>
+              </div>
+              <div
+                class="device-frame device-frame--${this.device}"
+                role="img"
+                aria-label="${this.device} preview frame"
+              >
+                ${area}
               </div>
             `
-            : html`
+          : area}
+      </div>
+    `;
+  }
+
+  /**
+   * The email "sheet" — the canvas-area and its rows. Rendered standalone on
+   * desktop, or nested inside a device frame for tablet/mobile. When framed,
+   * `bg` paints the document background onto the sheet itself (the area behind
+   * the frame stays neutral).
+   */
+  private _renderCanvasArea(bodyWidth: number, bg?: string) {
+    const rows = this.doc.body.rows;
+    const bgStyle = bg ? `background: ${bg};` : '';
+    return html`
+      <div
+        class="canvas-area"
+        part="canvas-area"
+        style="--canvas-width: ${bodyWidth}px; max-width: ${bodyWidth}px; font-family: ${this.doc.body.attributes.fontFamily}; ${bgStyle}"
+        @dragover=${this._onDragOver}
+        @dragleave=${this._onDragLeave}
+        @drop=${this._onDrop}
+      >
+        ${rows.length === 0
+          ? html`
+              <div class="empty-state ${this._isDragOver ? 'drag-over' : ''}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                  <line x1="12" y1="8" x2="12" y2="16" />
+                  <line x1="8" y1="12" x2="16" y2="12" />
+                </svg>
+                <h3>Start building your email</h3>
+                <p>Drag a layout or content block from the left panel,<br />or drop one here to get started.</p>
+              </div>
+            `
+          : html`
               <div class="rows-container">
-                ${rows.map((row: RowNode, index: number) => html`
-                  <pigeon-drop-indicator
-                    ?visible=${this._isDragOver && this._rowDropIndex === index}
-                  ></pigeon-drop-indicator>
-                  <pigeon-row
-                    .row=${row}
-                    .index=${index}
-                    .totalRows=${rows.length}
-                    .selection=${this.selection}
-                    .editingBlockId=${this.editingBlockId}
-                  ></pigeon-row>
-                `)}
+                ${rows.map(
+                  (row: RowNode, index: number) => html`
+                    <pigeon-drop-indicator
+                      ?visible=${this._isDragOver && this._rowDropIndex === index}
+                    ></pigeon-drop-indicator>
+                    <pigeon-row
+                      .row=${row}
+                      .index=${index}
+                      .totalRows=${rows.length}
+                      .selection=${this.selection}
+                      .editingBlockId=${this.editingBlockId}
+                    ></pigeon-row>
+                  `,
+                )}
                 <pigeon-drop-indicator
                   ?visible=${this._isDragOver && this._rowDropIndex === rows.length}
                 ></pigeon-drop-indicator>
               </div>
             `}
-        </div>
       </div>
     `;
   }

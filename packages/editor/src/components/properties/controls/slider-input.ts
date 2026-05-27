@@ -60,7 +60,7 @@ export class PigeonSliderInput extends LitElement {
       border-radius: 50%;
       background: var(--pigeon-primary, #3b82f6);
       cursor: pointer;
-      border: 2px solid white;
+      border: 2px solid var(--pigeon-bg, #ffffff);
       box-shadow: var(--pigeon-shadow-sm);
     }
 
@@ -70,7 +70,7 @@ export class PigeonSliderInput extends LitElement {
       border-radius: 50%;
       background: var(--pigeon-primary, #3b82f6);
       cursor: pointer;
-      border: 2px solid white;
+      border: 2px solid var(--pigeon-bg, #ffffff);
       box-shadow: var(--pigeon-shadow-sm);
     }
 
@@ -83,7 +83,7 @@ export class PigeonSliderInput extends LitElement {
     input[type='number'] {
       width: 52px;
       height: 28px;
-      border: 1px solid var(--pigeon-border, #e2e8f0);
+      border: 1px solid var(--pigeon-input, #cbd5e1);
       border-radius: var(--pigeon-radius-sm, 4px);
       padding: 0 4px;
       font-family: var(--pigeon-font-mono);
@@ -93,11 +93,16 @@ export class PigeonSliderInput extends LitElement {
       text-align: center;
       outline: none;
       box-sizing: border-box;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
 
-    input[type='number']:focus {
-      border-color: var(--pigeon-border-focus, #3b82f6);
-      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+    input[type='number']:focus-visible {
+      border-color: var(--pigeon-ring);
+      box-shadow: var(--pigeon-ring-shadow);
+    }
+
+    input[type='range']:focus-visible {
+      box-shadow: var(--pigeon-ring-shadow);
     }
 
     .unit {

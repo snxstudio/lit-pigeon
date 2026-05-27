@@ -102,7 +102,7 @@ export class PigeonAssetManager extends LitElement {
 
     .drop-zone.drag-over {
       border-color: var(--pigeon-primary, #3b82f6);
-      background: rgba(59, 130, 246, 0.06);
+      background: color-mix(in srgb, var(--pigeon-primary) 6%, transparent);
     }
 
     .drop-zone svg {
@@ -167,7 +167,7 @@ export class PigeonAssetManager extends LitElement {
       height: 36px;
       padding: 0 16px;
       background: var(--pigeon-primary, #3b82f6);
-      color: white;
+      color: var(--pigeon-primary-foreground, #ffffff);
       border: none;
       border-radius: var(--pigeon-radius-sm, 4px);
       font-family: var(--pigeon-font);
