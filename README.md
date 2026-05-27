@@ -441,8 +441,8 @@ A separate track that any AI tool — Claude Code, Cursor, custom agents, raw LL
 ### v0.3 -- Templates & Theming
 - [x] Template system with save/load (`TemplateStorage` + `InMemoryTemplateStorage` in `@lit-pigeon/core`; `list_templates`/`load_template`/`save_template`/`delete_template` MCP tools)
 - [x] Pre-built email templates (welcome, newsletter, transactional, promo) — `getStarterTemplates()` from `@lit-pigeon/core`
-- [ ] Editor toolbar UI for templates (Save as / Open buttons)
-- [ ] File-system-backed `TemplateStorage` (templates persist across MCP-server restarts)
+- [x] Editor toolbar UI for templates (Save as / Open buttons — `<pigeon-template-picker>` lazy-loaded modal)
+- [x] File-system-backed `TemplateStorage` (`FsTemplateStorage` in `@lit-pigeon/mcp-server`; persists to `~/.lit-pigeon/templates/` by default, overridable via `$LIT_PIGEON_TEMPLATES_DIR`)
 - [ ] Dark theme
 - [ ] Theme customization API
 - [ ] `::part()` CSS selectors for deep customization
@@ -450,19 +450,24 @@ A separate track that any AI tool — Claude Code, Cursor, custom agents, raw LL
 ### v0.4 -- Advanced Features
 - [ ] Conditional content / dynamic variables (`{{firstName}}`)
 - [ ] Mobile-responsive preview baked into the main canvas
-- [ ] Outlook (mso) and dark-mode rendering workarounds + email-client compatibility matrix
+- [x] Outlook (mso) and dark-mode rendering workarounds (heading-margin reset, color-scheme metas, `[if mso]` CSS conditional — opt-out via `RenderOptions.outlookWorkarounds: false`)
+- [ ] Email-client compatibility matrix (Gmail, Outlook, Apple Mail rendering tests)
 - [ ] Collaborative editing (CRDT-based)
-- [ ] Custom block plugin API with full docs
+- [x] Custom block plugin API docs — [`docs/plugins/README.md`](./docs/plugins/README.md) (registry-dispatch follow-up still open; see Known gaps below)
 - [ ] Accessibility audit (WCAG 2.1 AA)
 
 ### v0.5 -- Framework Wrappers & Ecosystem
-- [ ] Vue wrapper (`@lit-pigeon/vue`)
-- [ ] Svelte wrapper (`@lit-pigeon/svelte`)
+- [x] Vue wrapper (`@lit-pigeon/vue` — 712 B gz)
+- [x] Svelte wrapper (`@lit-pigeon/svelte` — 1.09 kB gz)
 - [ ] Server-side rendering API
 - [ ] REST API adapter for headless usage
 - [x] Figma-to-email import — `@lit-pigeon/figma-import` (see [AI Integration](#ai-integration-cross-cutting-shipped))
-- [ ] Hero block detection in Figma importer (image + overlay-text heuristic)
+- [x] Hero block detection in Figma importer (image + overlay-text heuristic, in `@lit-pigeon/figma-import/converters/hero.ts`)
 - [ ] `import_figma_frame` live-sandbox smoke test in CI
+
+### Known gaps (surfaced during plugin-API docs work)
+- `pigeon-column.ts`, `pigeon-properties.ts`, and `document-to-mjml.ts` all use closed `switch` statements over `ContentBlock['type']`. Custom block types registered via the plugin registry can be authored as TS but cannot actually render — they fall through to "Unknown block type". Registry-based dispatch in the canvas, properties panel, and MJML renderer would close the v0.4 plugin-API line item end-to-end.
+- `createBlock(type)` is typed against the built-in `BlockType` union, so it can't construct custom blocks from the registry. An overload that falls back to `getBlockDefinition(type)?.defaultValues` would let consumers use one factory.
 
 ### Future
 - [ ] AI-powered content suggestions
