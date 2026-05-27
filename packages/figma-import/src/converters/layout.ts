@@ -4,6 +4,7 @@ import type { FigmaNode, ImportOptions } from '../types.js';
 import { isVisible, paddingFromAutolayout, solidHex } from '../utils.js';
 import { nodeToBlock } from './block.js';
 import { looksLikeButton } from './button.js';
+import { looksLikeHero, heroNodeToBlock } from './hero.js';
 
 /**
  * Convert a top-level frame's direct children into Pigeon rows.
@@ -32,6 +33,18 @@ export function frameToRows(
 }
 
 function childToRow(node: FigmaNode, opts: ImportOptions, warnings: string[]): RowNode | null {
+  // Hero block first — a hero is conceptually a single full-width row even when
+  // its inner layoutMode is horizontal, so it takes precedence over the
+  // multi-column-row pathway below.
+  if (looksLikeHero(node, opts)) {
+    const hero = heroNodeToBlock(node, opts);
+    const column = createColumn([hero]);
+    const row = createRow([column]);
+    row.attributes.padding = { top: 0, right: 0, bottom: 0, left: 0 };
+    row.attributes.fullWidth = true;
+    return row;
+  }
+
   // Multi-column horizontal autolayout — but don't tear apart a button frame.
   if (
     node.type === 'FRAME' &&
