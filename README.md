@@ -60,6 +60,7 @@ There is no truly open-source, self-hosted, framework-agnostic drag-and-drop ema
 | [`@lit-pigeon/parser-mjml`](./packages/parser-mjml) | MJML → JSON document parser — import existing MJML into the editor | ~2.9 kB |
 | [`@lit-pigeon/react`](./packages/react) | React wrapper via `@lit/react` | 0.5 kB |
 | [`@lit-pigeon/angular`](./packages/angular) | Angular component wrapper | ~1 kB |
+| [`@lit-pigeon/vue`](./packages/vue) | Vue 3 component wrapper | ~1 kB |
 | [`@lit-pigeon/mcp-server`](./packages/mcp-server) | Model Context Protocol server — exposes authoring + rendering as MCP tools for AI clients (Claude Code, Cursor, etc.) | Node.js |
 | [`@lit-pigeon/figma-import`](./packages/figma-import) | Convert a Figma frame into a `PigeonDocument` via the Figma REST API | Node.js |
 
