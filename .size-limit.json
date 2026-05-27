@@ -54,5 +54,12 @@
     "ignore": ["vue", "@lit-pigeon/editor", "@lit-pigeon/core"],
     "limit": "2 kB",
     "gzip": true
+  },
+  {
+    "name": "@lit-pigeon/svelte (ESM, excluding svelte)",
+    "path": "packages/svelte/dist/index.js",
+    "ignore": ["svelte", "svelte/internal", "@lit-pigeon/editor", "@lit-pigeon/core"],
+    "limit": "2 kB",
+    "gzip": true
   }
 ]

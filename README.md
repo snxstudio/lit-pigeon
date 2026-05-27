@@ -61,6 +61,7 @@ There is no truly open-source, self-hosted, framework-agnostic drag-and-drop ema
 | [`@lit-pigeon/react`](./packages/react) | React wrapper via `@lit/react` | 0.5 kB |
 | [`@lit-pigeon/angular`](./packages/angular) | Angular component wrapper | ~1 kB |
 | [`@lit-pigeon/vue`](./packages/vue) | Vue 3 component wrapper | ~1 kB |
+| [`@lit-pigeon/svelte`](./packages/svelte) | Svelte 4/5 component wrapper | ~1 kB |
 | [`@lit-pigeon/mcp-server`](./packages/mcp-server) | Model Context Protocol server — exposes authoring + rendering as MCP tools for AI clients (Claude Code, Cursor, etc.) | Node.js |
 | [`@lit-pigeon/figma-import`](./packages/figma-import) | Convert a Figma frame into a `PigeonDocument` via the Figma REST API | Node.js |
 
@@ -188,6 +189,20 @@ function onChange(e) {
   console.log(e.detail.document);
 }
 </script>
+```
+
+### Svelte
+
+```svelte
+<script lang="ts">
+  import { PigeonEditor } from '@lit-pigeon/svelte';
+  let doc;
+  function handleChange(e) {
+    doc = e.detail.document;
+  }
+</script>
+
+<PigeonEditor document={doc} on:change={handleChange} on:ready={() => console.log('Ready')} />
 ```
 
 ### Export to HTML
