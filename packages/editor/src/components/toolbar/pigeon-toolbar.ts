@@ -227,6 +227,20 @@ export class PigeonToolbar extends LitElement {
       <div class="separator"></div>
 
       <!-- Actions -->
+      <button
+        data-action="templates"
+        title="Templates"
+        @click=${this._onTemplates}
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7" rx="1"/>
+          <rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/>
+          <rect x="14" y="14" width="7" height="7" rx="1"/>
+        </svg>
+        Templates
+      </button>
+
       <button @click=${this._onPreview}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
@@ -290,6 +304,13 @@ export class PigeonToolbar extends LitElement {
 
   private _onPreview() {
     this.dispatchEvent(new CustomEvent('pigeon:preview', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  private _onTemplates() {
+    this.dispatchEvent(new CustomEvent('toolbar-templates', {
       bubbles: true,
       composed: true,
     }));

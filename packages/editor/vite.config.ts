@@ -19,6 +19,9 @@ export default defineConfig({
           if (id.includes('/src/rich-text/') || id.includes('/@tiptap/')) {
             return 'rich-text';
           }
+          if (id.includes('/src/components/templates/')) {
+            return 'templates';
+          }
         },
         chunkFileNames: '[name].js',
       },
