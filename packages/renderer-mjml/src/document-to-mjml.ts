@@ -129,15 +129,76 @@ ${columnsMarkup}
 }
 
 /**
+ * Options that influence the MJML document the renderer emits.
+ *
+ * Kept as a local subset of `@lit-pigeon/core`'s `RenderOptions` — only the
+ * fields that affect MJML markup generation are relevant here (other fields
+ * like `minify`/`beautify` apply to the mjml2html compilation step).
+ */
+export interface DocumentToMjmlOptions {
+  /**
+   * Inject Outlook (mso) and dark-mode rendering workarounds into the
+   * document. Defaults to `true`. Set to `false` to emit a bare MJML
+   * document without the heading-margin reset, dark-mode meta tags, or
+   * `[if mso]` conditional block.
+   */
+  outlookWorkarounds?: boolean;
+}
+
+/**
+ * `<mj-raw>` block holding the standard Office365 / Outlook 2016+ mso
+ * conditional. The Arial fallback only fires inside MSO — modern clients
+ * keep using the document's chosen font-family.
+ */
+const MSO_CONDITIONAL_BLOCK = `    <mj-raw>
+      <!--[if mso]>
+      <style>
+        body, table, td { font-family: Arial, Helvetica, sans-serif !important; }
+        blockquote { margin: 0 0 16px !important; }
+      </style>
+      <![endif]-->
+    </mj-raw>`;
+
+/**
+ * Dark-mode color-scheme meta tags inside an `<mj-raw>` so MJML emits them
+ * verbatim into the document `<head>`. Email clients that honour these
+ * (Apple Mail, recent Outlook desktop, etc.) will respect the document's
+ * chosen background/text colours instead of force-inverting them.
+ */
+const DARK_MODE_META_BLOCK = `    <mj-raw>
+      <meta name="color-scheme" content="light dark">
+      <meta name="supported-color-schemes" content="light dark">
+    </mj-raw>`;
+
+/**
+ * Heading-margin reset for Outlook. TipTap emits `<h1>`/`<h2>`/`<h3>` and
+ * `<blockquote>` with browser-default margins that Outlook renders with
+ * extra whitespace. This zeros the top margin and uses a compact bottom
+ * margin across all clients (mso variant in MSO_CONDITIONAL_BLOCK gets the
+ * `!important` override that Outlook needs).
+ */
+const HEADING_MARGIN_RESET_BLOCK = `    <mj-style inline="inline">
+      h1, h2, h3, blockquote { margin: 0 0 0.5em; }
+    </mj-style>`;
+
+/**
  * Builds the <mj-head> section of the MJML document, including:
+ * - Outlook + dark-mode workarounds (unless disabled)
  * - <mj-attributes> for default styling
  * - <mj-preview> for preview text
  */
-function renderHead(doc: PigeonDocument): string {
+function renderHead(doc: PigeonDocument, options: Required<DocumentToMjmlOptions>): string {
   const { fontFamily } = doc.body.attributes;
   const previewText = doc.metadata.previewText;
 
   const headParts: string[] = [];
+
+  if (options.outlookWorkarounds) {
+    // mso conditional first so Outlook picks it up before any other styling.
+    headParts.push(MSO_CONDITIONAL_BLOCK);
+    headParts.push(DARK_MODE_META_BLOCK);
+    headParts.push(HEADING_MARGIN_RESET_BLOCK);
+  }
 
   // Default attributes
   headParts.push(`    <mj-attributes>
@@ -162,8 +223,16 @@ ${headParts.join('\n')}
  * This function maps the document's body attributes, rows, columns,
  * and content blocks to their MJML equivalents. The resulting string
  * can then be passed to mjml2html() to produce the final HTML output.
+ *
+ * @param doc - The PigeonDocument to render.
+ * @param options - Optional MJML-shaping options. `outlookWorkarounds`
+ *   defaults to `true` and injects Outlook (mso) + dark-mode workarounds.
  */
-export function documentToMjml(doc: PigeonDocument): string {
+export function documentToMjml(doc: PigeonDocument, options?: DocumentToMjmlOptions): string {
+  const resolved: Required<DocumentToMjmlOptions> = {
+    outlookWorkarounds: options?.outlookWorkarounds ?? true,
+  };
+
   const { width, backgroundColor } = doc.body.attributes;
 
   const bodyAttrs: string[] = [
@@ -174,7 +243,7 @@ export function documentToMjml(doc: PigeonDocument): string {
     bodyAttrs.push(`background-color="${backgroundColor}"`);
   }
 
-  const head = renderHead(doc);
+  const head = renderHead(doc, resolved);
   const rows = doc.body.rows.map((row) => renderRow(row)).join('\n');
 
   return `<mjml>
