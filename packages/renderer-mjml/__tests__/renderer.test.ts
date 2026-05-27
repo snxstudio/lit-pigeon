@@ -115,7 +115,9 @@ describe('documentToMjml', () => {
       const malicious = '</mj-raw><mj-text>INJECTED</mj-text><mj-raw>';
       const htmlBlock = createBlock('html', { content: malicious });
       doc.body.rows = [createRow([createColumn([htmlBlock])])];
-      const mjml = documentToMjml(doc);
+      // Disable Outlook workarounds so the only <mj-raw> blocks come from the
+      // html block under test (the head emits its own <mj-raw> wrappers).
+      const mjml = documentToMjml(doc, { outlookWorkarounds: false });
 
       const rawOpen = (mjml.match(/<mj-raw>/g) || []).length;
       const rawClose = (mjml.match(/<\/mj-raw>/g) || []).length;
@@ -198,6 +200,81 @@ describe('documentToMjml', () => {
     const mjml = documentToMjml(doc);
 
     expect(mjml).toContain('background-color="#ff0000"');
+  });
+
+  describe('Outlook and dark-mode workarounds', () => {
+    it('emits the heading-margin reset <mj-style> by default', () => {
+      const doc = createDefaultDocument('Test');
+      const mjml = documentToMjml(doc);
+
+      expect(mjml).toContain('<mj-style inline="inline">');
+      expect(mjml).toMatch(/h1,\s*h2,\s*h3,\s*blockquote\s*\{\s*margin:\s*0 0 0\.5em;?\s*\}/);
+    });
+
+    it('emits both dark-mode color-scheme <meta> tags by default', () => {
+      const doc = createDefaultDocument('Test');
+      const mjml = documentToMjml(doc);
+
+      expect(mjml).toContain('<meta name="color-scheme" content="light dark"');
+      expect(mjml).toContain('<meta name="supported-color-schemes" content="light dark"');
+    });
+
+    it('emits the [if mso] conditional block at the top of <mj-head>', () => {
+      const doc = createDefaultDocument('Test');
+      const mjml = documentToMjml(doc);
+
+      expect(mjml).toContain('<!--[if mso]>');
+      expect(mjml).toContain('<![endif]-->');
+      // Arial fallback only fires inside MSO.
+      expect(mjml).toMatch(/<!--\[if mso\]>[\s\S]*font-family:\s*Arial,\s*Helvetica,\s*sans-serif[\s\S]*<!\[endif\]-->/);
+      // blockquote margin reset inside the mso block.
+      expect(mjml).toMatch(/<!--\[if mso\]>[\s\S]*blockquote\s*\{\s*margin:\s*0 0 16px\s*!important;?\s*\}[\s\S]*<!\[endif\]-->/);
+
+      // mj-raw containing the mso conditional should appear inside mj-head.
+      const headMatch = mjml.match(/<mj-head>[\s\S]*?<\/mj-head>/);
+      expect(headMatch).not.toBeNull();
+      expect(headMatch?.[0]).toContain('<!--[if mso]>');
+    });
+
+    it('omits all three workarounds when outlookWorkarounds is false', () => {
+      const doc = createDefaultDocument('Test');
+      const mjml = documentToMjml(doc, { outlookWorkarounds: false });
+
+      expect(mjml).not.toContain('<mj-style');
+      expect(mjml).not.toContain('color-scheme');
+      expect(mjml).not.toContain('supported-color-schemes');
+      expect(mjml).not.toContain('<!--[if mso]>');
+    });
+
+    it('MjmlRenderer forwards outlookWorkarounds: false to documentToMjml', async () => {
+      const renderer = new MjmlRenderer();
+      const doc = createDefaultDocument('Test');
+
+      const withWorkarounds = await renderer.render(doc);
+      const withoutWorkarounds = await renderer.render(doc, { outlookWorkarounds: false });
+
+      expect(withWorkarounds.errors).toEqual([]);
+      expect(withoutWorkarounds.errors).toEqual([]);
+
+      // The Arial fallback inside our mso conditional and the color-scheme
+      // meta tags only appear when the workarounds are enabled. (MJML emits
+      // its own unrelated [if mso] block for OfficeDocumentSettings, so we
+      // probe for our specific markers instead.)
+      expect(withWorkarounds.html).toMatch(/font-family:\s*Arial,\s*Helvetica,\s*sans-serif/);
+      expect(withWorkarounds.html).toContain('color-scheme');
+      expect(withoutWorkarounds.html).not.toMatch(/font-family:\s*Arial,\s*Helvetica,\s*sans-serif/);
+      expect(withoutWorkarounds.html).not.toContain('color-scheme');
+    });
+
+    it('renders Arial font-family fallback inside the [if mso] block in the final HTML', async () => {
+      const renderer = new MjmlRenderer();
+      const doc = createDefaultDocument('Test');
+      const result = await renderer.render(doc);
+
+      expect(result.errors).toEqual([]);
+      // The mso conditional content (including Arial fallback) is preserved into the HTML output.
+      expect(result.html).toMatch(/<!--\[if mso\]>[\s\S]*font-family:\s*Arial,\s*Helvetica,\s*sans-serif[\s\S]*<!\[endif\]-->/);
+    });
   });
 });
 

@@ -42,4 +42,15 @@ describe('AI spec examples — render end-to-end', () => {
       expect(html).toContain('style=');
     }
   });
+
+  it('AI spec examples include the Outlook + dark-mode workarounds by default', async () => {
+    const renderer = new MjmlRenderer();
+    for (const name of ['welcome-email', 'promo-email']) {
+      const { html, errors } = await renderer.render(readDoc(name));
+      expect(errors).toEqual([]);
+      expect(html).toContain('[if mso]');
+      expect(html).toContain('color-scheme');
+      expect(html).toContain('supported-color-schemes');
+    }
+  });
 });

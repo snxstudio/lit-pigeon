@@ -101,6 +101,14 @@ export interface RenderOptions {
   minify?: boolean;
   inlineCss?: boolean;
   beautify?: boolean;
+  /**
+   * When true (default), the MJML renderer injects Outlook (mso) and
+   * dark-mode rendering workarounds: a heading-margin reset `<mj-style>`,
+   * dark-mode color-scheme `<meta>` tags, and an `[if mso]` conditional
+   * block with Arial fallback and blockquote margin reset.
+   * Set to false to opt out (useful for testing the bare renderer output).
+   */
+  outlookWorkarounds?: boolean;
 }
 
 export interface RenderResult {
