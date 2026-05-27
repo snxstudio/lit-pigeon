@@ -341,6 +341,17 @@ docs/ai-spec/
 
 ---
 
+## Custom block plugin API
+
+Lit Pigeon ships a ProseMirror-inspired plugin system since v0.1. The
+**Custom Block Plugin API guide** at [`docs/plugins/`](./docs/plugins/) walks
+through registering custom block types, defining commands, and using the
+`PigeonPlugin` lifecycle (`init` / `apply` / `onStateChange`) — with a full
+"Quote" block example and an honest accounting of the current gaps in canvas
+and renderer dispatch.
+
+---
+
 ## Architecture
 
 ```
