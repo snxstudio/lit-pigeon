@@ -64,6 +64,10 @@ There is no truly open-source, self-hosted, framework-agnostic drag-and-drop ema
 | [`@lit-pigeon/svelte`](./packages/svelte) | Svelte 4/5 component wrapper | ~1 kB |
 | [`@lit-pigeon/mcp-server`](./packages/mcp-server) | Model Context Protocol server — exposes authoring + rendering as MCP tools for AI clients (Claude Code, Cursor, etc.) | Node.js |
 | [`@lit-pigeon/figma-import`](./packages/figma-import) | Convert a Figma frame into a `PigeonDocument` via the Figma REST API | Node.js |
+| [`@lit-pigeon/ssr`](./packages/ssr) | Server-side rendering API — render, parse, validate, and merge-tag-substitute documents from Node (transactional pipelines) | ~0.7 kB |
+| [`@lit-pigeon/rest`](./packages/rest) | Framework-agnostic Node REST adapter — render/parse/validate over HTTP, ships a `lit-pigeon-rest` CLI binary | ~1.6 kB |
+| [`@lit-pigeon/blocks`](./packages/blocks) | Optional standard block catalog — video, countdown, accordion, table, carousel — shipped as plugin `BlockDefinition`s | ~2 kB |
+| [`@lit-pigeon/lint`](./packages/lint) | Pre-flight QA — alt text, contrast, link, merge-tag, spam-score, image-weight, link-reachability rules. Sync + async; exposed as REST endpoints | ~2 kB |
 
 Sizes are measured by `pnpm size` and enforced in CI via [size-limit](https://github.com/ai/size-limit), excluding peer dependencies. See [`.size-limit.json`](./.size-limit.json) for the budgets.
 
@@ -459,8 +463,8 @@ A separate track that any AI tool — Claude Code, Cursor, custom agents, raw LL
 ### v0.5 -- Framework Wrappers & Ecosystem
 - [x] Vue wrapper (`@lit-pigeon/vue` — 712 B gz)
 - [x] Svelte wrapper (`@lit-pigeon/svelte` — 1.09 kB gz)
-- [ ] Server-side rendering API
-- [ ] REST API adapter for headless usage
+- [x] Server-side rendering API (`@lit-pigeon/ssr` — 764 B gz; render/parse/validate + merge-tag substitution, no DOM deps)
+- [x] REST API adapter for headless usage (`@lit-pigeon/rest` — 1.58 kB gz; `createHandler` for express/fastify/connect, `createServer` for stand-alone, ships `lit-pigeon-rest` CLI)
 - [x] Figma-to-email import — `@lit-pigeon/figma-import` (see [AI Integration](#ai-integration-cross-cutting-shipped))
 - [x] Hero block detection in Figma importer (image + overlay-text heuristic, in `@lit-pigeon/figma-import/converters/hero.ts`)
 - [ ] `import_figma_frame` live-sandbox smoke test in CI

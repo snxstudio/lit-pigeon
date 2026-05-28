@@ -10,6 +10,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "@lit-pigeon/blocks": "workspace:*",
     "@lit-pigeon/core": "workspace:*",
     "@lit-pigeon/editor": "workspace:*",
     "@lit-pigeon/renderer-mjml": "workspace:*"

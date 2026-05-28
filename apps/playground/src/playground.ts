@@ -7,7 +7,13 @@ import {
   registerBlock,
   type PigeonDocument,
 } from '@lit-pigeon/core';
+import { registerStandardBlocks } from '@lit-pigeon/blocks';
 import type { PigeonEditor } from '@lit-pigeon/editor';
+
+// Register the optional standard block catalog (video, countdown, accordion,
+// table, carousel) so the playground exercises every block type the project
+// ships, not just the built-ins.
+registerStandardBlocks();
 
 const STORAGE_KEY = 'lit-pigeon-playground-doc';
 
