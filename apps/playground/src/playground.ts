@@ -311,18 +311,26 @@ function loadInitialDocument() {
 
 loadInitialDocument();
 
-// Theme toggle (light / dark / auto) — drives <pigeon-editor>.theme.
+// Theme toggle (light / dark / auto) — drives both <pigeon-editor>.theme and
+// the surrounding playground shell, which keys off `<body data-theme="…">`
+// to swap its own CSS variable token set. Without the shell sync the editor
+// went light/dark but the top bar stayed hard-coded zinc.
 const THEME_KEY = 'lit-pigeon-playground-theme';
+type ThemeValue = 'light' | 'dark' | 'auto';
+const applyTheme = (value: ThemeValue) => {
+  editor.theme = value;
+  document.body.dataset.theme = value;
+};
 const themeSelect = document.getElementById('theme-select') as HTMLSelectElement | null;
+{
+  const saved = (localStorage.getItem(THEME_KEY) as ThemeValue | null) ?? 'light';
+  applyTheme(saved);
+  if (themeSelect) themeSelect.value = saved;
+}
 if (themeSelect) {
-  const saved = localStorage.getItem(THEME_KEY) as 'light' | 'dark' | 'auto' | null;
-  if (saved) {
-    editor.theme = saved;
-    themeSelect.value = saved;
-  }
   themeSelect.addEventListener('change', () => {
-    const value = themeSelect.value as 'light' | 'dark' | 'auto';
-    editor.theme = value;
+    const value = themeSelect.value as ThemeValue;
+    applyTheme(value);
     localStorage.setItem(THEME_KEY, value);
   });
 }
