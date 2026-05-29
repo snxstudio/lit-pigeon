@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import type { SocialBlock, SocialIcon, Spacing } from '@lit-pigeon/core';
+import { panelStyles } from './panel-styles.js';
 import '../controls/alignment-picker.js';
 import '../controls/slider-input.js';
 import '../controls/spacing-input.js';
@@ -26,109 +27,66 @@ export class PigeonSocialPanel extends LitElement {
   @property({ type: String })
   columnId = '';
 
-  static styles = css`
-    :host {
-      display: block;
-    }
+  static styles = [
+    panelStyles,
+    css`
+      h4 {
+        margin: 0 0 8px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--pigeon-text, #1e293b);
+        font-family: var(--pigeon-font);
+      }
 
-    h3 {
-      margin: 0 0 16px;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--pigeon-text, #1e293b);
-      font-family: var(--pigeon-font);
-    }
+      .icon-item {
+        border: 1px solid var(--pigeon-border, #e2e8f0);
+        border-radius: var(--pigeon-radius-sm, 6px);
+        padding: 8px;
+        margin-bottom: 8px;
+      }
 
-    h4 {
-      margin: 0 0 8px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--pigeon-text, #1e293b);
-      font-family: var(--pigeon-font);
-    }
+      .icon-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
 
-    .field {
-      margin-bottom: 12px;
-    }
+      .remove-btn {
+        background: none;
+        border: none;
+        color: var(--pigeon-danger, #ef4444);
+        cursor: pointer;
+        font-size: 12px;
+        font-family: var(--pigeon-font);
+        padding: 2px 6px;
+        border-radius: var(--pigeon-radius-sm, 6px);
+      }
 
-    label {
-      display: block;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--pigeon-text-secondary, #64748b);
-      margin-bottom: 4px;
-      font-family: var(--pigeon-font);
-    }
+      .remove-btn:hover {
+        background: color-mix(in srgb, var(--pigeon-danger) 10%, transparent);
+      }
 
-    input[type='text'],
-    input[type='url'],
-    select {
-      width: 100%;
-      height: 32px;
-      border: 1px solid var(--pigeon-border, #e2e8f0);
-      border-radius: var(--pigeon-radius-sm, 4px);
-      padding: 0 8px;
-      font-family: var(--pigeon-font);
-      font-size: 13px;
-      color: var(--pigeon-text, #1e293b);
-      background: var(--pigeon-bg, #ffffff);
-      outline: none;
-      box-sizing: border-box;
-    }
+      .add-btn {
+        width: 100%;
+        height: 36px;
+        border: 1px dashed var(--pigeon-border, #e2e8f0);
+        border-radius: var(--pigeon-radius-sm, 6px);
+        background: transparent;
+        color: var(--pigeon-text-secondary, #64748b);
+        cursor: pointer;
+        font-family: var(--pigeon-font);
+        font-size: 13px;
+        margin-bottom: 14px;
+        transition: border-color 0.15s ease, color 0.15s ease;
+      }
 
-    input:focus,
-    select:focus {
-      border-color: var(--pigeon-border-focus, #3b82f6);
-      box-shadow: var(--pigeon-ring-shadow);
-    }
-
-    .icon-item {
-      border: 1px solid var(--pigeon-border, #e2e8f0);
-      border-radius: var(--pigeon-radius-sm, 4px);
-      padding: 8px;
-      margin-bottom: 8px;
-    }
-
-    .icon-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .remove-btn {
-      background: none;
-      border: none;
-      color: var(--pigeon-danger, #ef4444);
-      cursor: pointer;
-      font-size: 12px;
-      font-family: var(--pigeon-font);
-      padding: 2px 6px;
-      border-radius: var(--pigeon-radius-sm, 4px);
-    }
-
-    .remove-btn:hover {
-      background: color-mix(in srgb, var(--pigeon-danger) 10%, transparent);
-    }
-
-    .add-btn {
-      width: 100%;
-      height: 32px;
-      border: 1px dashed var(--pigeon-border, #e2e8f0);
-      border-radius: var(--pigeon-radius-sm, 4px);
-      background: transparent;
-      color: var(--pigeon-text-secondary, #64748b);
-      cursor: pointer;
-      font-family: var(--pigeon-font);
-      font-size: 13px;
-      margin-bottom: 12px;
-    }
-
-    .add-btn:hover {
-      border-color: var(--pigeon-primary, #3b82f6);
-      color: var(--pigeon-primary, #3b82f6);
-    }
-  `;
+      .add-btn:hover {
+        border-color: var(--pigeon-primary, #4f46e5);
+        color: var(--pigeon-primary, #4f46e5);
+      }
+    `,
+  ];
 
   render() {
     if (!this.block) return html``;
