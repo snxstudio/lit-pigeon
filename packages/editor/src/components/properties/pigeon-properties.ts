@@ -1,6 +1,14 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import type { PigeonDocument, RowNode, ContentBlock, Selection, MergeTag } from '@lit-pigeon/core';
+import type {
+  PigeonDocument,
+  RowNode,
+  ContentBlock,
+  Selection,
+  MergeTag,
+  AssetManagerConfig,
+  AssetStorage,
+} from '@lit-pigeon/core';
 import { getBlockDefinition } from '@lit-pigeon/core';
 import './panels/text-panel.js';
 import './panels/image-panel.js';
@@ -25,6 +33,12 @@ export class PigeonProperties extends LitElement {
 
   @property({ type: Array })
   mergeTags: MergeTag[] = [];
+
+  @property({ attribute: false })
+  assetManagerConfig?: AssetManagerConfig;
+
+  @property({ attribute: false })
+  assetStorage?: AssetStorage;
 
   static styles = css`
     :host {
@@ -128,11 +142,23 @@ export class PigeonProperties extends LitElement {
       case 'text':
         return html`<pigeon-text-panel .block=${block} .rowId=${rowId} .columnId=${columnId} .mergeTags=${this.mergeTags}></pigeon-text-panel>`;
       case 'image':
-        return html`<pigeon-image-panel .block=${block} .rowId=${rowId} .columnId=${columnId}></pigeon-image-panel>`;
+        return html`<pigeon-image-panel
+          .block=${block}
+          .rowId=${rowId}
+          .columnId=${columnId}
+          .assetManagerConfig=${this.assetManagerConfig}
+          .assetStorage=${this.assetStorage}
+        ></pigeon-image-panel>`;
       case 'button':
         return html`<pigeon-button-panel .block=${block} .rowId=${rowId} .columnId=${columnId}></pigeon-button-panel>`;
       case 'hero':
-        return html`<pigeon-hero-panel .block=${block} .rowId=${rowId} .columnId=${columnId}></pigeon-hero-panel>`;
+        return html`<pigeon-hero-panel
+          .block=${block}
+          .rowId=${rowId}
+          .columnId=${columnId}
+          .assetManagerConfig=${this.assetManagerConfig}
+          .assetStorage=${this.assetStorage}
+        ></pigeon-hero-panel>`;
       case 'navbar':
         return html`<pigeon-navbar-panel .block=${block} .rowId=${rowId} .columnId=${columnId}></pigeon-navbar-panel>`;
       case 'divider':

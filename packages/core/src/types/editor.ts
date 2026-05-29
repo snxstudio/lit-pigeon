@@ -1,4 +1,6 @@
 import type { PigeonDocument, ContentBlock, RowNode, ColumnNode } from './document.js';
+import type { AssetStorage } from './asset.js';
+import type { BrandKit, BrandKitStorage } from './brand-kit.js';
 
 export interface Selection {
   type: 'block' | 'row' | 'column' | 'body';
@@ -44,6 +46,21 @@ export interface EditorConfig {
   plugins?: PigeonPlugin[];
   assetManager?: AssetManagerConfig;
   mergeTags?: MergeTagConfig;
+  /**
+   * Optional persistent asset library. When supplied, the asset modal shows
+   * a "Library" tab next to "Upload" so users can pick from previously saved
+   * assets without re-uploading. The data layer lives in `@lit-pigeon/core`
+   * (`AssetStorage`) and a filesystem-backed implementation ships in
+   * `@lit-pigeon/mcp-server` (`FsAssetStorage`).
+   */
+  assetStorage?: AssetStorage;
+  /**
+   * Optional brand kit (or storage for multiple kits) — saved colors and
+   * fonts can be surfaced as palette swatches in the property panels' color
+   * pickers and font-family pickers. When a `BrandKit` is passed it is used
+   * directly; a `BrandKitStorage` is resolved lazily on demand.
+   */
+  brandKit?: BrandKit | BrandKitStorage;
 }
 
 export interface Step {

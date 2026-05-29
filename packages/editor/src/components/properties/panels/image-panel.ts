@@ -1,6 +1,11 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import type { ImageBlock, Spacing, AssetManagerConfig } from '@lit-pigeon/core';
+import type {
+  ImageBlock,
+  Spacing,
+  AssetManagerConfig,
+  AssetStorage,
+} from '@lit-pigeon/core';
 import { panelStyles } from './panel-styles.js';
 import '../controls/alignment-picker.js';
 import '../controls/spacing-input.js';
@@ -20,6 +25,9 @@ export class PigeonImagePanel extends LitElement {
 
   @property({ type: Object })
   assetManagerConfig?: AssetManagerConfig;
+
+  @property({ attribute: false })
+  assetStorage?: AssetStorage;
 
   @state()
   private _assetManagerOpen = false;
@@ -75,6 +83,7 @@ export class PigeonImagePanel extends LitElement {
         ? html`<pigeon-asset-manager
             ?open=${this._assetManagerOpen}
             .config=${this.assetManagerConfig ?? {}}
+            .storage=${this.assetStorage}
             @asset-selected=${this._onAssetSelected}
           ></pigeon-asset-manager>`
         : ''}

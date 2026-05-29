@@ -12,6 +12,7 @@ import {
   type Template,
   type TemplateCategory,
   type TemplateStorage,
+  type AssetStorage,
   createHistoryPlugin,
   createDefaultDocument,
   createBlock,
@@ -169,6 +170,16 @@ export class PigeonEditor extends LitElement {
    */
   @property({ attribute: false })
   templateStorage?: TemplateStorage;
+
+  /**
+   * Optional asset library backend. When set, the asset modal shows a
+   * "Library" tab next to "Upload" so users can browse previously-saved
+   * assets (folders, search, tag filters) without re-uploading. Falls back to
+   * `config.assetStorage` if not set directly. Without either, the modal
+   * keeps its current upload-only behaviour.
+   */
+  @property({ attribute: false })
+  assetStorage?: AssetStorage;
 
   /* ------------------------------------------------------------------ */
   /*  Internal state                                                     */
@@ -414,6 +425,8 @@ export class PigeonEditor extends LitElement {
           .doc=${doc}
           .selection=${sel}
           .mergeTags=${this.config.mergeTags?.tags ?? []}
+          .assetManagerConfig=${this.config.assetManager ?? {}}
+          .assetStorage=${this.assetStorage ?? this.config.assetStorage}
           @property-change=${this._handlePropertyChange}
           @row-property-change=${this._handleRowPropertyChange}
           @row-layout-change=${this._handleRowLayoutChange}
