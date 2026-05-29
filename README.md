@@ -83,7 +83,7 @@ Sizes are measured by `pnpm size` and enforced in CI via [size-limit](https://gi
 ### Install
 
 ```bash
-git clone https://github.com/snxstudio/unnlayer.git lit-pigeon
+git clone https://github.com/snxstudio/lit-pigeon.git
 cd lit-pigeon
 pnpm install
 pnpm build
