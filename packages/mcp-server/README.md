@@ -1,6 +1,6 @@
 # @lit-pigeon/mcp-server
 
-Model Context Protocol server exposing Lit Pigeon email authoring + rendering as MCP tools. Plug it into any MCP-compatible client (Claude Code, Cursor, Windsurf, Codex, etc.) and ask the model to build emails for you.
+Model Context Protocol server exposing Lit Pigeon email authoring + rendering as MCP tools. Plug it into any MCP-compatible client (Cursor, Windsurf, Codex, etc.) and ask the model to build emails for you.
 
 This is the runtime implementation of the [AI authoring specification](../../docs/ai-spec/).
 
@@ -14,20 +14,7 @@ npm install -g @lit-pigeon/mcp-server
 
 ## Configure your client
 
-### Claude Code (`~/.claude.json` or `.mcp.json` in a project)
-
-```json
-{
-  "mcpServers": {
-    "lit-pigeon": {
-      "command": "npx",
-      "args": ["-y", "@lit-pigeon/mcp-server"]
-    }
-  }
-}
-```
-
-### Cursor (`~/.cursor/mcp.json`)
+Most MCP clients accept the same `mcpServers` block in their config file. The path varies by client — for example, Cursor reads `~/.cursor/mcp.json`, Windsurf reads `~/.codeium/windsurf/mcp_config.json`, and project-scoped configs typically live at `.mcp.json` in the workspace root.
 
 ```json
 {

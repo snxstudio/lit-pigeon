@@ -1,6 +1,6 @@
 # Prompting Guide — Producing Lit Pigeon documents with an LLM
 
-This guide gives you templates and rules for instructing any LLM (Claude, GPT-4, Gemini, local models) to author Lit Pigeon emails as JSON. Pair it with the [JSON Schema](./lit-pigeon-ai-spec.schema.json) for validation.
+This guide gives you templates and rules for instructing any LLM (GPT-4, Gemini, local models, etc.) to author Lit Pigeon emails as JSON. Pair it with the [JSON Schema](./lit-pigeon-ai-spec.schema.json) for validation.
 
 ## System-prompt template (copy-paste ready)
 
@@ -57,12 +57,12 @@ See `examples/welcome-email.json` for the kind of output the model should produc
 
 | Provider | Mechanism |
 |---|---|
-| **Claude** (Anthropic API) | Tool use with the schema as `input_schema`, OR `response_format: { type: "json" }` + the system prompt above. |
 | **OpenAI** | `response_format: { type: "json_schema", json_schema: { …content of lit-pigeon-ai-spec.schema.json… } }`. |
 | **Gemini** | `responseMimeType: "application/json"` + `responseSchema`. |
 | **Local models (Ollama, llama.cpp)** | Use the system prompt; validate after with `isValidDocument(doc)`. |
+| **Other providers** | Use the system prompt above + the provider's native structured-output / JSON-mode feature. Validate with `isValidDocument(doc)`. |
 
-For agentic tools (Claude Code, Cursor), use `@lit-pigeon/mcp-server` instead — it exposes the same operations as live tools and removes the JSON-emission burden from the model.
+For agentic tools (Cursor, Windsurf, and other MCP-compatible clients), use `@lit-pigeon/mcp-server` instead — it exposes the same operations as live tools and removes the JSON-emission burden from the model.
 
 ## Common pitfalls (and the fix)
 
