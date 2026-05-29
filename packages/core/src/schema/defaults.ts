@@ -11,6 +11,7 @@ import type {
   HeroBlock,
   NavBarBlock,
   ContentBlock,
+  AnyBlock,
   BlockType,
   RowNode,
   ColumnNode,
@@ -138,12 +139,59 @@ export function getDefaultValues(type: BlockType): ContentBlock['values'] {
   return factory();
 }
 
-export function createBlock(type: BlockType, overrides?: Partial<ContentBlock['values']>): ContentBlock {
-  return {
-    id: generateId(),
-    type,
-    values: { ...getDefaultValues(type), ...overrides },
-  } as ContentBlock;
+/**
+ * Resolver for default values of *custom* (registry-defined) block types.
+ *
+ * Injected by the block registry (`initBlockRegistry`) rather than imported
+ * directly, so `defaults.ts` never imports `block-registry.ts` — which would
+ * create an evaluation-order cycle (the registry eagerly calls
+ * `getDefaultValues` for built-ins at module load).
+ */
+type CustomDefaultsResolver = (type: string) => Record<string, unknown> | undefined;
+let customDefaultsResolver: CustomDefaultsResolver | null = null;
+
+/** @internal — wired up by the block registry; not part of the public API. */
+export function _setCustomDefaultsResolver(resolver: CustomDefaultsResolver): void {
+  customDefaultsResolver = resolver;
+}
+
+export function createBlock(
+  type: BlockType,
+  overrides?: Partial<ContentBlock['values']>,
+): ContentBlock;
+export function createBlock(
+  type: string,
+  overrides?: Record<string, unknown>,
+): AnyBlock;
+/**
+ * Create a block of the given type with default values, optionally overriding
+ * individual fields. Built-in types resolve their defaults from the schema;
+ * custom types registered via `registerBlock` fall back to the registry's
+ * `defaultValues`. Throws if the type is neither built-in nor registered.
+ */
+export function createBlock(
+  type: string,
+  overrides?: Record<string, unknown>,
+): AnyBlock {
+  const builtIn = defaultValuesMap[type as BlockType];
+  if (builtIn) {
+    return {
+      id: generateId(),
+      type,
+      values: { ...builtIn(), ...overrides },
+    } as ContentBlock;
+  }
+
+  const customDefaults = customDefaultsResolver?.(type);
+  if (customDefaults) {
+    return {
+      id: generateId(),
+      type,
+      values: { ...structuredClone(customDefaults), ...overrides },
+    };
+  }
+
+  throw new Error(`Unknown block type: ${type}`);
 }
 
 export function createColumn(blocks: ContentBlock[] = []): ColumnNode {

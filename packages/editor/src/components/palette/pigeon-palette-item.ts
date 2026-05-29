@@ -64,6 +64,12 @@ export class PigeonPaletteItem extends LitElement {
       transform: scale(0.98);
     }
 
+    .item:focus-visible {
+      outline: none;
+      border-color: var(--pigeon-ring);
+      box-shadow: var(--pigeon-ring-shadow);
+    }
+
     .icon {
       display: flex;
       align-items: center;
@@ -71,8 +77,8 @@ export class PigeonPaletteItem extends LitElement {
       width: 32px;
       height: 32px;
       border-radius: var(--pigeon-radius-sm, 4px);
-      background: var(--pigeon-surface, #f8fafc);
-      color: var(--pigeon-primary, #3b82f6);
+      background: var(--pigeon-accent, #eef2ff);
+      color: var(--pigeon-accent-foreground, #4338ca);
       font-size: 12px;
       font-weight: 700;
       font-family: var(--pigeon-font-mono);
@@ -88,17 +94,41 @@ export class PigeonPaletteItem extends LitElement {
 
   render() {
     const displayIcon = BLOCK_ICONS[this.icon] ?? this.icon ?? '?';
+    const verb = this.dragType === 'palette-row' ? 'Add layout' : 'Add block';
     return html`
       <div
         class="item"
         draggable="true"
+        role="button"
+        tabindex="0"
+        aria-label="${verb}: ${this.label}"
+        title="Drag onto the canvas, or press Enter to add"
         @dragstart=${this._onDragStart}
         @dragend=${this._onDragEnd}
+        @keydown=${this._onKeyDown}
       >
-        <span class="icon">${displayIcon}</span>
+        <span class="icon" aria-hidden="true">${displayIcon}</span>
         <span class="label">${this.label}</span>
       </div>
     `;
+  }
+
+  private _onKeyDown(e: KeyboardEvent) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    e.preventDefault();
+    // Keyboard equivalent of dragging this item onto the canvas: ask the
+    // editor to append the block/layout to the document.
+    this.dispatchEvent(
+      new CustomEvent('palette-item-activate', {
+        detail: {
+          type: this.dragType,
+          blockType: this.blockType,
+          columnCount: this.columnCount,
+        },
+        bubbles: true,
+        composed: true,
+      }),
+    );
   }
 
   private _onDragStart(e: DragEvent) {

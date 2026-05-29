@@ -1,6 +1,6 @@
 # Lit Pigeon — Custom Block Plugin API
 
-**Status:** v0.1 plugin surface — block definitions, commands, and state hooks ship today. Canvas-rendering and property-panel dispatch are still closed switches inside `@lit-pigeon/editor`; see [Known gaps](#known-gaps).
+**Status:** The plugin API is end-to-end. A `BlockDefinition` can now register a custom block that **renders on the canvas** (`renderCanvas`), **exports to MJML** (`renderMjml`), and is **edited in the properties panel** (`propertySchema`) — plus commands and plugin state — all without forking `@lit-pigeon/editor`. See the per-feature sections below.
 
 This guide is for developers who want to add a custom block type, register editor commands, or extend the document with their own state. It assumes familiarity with the [AI authoring spec](../ai-spec/) for the document shape.
 
@@ -381,12 +381,54 @@ Or via the editor shell:
 
 ## <a id="known-gaps"></a> Known gaps
 
-> **Canvas rendering is a closed switch.** [`packages/editor/src/components/canvas/pigeon-column.ts`](../../packages/editor/src/components/canvas/pigeon-column.ts) dispatches block rendering via an exhaustive `switch (block.type)` over the core `ContentBlock` union, falling through to `<div>Unknown block type: …</div>` for anything else. Today, rendering a custom block on the canvas requires forking `@lit-pigeon/editor` and adding a case to that switch. The same is true of `pigeon-properties.ts` for property-panel dispatch.
+> **Canvas & MJML dispatch now fall back to the registry.** When `block.type`
+> isn't a built-in, [`pigeon-column.ts`](../../packages/editor/src/components/canvas/pigeon-column.ts)
+> calls your `BlockDefinition.renderCanvas(block)` (returning an HTML string)
+> and [`document-to-mjml.ts`](../../packages/renderer-mjml/src/document-to-mjml.ts)
+> calls `renderMjml(block)`. If you omit `renderCanvas`, the canvas shows a
+> labelled, selectable placeholder instead of an error; if you omit
+> `renderMjml`, export emits an explanatory comment. `createBlock(type)`
+> constructs registry blocks from their `defaultValues`.
 >
-> A registry-based dispatch on the canvas side is the next step to make this API fully consumer-side. Until then, plugins are most useful for:
-> - registering block metadata that tooling and the MCP server can enumerate,
-> - registering commands invoked by your own toolbar buttons,
-> - storing plugin state (history-style) for features that don't need direct canvas rendering.
+> ```ts
+> registerBlock({
+>   type: 'quote',
+>   label: 'Quote',
+>   icon: 'quote',
+>   defaultValues: { text: '', cite: '' },
+>   renderCanvas: (b) => `<blockquote>${b.values.text}</blockquote>`,
+>   renderMjml: (b) => `<mj-text font-style="italic">${b.values.text}</mj-text>`,
+> });
+> ```
+>
+> **Property panel — declare a `propertySchema`.** Add a `propertySchema` to
+> your `BlockDefinition` and selecting the block renders an editable form that
+> writes straight back to `block.values` (no custom panel component needed):
+>
+> ```ts
+> registerBlock({
+>   type: 'quote',
+>   label: 'Quote',
+>   icon: 'quote',
+>   defaultValues: { text: '', cite: '', align: 'left' },
+>   renderCanvas: (b) => `<blockquote>${b.values.text}</blockquote>`,
+>   renderMjml: (b) => `<mj-text>${b.values.text}</mj-text>`,
+>   propertySchema: [
+>     { key: 'text', label: 'Quote', type: 'textarea' },
+>     { key: 'cite', label: 'Attribution', type: 'text' },
+>     { key: 'align', label: 'Align', type: 'select',
+>       options: [{ label: 'Left', value: 'left' }, { label: 'Right', value: 'right' }] },
+>   ],
+> });
+> ```
+>
+> Field `type`s: `text`, `textarea`, `number` (`min`/`max`/`step`), `color`,
+> `checkbox`, `select` (`options`). Blocks with no `propertySchema` still show a
+> labelled placeholder. For richer/interactive editors beyond these field
+> types, build your own panel and drive `updateBlock` from your commands.
+>
+> `renderCanvas` output is injected with `unsafeHTML`, so the plugin author is
+> responsible for sanitising any user-derived content it interpolates.
 
 ---
 
@@ -474,7 +516,17 @@ export function renderQuoteBlock(block: QuoteBlock): string {
 }
 ```
 
-> **Known gap.** The renderer's block dispatch is a closed `switch` over `ContentBlock`, not a registry. Wiring `renderQuoteBlock` into the pipeline today requires forking `@lit-pigeon/renderer-mjml` and adding a `case 'quote':` to `document-to-mjml.ts`. Promoting that switch to a registry that `PigeonPlugin` can contribute to is on the roadmap — until then, plug a custom renderer in by passing your own `documentToMjml` function to `<pigeon-editor>`'s `documentToMjml` property, or by composing the built-in `documentToMjml(doc)` output with a post-pass that swaps the placeholder for custom blocks.
+> **Wiring it in.** Assign this function to your `BlockDefinition.renderMjml`
+> and `document-to-mjml.ts` calls it automatically for `quote` blocks — no fork
+> needed:
+>
+> ```ts
+> registerBlock({ /* …quote def… */, renderMjml: renderQuoteBlock });
+> ```
+>
+> Passing your own `documentToMjml` to `<pigeon-editor>` still works if you want
+> to override the whole pipeline, but for a single block the `renderMjml` hook
+> is the simplest path.
 
 ---
 

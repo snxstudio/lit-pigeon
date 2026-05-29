@@ -1,6 +1,11 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import type { HeroBlock, Spacing, AssetManagerConfig } from '@lit-pigeon/core';
+import type {
+  HeroBlock,
+  Spacing,
+  AssetManagerConfig,
+  AssetStorage,
+} from '@lit-pigeon/core';
 import '../controls/alignment-picker.js';
 import '../controls/spacing-input.js';
 import '../controls/slider-input.js';
@@ -20,6 +25,9 @@ export class PigeonHeroPanel extends LitElement {
 
   @property({ type: Object })
   assetManagerConfig?: AssetManagerConfig;
+
+  @property({ attribute: false })
+  assetStorage?: AssetStorage;
 
   @state()
   private _assetManagerOpen = false;
@@ -79,7 +87,7 @@ export class PigeonHeroPanel extends LitElement {
     input:focus,
     textarea:focus {
       border-color: var(--pigeon-border-focus, #3b82f6);
-      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+      box-shadow: var(--pigeon-ring-shadow);
     }
 
     select {
@@ -121,6 +129,7 @@ export class PigeonHeroPanel extends LitElement {
       <pigeon-asset-manager
         ?open=${this._assetManagerOpen}
         .config=${this.assetManagerConfig ?? {}}
+        .storage=${this.assetStorage}
         @asset-selected=${this._onBgAssetSelected}
       ></pigeon-asset-manager>
 

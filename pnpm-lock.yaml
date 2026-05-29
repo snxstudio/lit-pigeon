@@ -50,6 +50,9 @@ importers:
 
   apps/playground:
     dependencies:
+      '@lit-pigeon/blocks':
+        specifier: workspace:*
+        version: link:../../packages/blocks
       '@lit-pigeon/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -88,6 +91,22 @@ importers:
       vite-plugin-dts:
         specifier: ^4.0.0
         version: 4.5.4(@types/node@25.9.1)(rollup@4.57.1)(typescript@5.9.3)(vite@5.4.21(@types/node@25.9.1))
+
+  packages/blocks:
+    dependencies:
+      '@lit-pigeon/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@lit-pigeon/renderer-mjml':
+        specifier: workspace:*
+        version: link:../renderer-mjml
+      typescript:
+        specifier: ^5.5.0
+        version: 5.9.3
+      vitest:
+        specifier: ^2.0.0
+        version: 2.1.9(@types/node@25.9.1)(happy-dom@20.9.0)
 
   packages/core:
     dependencies:
@@ -175,6 +194,22 @@ importers:
         specifier: workspace:*
         version: link:../core
     devDependencies:
+      typescript:
+        specifier: ^5.5.0
+        version: 5.9.3
+      vitest:
+        specifier: ^2.0.0
+        version: 2.1.9(@types/node@25.9.1)(happy-dom@20.9.0)
+
+  packages/lint:
+    dependencies:
+      '@lit-pigeon/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.9.1
+        version: 25.9.1
       typescript:
         specifier: ^5.5.0
         version: 5.9.3
@@ -284,6 +319,47 @@ importers:
       vite-plugin-dts:
         specifier: ^4.0.0
         version: 4.5.4(@types/node@25.9.1)(rollup@4.57.1)(typescript@5.9.3)(vite@5.4.21(@types/node@25.9.1))
+      vitest:
+        specifier: ^2.0.0
+        version: 2.1.9(@types/node@25.9.1)(happy-dom@20.9.0)
+
+  packages/rest:
+    dependencies:
+      '@lit-pigeon/core':
+        specifier: workspace:*
+        version: link:../core
+      '@lit-pigeon/lint':
+        specifier: workspace:*
+        version: link:../lint
+      '@lit-pigeon/ssr':
+        specifier: workspace:*
+        version: link:../ssr
+    devDependencies:
+      '@types/node':
+        specifier: ^25.9.1
+        version: 25.9.1
+      typescript:
+        specifier: ^5.5.0
+        version: 5.9.3
+      vitest:
+        specifier: ^2.0.0
+        version: 2.1.9(@types/node@25.9.1)(happy-dom@20.9.0)
+
+  packages/ssr:
+    dependencies:
+      '@lit-pigeon/core':
+        specifier: workspace:*
+        version: link:../core
+      '@lit-pigeon/parser-mjml':
+        specifier: workspace:*
+        version: link:../parser-mjml
+      '@lit-pigeon/renderer-mjml':
+        specifier: workspace:*
+        version: link:../renderer-mjml
+    devDependencies:
+      typescript:
+        specifier: ^5.5.0
+        version: 5.9.3
       vitest:
         specifier: ^2.0.0
         version: 2.1.9(@types/node@25.9.1)(happy-dom@20.9.0)

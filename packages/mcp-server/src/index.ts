@@ -3,3 +3,7 @@ export type { BuildServerOptions } from './server.js';
 export { DocumentStore } from './store/document-store.js';
 export { FsTemplateStorage } from './store/fs-template-storage.js';
 export type { FsTemplateStorageOptions } from './store/fs-template-storage.js';
+export { FsBrandKitStorage } from './store/fs-brand-kit-storage.js';
+export type { FsBrandKitStorageOptions } from './store/fs-brand-kit-storage.js';
+export { FsAssetStorage } from './store/fs-asset-storage.js';
+export type { FsAssetStorageOptions } from './store/fs-asset-storage.js';

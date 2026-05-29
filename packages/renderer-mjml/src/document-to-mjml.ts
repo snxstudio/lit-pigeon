@@ -4,7 +4,9 @@ import type {
   ColumnNode,
   ContentBlock,
   HeroBlock,
+  RegisteredBlock,
 } from '@lit-pigeon/core';
+import { getBlockDefinition } from '@lit-pigeon/core';
 import { spacingToMjml } from './utils/spacing.js';
 import { renderTextBlock } from './block-renderers/text.js';
 import { renderImageBlock } from './block-renderers/image.js';
@@ -39,12 +41,23 @@ function renderBlock(block: ContentBlock): string {
       return renderHeroBlock(block);
     case 'navbar':
       return renderNavBarBlock(block);
-    default: {
-      // Exhaustive check: if a new block type is added, TypeScript will error here
-      const _exhaustive: never = block;
-      return `<!-- Unknown block type: ${(_exhaustive as ContentBlock).type} -->`;
-    }
+    default:
+      return renderCustomBlock(block);
   }
+}
+
+/**
+ * Render a registry-defined custom block to MJML via its `renderMjml` hook.
+ * If the type is unknown or supplies no MJML renderer, emit a comment so the
+ * output stays valid and the gap is visible rather than silently dropped.
+ */
+function renderCustomBlock(block: ContentBlock): string {
+  const type = (block as { type: string }).type;
+  const def = getBlockDefinition(type);
+  if (def?.renderMjml) {
+    return def.renderMjml(block as unknown as RegisteredBlock);
+  }
+  return `<!-- Unknown block type: ${type} -->`;
 }
 
 /**
@@ -89,7 +102,10 @@ function renderRow(row: RowNode): string {
     row.columns[0].blocks.length === 1 &&
     row.columns[0].blocks[0].type === 'hero'
   ) {
-    return renderHeroSection(row.columns[0].blocks[0] as HeroBlock);
+    return wrapConditional(
+      renderHeroSection(row.columns[0].blocks[0] as HeroBlock),
+      row.attributes.condition,
+    );
   }
 
   const { backgroundColor, backgroundImage, padding, fullWidth } = row.attributes;
@@ -123,9 +139,26 @@ function renderRow(row: RowNode): string {
     })
     .join('\n');
 
-  return `  <mj-section ${attrs.join(' ')}>
+  return wrapConditional(
+    `  <mj-section ${attrs.join(' ')}>
 ${columnsMarkup}
-  </mj-section>`;
+  </mj-section>`,
+    row.attributes.condition,
+  );
+}
+
+/**
+ * Wrap a section's MJML in a template-engine conditional when the row has a
+ * display `condition`. The `{{#if}}` / `{{/if}}` markers are emitted inside
+ * `<mj-raw>` so mjml2html passes them through verbatim into the final HTML,
+ * where the sending platform (Handlebars, Liquid, etc.) evaluates them.
+ */
+function wrapConditional(sectionMarkup: string, condition?: string): string {
+  const expr = condition?.trim();
+  if (!expr) return sectionMarkup;
+  return `  <mj-raw>{{#if ${expr}}}</mj-raw>
+${sectionMarkup}
+  <mj-raw>{{/if}}</mj-raw>`;
 }
 
 /**

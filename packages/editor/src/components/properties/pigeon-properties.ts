@@ -1,6 +1,15 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import type { PigeonDocument, RowNode, ContentBlock, Selection, MergeTag } from '@lit-pigeon/core';
+import type {
+  PigeonDocument,
+  RowNode,
+  ContentBlock,
+  Selection,
+  MergeTag,
+  AssetManagerConfig,
+  AssetStorage,
+} from '@lit-pigeon/core';
+import { getBlockDefinition } from '@lit-pigeon/core';
 import './panels/text-panel.js';
 import './panels/image-panel.js';
 import './panels/button-panel.js';
@@ -12,6 +21,7 @@ import './panels/divider-panel.js';
 import './panels/spacer-panel.js';
 import './panels/social-panel.js';
 import './panels/html-panel.js';
+import './panels/custom-panel.js';
 
 @customElement('pigeon-properties')
 export class PigeonProperties extends LitElement {
@@ -23,6 +33,12 @@ export class PigeonProperties extends LitElement {
 
   @property({ type: Array })
   mergeTags: MergeTag[] = [];
+
+  @property({ attribute: false })
+  assetManagerConfig?: AssetManagerConfig;
+
+  @property({ attribute: false })
+  assetStorage?: AssetStorage;
 
   static styles = css`
     :host {
@@ -71,7 +87,7 @@ export class PigeonProperties extends LitElement {
     // If no selection or body selection, show body panel
     if (!this.selection || this.selection.type === 'body') {
       return html`
-        <div class="panel-wrapper">
+        <div class="panel-wrapper" part="panel">
           <pigeon-body-panel .doc=${this.doc} .mergeTags=${this.mergeTags}></pigeon-body-panel>
         </div>
       `;
@@ -81,7 +97,7 @@ export class PigeonProperties extends LitElement {
       const row = this._findRow(this.selection.rowId);
       if (row) {
         return html`
-          <div class="panel-wrapper">
+          <div class="panel-wrapper" part="panel">
             <pigeon-row-panel .row=${row}></pigeon-row-panel>
           </div>
         `;
@@ -92,7 +108,7 @@ export class PigeonProperties extends LitElement {
       const block = this._findBlock(this.selection.rowId, this.selection.columnId, this.selection.blockId);
       if (block) {
         return html`
-          <div class="panel-wrapper">
+          <div class="panel-wrapper" part="panel">
             ${this._renderBlockPanel(block, this.selection.rowId, this.selection.columnId)}
           </div>
         `;
@@ -101,7 +117,7 @@ export class PigeonProperties extends LitElement {
 
     if (this.selection.type === 'column') {
       return html`
-        <div class="panel-wrapper">
+        <div class="panel-wrapper" part="panel">
           <div class="empty-state">
             <p>Column selected. Select a block within the column to edit its properties.</p>
           </div>
@@ -110,7 +126,7 @@ export class PigeonProperties extends LitElement {
     }
 
     return html`
-      <div class="panel-wrapper">
+      <div class="panel-wrapper" part="panel">
         <div class="empty-state">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5"/>
@@ -126,11 +142,23 @@ export class PigeonProperties extends LitElement {
       case 'text':
         return html`<pigeon-text-panel .block=${block} .rowId=${rowId} .columnId=${columnId} .mergeTags=${this.mergeTags}></pigeon-text-panel>`;
       case 'image':
-        return html`<pigeon-image-panel .block=${block} .rowId=${rowId} .columnId=${columnId}></pigeon-image-panel>`;
+        return html`<pigeon-image-panel
+          .block=${block}
+          .rowId=${rowId}
+          .columnId=${columnId}
+          .assetManagerConfig=${this.assetManagerConfig}
+          .assetStorage=${this.assetStorage}
+        ></pigeon-image-panel>`;
       case 'button':
         return html`<pigeon-button-panel .block=${block} .rowId=${rowId} .columnId=${columnId}></pigeon-button-panel>`;
       case 'hero':
-        return html`<pigeon-hero-panel .block=${block} .rowId=${rowId} .columnId=${columnId}></pigeon-hero-panel>`;
+        return html`<pigeon-hero-panel
+          .block=${block}
+          .rowId=${rowId}
+          .columnId=${columnId}
+          .assetManagerConfig=${this.assetManagerConfig}
+          .assetStorage=${this.assetStorage}
+        ></pigeon-hero-panel>`;
       case 'navbar':
         return html`<pigeon-navbar-panel .block=${block} .rowId=${rowId} .columnId=${columnId}></pigeon-navbar-panel>`;
       case 'divider':
@@ -142,11 +170,24 @@ export class PigeonProperties extends LitElement {
       case 'html':
         return html`<pigeon-html-panel .block=${block} .rowId=${rowId} .columnId=${columnId} .mergeTags=${this.mergeTags}></pigeon-html-panel>`;
       default: {
-        const exhaustive: never = block;
-        const unknownType = (exhaustive as { type?: string }).type ?? 'unknown';
+        const unknownType = (block as { type?: string }).type ?? 'unknown';
+        const def = getBlockDefinition(unknownType);
+        // Registry blocks that declare a property schema get a generic form.
+        if (def?.propertySchema && def.propertySchema.length > 0) {
+          return html`<pigeon-custom-panel
+            .block=${block}
+            .rowId=${rowId}
+            .columnId=${columnId}
+            .label=${def.label}
+            .schema=${def.propertySchema}
+          ></pigeon-custom-panel>`;
+        }
         return html`
           <div class="empty-state">
-            <p>No property editor available for "${unknownType}" blocks yet.</p>
+            <p>
+              No property editor available for
+              "${def?.label ?? unknownType}" blocks yet.
+            </p>
           </div>
         `;
       }

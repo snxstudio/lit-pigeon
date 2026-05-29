@@ -5,4 +5,8 @@ export default defineWorkspace([
   'packages/renderer-mjml',
   'packages/parser-mjml',
   'packages/editor',
+  'packages/ssr',
+  'packages/rest',
+  'packages/blocks',
+  'packages/lint',
 ]);

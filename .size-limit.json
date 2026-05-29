@@ -10,7 +10,7 @@
     "name": "@lit-pigeon/editor (ESM, excluding lit)",
     "path": "packages/editor/dist/index.js",
     "ignore": ["lit", "lit/decorators.js", "lit/directives/ref.js", "lit/directives/unsafe-html.js", "@lit-pigeon/core", "./rich-text.js"],
-    "limit": "35 kB",
+    "limit": "41 kB",
     "gzip": true
   },
   {
@@ -60,6 +60,34 @@
     "path": "packages/svelte/dist/index.js",
     "ignore": ["svelte", "svelte/internal", "@lit-pigeon/editor", "@lit-pigeon/core"],
     "limit": "2 kB",
+    "gzip": true
+  },
+  {
+    "name": "@lit-pigeon/ssr (ESM, excluding mjml + workspace deps)",
+    "path": "packages/ssr/dist/index.js",
+    "ignore": ["mjml", "htmlparser2", "@lit-pigeon/core", "@lit-pigeon/renderer-mjml", "@lit-pigeon/parser-mjml"],
+    "limit": "2 kB",
+    "gzip": true
+  },
+  {
+    "name": "@lit-pigeon/rest (ESM, excluding node:http + workspace deps)",
+    "path": "packages/rest/dist/index.js",
+    "ignore": ["node:http", "@lit-pigeon/core", "@lit-pigeon/ssr", "@lit-pigeon/lint"],
+    "limit": "3 kB",
+    "gzip": true
+  },
+  {
+    "name": "@lit-pigeon/blocks (ESM, excluding core)",
+    "path": "packages/blocks/dist/index.js",
+    "ignore": ["@lit-pigeon/core"],
+    "limit": "4 kB",
+    "gzip": true
+  },
+  {
+    "name": "@lit-pigeon/lint (ESM, excluding core)",
+    "path": "packages/lint/dist/index.js",
+    "ignore": ["@lit-pigeon/core"],
+    "limit": "5 kB",
     "gzip": true
   }
 ]

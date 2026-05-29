@@ -53,11 +53,18 @@ export class PigeonAlignmentPicker extends LitElement {
 
     button:hover {
       background: var(--pigeon-surface-hover, #f1f5f9);
+      color: var(--pigeon-text, #1e293b);
+    }
+
+    button:focus-visible {
+      outline: none;
+      box-shadow: var(--pigeon-ring-shadow);
+      z-index: 1;
     }
 
     button.active {
-      background: var(--pigeon-primary, #3b82f6);
-      color: white;
+      background: var(--pigeon-accent, #eef2ff);
+      color: var(--pigeon-accent-foreground, #4338ca);
     }
 
     svg {
@@ -68,10 +75,12 @@ export class PigeonAlignmentPicker extends LitElement {
 
   render() {
     return html`
-      <span class="label">${this.label}</span>
-      <div class="buttons">
+      <span class="label" id="align-label">${this.label}</span>
+      <div class="buttons" role="group" aria-labelledby="align-label">
         <button
           class="${this.value === 'left' ? 'active' : ''}"
+          aria-label="Align left"
+          aria-pressed=${this.value === 'left'}
           @click=${() => this._select('left')}
           title="Align left"
         >
@@ -83,6 +92,8 @@ export class PigeonAlignmentPicker extends LitElement {
         </button>
         <button
           class="${this.value === 'center' ? 'active' : ''}"
+          aria-label="Align center"
+          aria-pressed=${this.value === 'center'}
           @click=${() => this._select('center')}
           title="Align center"
         >
@@ -94,6 +105,8 @@ export class PigeonAlignmentPicker extends LitElement {
         </button>
         <button
           class="${this.value === 'right' ? 'active' : ''}"
+          aria-label="Align right"
+          aria-pressed=${this.value === 'right'}
           @click=${() => this._select('right')}
           title="Align right"
         >

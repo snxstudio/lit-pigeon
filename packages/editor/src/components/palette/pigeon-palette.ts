@@ -74,6 +74,11 @@ export class PigeonPalette extends LitElement {
       color: var(--pigeon-text, #1e293b);
     }
 
+    .tab:focus-visible {
+      outline: none;
+      box-shadow: inset var(--pigeon-ring-shadow);
+    }
+
     .tab.active {
       color: var(--pigeon-primary, #3b82f6);
       border-bottom-color: var(--pigeon-primary, #3b82f6);
@@ -116,11 +121,34 @@ export class PigeonPalette extends LitElement {
 
   render() {
     return html`
-      <div class="tabs">
-        <button class="tab ${this._activeTab === 'content' ? 'active' : ''}" @click=${() => this._activeTab = 'content'}>Content</button>
-        <button class="tab ${this._activeTab === 'layers' ? 'active' : ''}" @click=${() => this._activeTab = 'layers'}>Layers</button>
+      <div class="tabs" role="tablist" aria-label="Palette">
+        <button
+          part="palette-tab"
+          role="tab"
+          id="pigeon-tab-content"
+          aria-selected=${this._activeTab === 'content'}
+          aria-controls="pigeon-tabpanel"
+          class="tab ${this._activeTab === 'content' ? 'active' : ''}"
+          @click=${() => (this._activeTab = 'content')}
+        >Content</button>
+        <button
+          part="palette-tab"
+          role="tab"
+          id="pigeon-tab-layers"
+          aria-selected=${this._activeTab === 'layers'}
+          aria-controls="pigeon-tabpanel"
+          class="tab ${this._activeTab === 'layers' ? 'active' : ''}"
+          @click=${() => (this._activeTab = 'layers')}
+        >Layers</button>
       </div>
-      <div class="tab-content">
+      <div
+        class="tab-content"
+        role="tabpanel"
+        id="pigeon-tabpanel"
+        aria-labelledby=${this._activeTab === 'content'
+          ? 'pigeon-tab-content'
+          : 'pigeon-tab-layers'}
+      >
         ${this._activeTab === 'content' ? this._renderContentTab() : this._renderLayersTab()}
       </div>
     `;
@@ -132,7 +160,7 @@ export class PigeonPalette extends LitElement {
         <div class="section-header">Content</div>
         <div class="items">
           ${this._blockDefs.map(def => html`
-            <pigeon-palette-item
+            <pigeon-palette-item part="palette-item"
               label="${def.label}"
               icon="${def.icon}"
               drag-type="palette-block"
@@ -146,7 +174,7 @@ export class PigeonPalette extends LitElement {
         <div class="section-header">Layout</div>
         <div class="items">
           ${ROW_LAYOUTS.map(layout => html`
-            <pigeon-palette-item
+            <pigeon-palette-item part="palette-item"
               label="${layout.label}"
               icon="${layout.icon}"
               drag-type="palette-row"

@@ -68,7 +68,7 @@ export class PigeonNavBarPanel extends LitElement {
 
     input:focus {
       border-color: var(--pigeon-border-focus, #3b82f6);
-      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+      box-shadow: var(--pigeon-ring-shadow);
     }
 
     select {
@@ -111,7 +111,7 @@ export class PigeonNavBarPanel extends LitElement {
     }
 
     .remove-btn:hover {
-      background: rgba(239, 68, 68, 0.1);
+      background: color-mix(in srgb, var(--pigeon-danger) 10%, transparent);
     }
 
     .add-btn {

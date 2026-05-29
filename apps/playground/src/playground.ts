@@ -4,11 +4,71 @@ import {
   createRow,
   createColumn,
   createBlock,
+  registerBlock,
+  InMemoryAssetStorage,
+  type Asset,
   type PigeonDocument,
 } from '@lit-pigeon/core';
+import { registerStandardBlocks } from '@lit-pigeon/blocks';
 import type { PigeonEditor } from '@lit-pigeon/editor';
 
+// Register the optional standard block catalog (video, countdown, accordion,
+// table, carousel) so the playground exercises every block type the project
+// ships, not just the built-ins.
+registerStandardBlocks();
+
 const STORAGE_KEY = 'lit-pigeon-playground-doc';
+
+// --- Demo: a custom "quote" block contributed via the plugin registry. ---
+// Exercises the full registry path: it appears in the palette, renders on the
+// canvas (renderCanvas), edits via a generated form (propertySchema), and
+// exports to MJML (renderMjml) — no fork of @lit-pigeon/editor required.
+const esc = (s: string) =>
+  String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+registerBlock({
+  type: 'quote',
+  label: 'Quote',
+  icon: 'Q',
+  defaultValues: {
+    text: 'The best way to predict the future is to invent it.',
+    cite: 'Alan Kay',
+    accent: '#4f46e5',
+    align: 'left',
+  },
+  renderCanvas: (b) => {
+    const v = b.values as { text: string; cite: string; accent: string; align: string };
+    return `<blockquote style="margin:0;padding:12px 16px;border-left:4px solid ${esc(
+      v.accent,
+    )};text-align:${esc(v.align)};font-style:italic;color:#334155">
+      <p style="margin:0 0 6px">${esc(v.text)}</p>
+      <cite style="font-size:13px;color:#64748b">— ${esc(v.cite)}</cite>
+    </blockquote>`;
+  },
+  renderMjml: (b) => {
+    const v = b.values as { text: string; cite: string; accent: string; align: string };
+    return `<mj-text align="${esc(v.align)}">
+      <blockquote style="border-left:4px solid ${esc(v.accent)};margin:0;padding:0 0 0 16px;font-style:italic">
+        ${esc(v.text)}<br/><span style="font-size:13px;color:#64748b">— ${esc(v.cite)}</span>
+      </blockquote>
+    </mj-text>`;
+  },
+  propertySchema: [
+    { key: 'text', label: 'Quote', type: 'textarea', placeholder: 'Quote text…' },
+    { key: 'cite', label: 'Attribution', type: 'text', placeholder: 'Author' },
+    { key: 'accent', label: 'Accent colour', type: 'color' },
+    {
+      key: 'align',
+      label: 'Alignment',
+      type: 'select',
+      options: [
+        { label: 'Left', value: 'left' },
+        { label: 'Center', value: 'center' },
+        { label: 'Right', value: 'right' },
+      ],
+    },
+  ],
+});
 
 // Sample templates
 const templates: Record<string, { name: string; description: string; create: () => PigeonDocument }> = {
@@ -47,7 +107,7 @@ const templates: Record<string, { name: string; description: string; create: () 
         createRow([
           createColumn([
             createBlock('button', {
-              text: 'Get Started',
+              content: '<p>Get Started</p>',
               href: 'https://example.com',
               backgroundColor: '#3b82f6',
               textColor: '#ffffff',
@@ -140,7 +200,7 @@ const templates: Record<string, { name: string; description: string; create: () 
         createRow([
           createColumn([
             createBlock('button', {
-              text: 'Read More',
+              content: '<p>Read More</p>',
               href: 'https://example.com',
               backgroundColor: '#1e293b',
               textColor: '#ffffff',
@@ -162,6 +222,60 @@ const templates: Record<string, { name: string; description: string; create: () 
 
 // Initialize
 const editor = document.getElementById('editor') as PigeonEditor;
+
+// Seed an in-memory asset library so the image/hero panels' picker exposes
+// the "Library" tab with folder + search + tag filtering. Wired up here so a
+// visual QA pass on the new browse UI is one click away in the playground.
+const NOW = new Date().toISOString();
+const demoAsset = (id: string, overrides: Partial<Asset>): Asset => ({
+  id,
+  name: id,
+  src: '',
+  folder: '/',
+  tags: [],
+  createdAt: NOW,
+  updatedAt: NOW,
+  ...overrides,
+});
+editor.assetStorage = new InMemoryAssetStorage({
+  seed: [
+    demoAsset('logo-primary', {
+      name: 'Primary logo',
+      src: 'https://placehold.co/600x120/3b82f6/ffffff?text=Logo',
+      alt: 'Primary logo',
+      folder: '/brand',
+      tags: ['logo', 'brand'],
+    }),
+    demoAsset('logo-mono', {
+      name: 'Monochrome logo',
+      src: 'https://placehold.co/600x120/1e293b/ffffff?text=Logo+Mono',
+      alt: 'Monochrome logo',
+      folder: '/brand',
+      tags: ['logo', 'brand'],
+    }),
+    demoAsset('hero-spring', {
+      name: 'Spring hero',
+      src: 'https://placehold.co/1200x600/22c55e/ffffff?text=Spring+Hero',
+      alt: 'Spring promo background',
+      folder: '/marketing',
+      tags: ['hero', 'campaign'],
+    }),
+    demoAsset('hero-summer', {
+      name: 'Summer hero',
+      src: 'https://placehold.co/1200x600/f97316/ffffff?text=Summer+Hero',
+      alt: 'Summer promo background',
+      folder: '/marketing',
+      tags: ['hero', 'campaign'],
+    }),
+    demoAsset('product-shot', {
+      name: 'Product shot',
+      src: 'https://placehold.co/600x600/e2e8f0/64748b?text=Product',
+      alt: 'Product photo',
+      folder: '/products',
+      tags: ['product'],
+    }),
+  ],
+});
 
 // Demo merge tags so the text-panel and body-panel show their "{ } Tag" picker.
 editor.config = {
@@ -196,6 +310,22 @@ function loadInitialDocument() {
 }
 
 loadInitialDocument();
+
+// Theme toggle (light / dark / auto) — drives <pigeon-editor>.theme.
+const THEME_KEY = 'lit-pigeon-playground-theme';
+const themeSelect = document.getElementById('theme-select') as HTMLSelectElement | null;
+if (themeSelect) {
+  const saved = localStorage.getItem(THEME_KEY) as 'light' | 'dark' | 'auto' | null;
+  if (saved) {
+    editor.theme = saved;
+    themeSelect.value = saved;
+  }
+  themeSelect.addEventListener('change', () => {
+    const value = themeSelect.value as 'light' | 'dark' | 'auto';
+    editor.theme = value;
+    localStorage.setItem(THEME_KEY, value);
+  });
+}
 
 // Event listeners
 editor.addEventListener('pigeon:change', ((e: CustomEvent) => {

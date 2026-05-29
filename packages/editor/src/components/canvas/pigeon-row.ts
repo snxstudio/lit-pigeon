@@ -67,7 +67,8 @@ export class PigeonRow extends LitElement {
     }
 
     .column-wrapper:not(:last-child) {
-      border-right: 1px dashed rgba(0, 0, 0, 0.06);
+      border-right: 1px dashed
+        color-mix(in srgb, var(--pigeon-border, #e2e8f0) 70%, transparent);
     }
 
     /* Row action buttons */
@@ -112,10 +113,16 @@ export class PigeonRow extends LitElement {
       background: var(--pigeon-surface, #f8fafc);
     }
 
+    .action-btn:focus-visible {
+      outline: none;
+      box-shadow: var(--pigeon-ring-shadow);
+      z-index: 1;
+    }
+
     .action-btn.danger:hover {
       color: var(--pigeon-danger, #ef4444);
       border-color: var(--pigeon-danger, #ef4444);
-      background: rgba(239, 68, 68, 0.05);
+      background: color-mix(in srgb, var(--pigeon-danger, #ef4444) 8%, transparent);
     }
 
     .action-btn svg {
@@ -129,7 +136,7 @@ export class PigeonRow extends LitElement {
       left: -40px;
       font-size: 10px;
       font-weight: 600;
-      color: white;
+      color: var(--pigeon-primary-foreground, #ffffff);
       background: var(--pigeon-primary, #3b82f6);
       padding: 2px 6px;
       border-radius: 3px 0 0 3px;

@@ -21,10 +21,28 @@ export function parseBody(bodyNode: MjmlNode, warnings: ParseWarning[]): BodyDat
 
   const rows: RowNode[] = [];
 
+  // Tracks a `{{#if …}}` display condition emitted as an mj-raw marker before
+  // a section, applied to the next parsed row to round-trip conditional rows.
+  let pendingCondition: string | undefined;
+  const applyCondition = (row: RowNode): RowNode => {
+    if (pendingCondition) {
+      row.attributes.condition = pendingCondition;
+      pendingCondition = undefined;
+    }
+    return row;
+  };
+
   for (const child of bodyNode.children) {
     switch (child.tag) {
+      case 'mj-raw': {
+        // Detect the conditional wrappers the renderer emits. Opening markers
+        // arm a condition for the following section; closing markers are noise.
+        const match = /\{\{#if\s+([^}]+?)\s*\}\}/.exec(child.text ?? '');
+        if (match) pendingCondition = match[1].trim();
+        break;
+      }
       case 'mj-section':
-        rows.push(parseSection(child, warnings));
+        rows.push(applyCondition(parseSection(child, warnings)));
         break;
       case 'mj-hero': {
         // mj-hero becomes a row with a single column containing a hero block
@@ -50,14 +68,14 @@ export function parseBody(bodyNode: MjmlNode, warnings: ParseWarning[]): BodyDat
           columnRatios: [12],
           locked: false,
         };
-        rows.push(row);
+        rows.push(applyCondition(row));
         break;
       }
       case 'mj-wrapper':
         // Treat wrapper children as normal sections
         for (const wrapperChild of child.children) {
           if (wrapperChild.tag === 'mj-section') {
-            rows.push(parseSection(wrapperChild, warnings));
+            rows.push(applyCondition(parseSection(wrapperChild, warnings)));
           }
         }
         break;

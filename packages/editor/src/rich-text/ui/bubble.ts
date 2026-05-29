@@ -78,7 +78,7 @@ export class PigeonRichTextBubble extends LitElement {
 
     button[data-active] {
       background: var(--pigeon-primary, #3b82f6);
-      color: white;
+      color: var(--pigeon-primary-foreground, #ffffff);
     }
 
     .divider {
@@ -123,7 +123,7 @@ export class PigeonRichTextBubble extends LitElement {
       width: auto;
       padding: 0 10px;
       background: var(--pigeon-primary, #3b82f6);
-      color: white;
+      color: var(--pigeon-primary-foreground, #ffffff);
     }
   `;
 

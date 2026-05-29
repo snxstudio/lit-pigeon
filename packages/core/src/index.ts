@@ -4,6 +4,8 @@ export type {
   RowNode,
   ColumnNode,
   ContentBlock,
+  CustomBlock,
+  AnyBlock,
   BlockType,
   TextBlock,
   ImageBlock,
@@ -29,6 +31,8 @@ export type {
   Step,
   PigeonPlugin,
   BlockDefinition,
+  RegisteredBlock,
+  PropertyField,
   Command,
   EditorStateSnapshot,
   TransactionSnapshot,
@@ -111,3 +115,23 @@ export {
   type TemplateStorage,
   type InMemoryTemplateStorageOptions,
 } from './templates/index.js';
+
+// Brand kits
+export {
+  InMemoryBrandKitStorage,
+  type InMemoryBrandKitStorageOptions,
+  type BrandKit,
+  type BrandKitStorage,
+  type BrandColor,
+  type BrandFont,
+  type BrandLogo,
+} from './brand-kit/index.js';
+
+// Assets
+export {
+  InMemoryAssetStorage,
+  type InMemoryAssetStorageOptions,
+  type Asset,
+  type AssetListFilter,
+  type AssetStorage,
+} from './assets/index.js';

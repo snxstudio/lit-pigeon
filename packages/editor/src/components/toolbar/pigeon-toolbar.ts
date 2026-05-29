@@ -10,13 +10,21 @@ export class PigeonToolbar extends LitElement {
   canRedo = false;
 
   @property({ type: String })
-  device: 'desktop' | 'mobile' = 'desktop';
+  device: 'desktop' | 'tablet' | 'mobile' = 'desktop';
 
   @property({ type: Boolean })
   fullscreen = false;
 
   @state()
   private _exportMenuOpen = false;
+
+  connectedCallback() {
+    super.connectedCallback();
+    if (!this.hasAttribute('role')) this.setAttribute('role', 'toolbar');
+    if (!this.hasAttribute('aria-label')) {
+      this.setAttribute('aria-label', 'Editor toolbar');
+    }
+  }
 
   static styles = css`
     :host {
@@ -65,6 +73,12 @@ export class PigeonToolbar extends LitElement {
       background: var(--pigeon-surface-hover, #f1f5f9);
     }
 
+    button:focus-visible {
+      outline: none;
+      box-shadow: var(--pigeon-ring-shadow);
+      z-index: 1;
+    }
+
     button:disabled {
       opacity: 0.4;
       cursor: not-allowed;
@@ -76,19 +90,19 @@ export class PigeonToolbar extends LitElement {
     }
 
     button.active {
-      background: var(--pigeon-primary, #3b82f6);
-      color: white;
-      border-color: var(--pigeon-primary, #3b82f6);
+      background: var(--pigeon-accent, #eef2ff);
+      color: var(--pigeon-accent-foreground, #4338ca);
     }
 
     button.primary {
       background: var(--pigeon-primary, #3b82f6);
-      color: white;
+      color: var(--pigeon-primary-foreground, #ffffff);
       border-color: var(--pigeon-primary, #3b82f6);
     }
 
     button.primary:hover:not(:disabled) {
       background: var(--pigeon-primary-hover, #2563eb);
+      border-color: var(--pigeon-primary-hover, #2563eb);
     }
 
     svg {
@@ -122,28 +136,24 @@ export class PigeonToolbar extends LitElement {
       position: absolute;
       top: 100%;
       right: 0;
-      margin-top: 4px;
+      margin-top: 6px;
       background: var(--pigeon-bg, #ffffff);
       border: 1px solid var(--pigeon-border, #e2e8f0);
-      border-radius: var(--pigeon-radius, 6px);
-      box-shadow: var(--pigeon-shadow-md);
-      min-width: 160px;
+      border-radius: var(--pigeon-radius-lg, 12px);
+      box-shadow: var(--pigeon-shadow-lg);
+      min-width: 168px;
+      padding: 4px;
       z-index: 100;
-      overflow: hidden;
     }
 
     .export-menu button {
       width: 100%;
       justify-content: flex-start;
       border: none;
-      border-radius: 0;
-      height: 36px;
-      padding: 0 12px;
+      border-radius: var(--pigeon-radius-sm, 6px);
+      height: 34px;
+      padding: 0 10px;
       font-weight: 400;
-    }
-
-    .export-menu button:not(:last-child) {
-      border-bottom: 1px solid var(--pigeon-border, #e2e8f0);
     }
   `;
 
@@ -152,7 +162,9 @@ export class PigeonToolbar extends LitElement {
       <!-- Undo/Redo -->
       <button
         class="icon-btn"
+        part="toolbar-button toolbar-button-undo"
         title="Undo"
+        aria-label="Undo"
         ?disabled=${!this.canUndo}
         @click=${this._onUndo}
       >
@@ -164,7 +176,9 @@ export class PigeonToolbar extends LitElement {
 
       <button
         class="icon-btn"
+        part="toolbar-button toolbar-button-redo"
         title="Redo"
+        aria-label="Redo"
         ?disabled=${!this.canRedo}
         @click=${this._onRedo}
       >
@@ -177,10 +191,14 @@ export class PigeonToolbar extends LitElement {
       <div class="separator"></div>
 
       <!-- Device toggle -->
-      <div class="device-group">
+      <div class="device-group" role="group" aria-label="Preview device">
+
         <button
+          part="toolbar-device toolbar-device-desktop"
           class="${this.device === 'desktop' ? 'active' : ''}"
           title="Desktop view"
+          aria-label="Desktop view"
+          aria-pressed=${this.device === 'desktop'}
           @click=${() => this._onDeviceChange('desktop')}
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -190,8 +208,24 @@ export class PigeonToolbar extends LitElement {
           </svg>
         </button>
         <button
+          part="toolbar-device toolbar-device-tablet"
+          class="${this.device === 'tablet' ? 'active' : ''}"
+          title="Tablet view (768px)"
+          aria-label="Tablet view"
+          aria-pressed=${this.device === 'tablet'}
+          @click=${() => this._onDeviceChange('tablet')}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="4" y="2" width="16" height="20" rx="2" ry="2"/>
+            <line x1="12" y1="18" x2="12.01" y2="18"/>
+          </svg>
+        </button>
+        <button
+          part="toolbar-device toolbar-device-mobile"
           class="${this.device === 'mobile' ? 'active' : ''}"
-          title="Mobile view"
+          title="Mobile view (375px)"
+          aria-label="Mobile view"
+          aria-pressed=${this.device === 'mobile'}
           @click=${() => this._onDeviceChange('mobile')}
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -206,7 +240,10 @@ export class PigeonToolbar extends LitElement {
       <!-- Fullscreen toggle -->
       <button
         class="icon-btn"
+        part="toolbar-button toolbar-button-fullscreen"
         title="${this.fullscreen ? 'Exit fullscreen' : 'Fullscreen'}"
+        aria-label="${this.fullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}"
+        aria-pressed=${this.fullscreen}
         @click=${this._onFullscreen}
       >
         ${this.fullscreen
@@ -229,6 +266,7 @@ export class PigeonToolbar extends LitElement {
       <!-- Actions -->
       <button
         data-action="templates"
+        part="toolbar-button toolbar-button-templates"
         title="Templates"
         @click=${this._onTemplates}
       >
@@ -241,7 +279,7 @@ export class PigeonToolbar extends LitElement {
         Templates
       </button>
 
-      <button @click=${this._onPreview}>
+      <button part="toolbar-button toolbar-button-preview" @click=${this._onPreview}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
           <circle cx="12" cy="12" r="3"/>
@@ -250,7 +288,13 @@ export class PigeonToolbar extends LitElement {
       </button>
 
       <div class="export-wrapper">
-        <button class="primary" @click=${this._toggleExportMenu}>
+        <button
+          class="primary"
+          part="toolbar-button toolbar-button-export"
+          aria-haspopup="menu"
+          aria-expanded=${this._exportMenuOpen}
+          @click=${this._toggleExportMenu}
+        >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
             <polyline points="7 10 12 15 17 10"/>
@@ -262,10 +306,10 @@ export class PigeonToolbar extends LitElement {
           </svg>
         </button>
         ${this._exportMenuOpen ? html`
-          <div class="export-menu">
-            <button @click=${this._onExportHtml}>Export HTML</button>
-            <button @click=${this._onExportMjml}>Export MJML</button>
-            <button @click=${this._onExportJson}>Export JSON</button>
+          <div class="export-menu" role="menu" aria-label="Export format">
+            <button role="menuitem" @click=${this._onExportHtml}>Export HTML</button>
+            <button role="menuitem" @click=${this._onExportMjml}>Export MJML</button>
+            <button role="menuitem" @click=${this._onExportJson}>Export JSON</button>
           </div>
         ` : ''}
       </div>
@@ -286,7 +330,7 @@ export class PigeonToolbar extends LitElement {
     }));
   }
 
-  private _onDeviceChange(device: 'desktop' | 'mobile') {
+  private _onDeviceChange(device: 'desktop' | 'tablet' | 'mobile') {
     this.device = device;
     this.dispatchEvent(new CustomEvent('toolbar-device', {
       detail: { device },
