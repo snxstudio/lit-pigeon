@@ -1,11 +1,17 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { TemplateStorage } from '@lit-pigeon/core';
+import type {
+  AssetStorage,
+  BrandKitStorage,
+  TemplateStorage,
+} from '@lit-pigeon/core';
 import { DocumentStore } from './store/document-store.js';
 import { registerDocumentTools } from './tools/document.js';
 import { registerStructureTools } from './tools/structure.js';
 import { registerRenderTools } from './tools/render.js';
 import { registerFigmaTools } from './tools/figma.js';
 import { registerTemplateTools } from './tools/templates.js';
+import { registerBrandKitTools } from './tools/brand-kits.js';
+import { registerAssetTools } from './tools/assets.js';
 
 export interface BuildServerOptions {
   /** Override the default in-memory store (e.g. for tests or persistence). */
@@ -16,6 +22,10 @@ export interface BuildServerOptions {
    * across server restarts.
    */
   templateStorage?: TemplateStorage;
+  /** Override the default in-memory brand-kit storage. Pass `FsBrandKitStorage` for persistence. */
+  brandKitStorage?: BrandKitStorage;
+  /** Override the default in-memory asset storage. Pass `FsAssetStorage` for persistence. */
+  assetStorage?: AssetStorage;
   /** Server name reported in initialize. Default: `lit-pigeon`. */
   name?: string;
   /** Server version reported in initialize. Default: package version. */
@@ -38,6 +48,8 @@ export function buildServer(opts: BuildServerOptions = {}): { server: McpServer;
   registerRenderTools(server, store);
   registerFigmaTools(server, store);
   registerTemplateTools(server, store, opts.templateStorage);
+  registerBrandKitTools(server, opts.brandKitStorage);
+  registerAssetTools(server, opts.assetStorage);
 
   return { server, store };
 }

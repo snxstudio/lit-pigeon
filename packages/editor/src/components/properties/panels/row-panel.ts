@@ -26,6 +26,22 @@ export class PigeonRowPanel extends LitElement {
       margin-bottom: 12px;
     }
 
+    .hint {
+      margin: 4px 0 0;
+      font-size: 11px;
+      line-height: 1.4;
+      color: var(--pigeon-muted-foreground, #64748b);
+      font-family: var(--pigeon-font);
+    }
+
+    .hint code {
+      font-family: var(--pigeon-font-mono);
+      font-size: 10px;
+      background: var(--pigeon-muted, #f1f5f9);
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
     label {
       display: block;
       font-size: 12px;
@@ -52,7 +68,7 @@ export class PigeonRowPanel extends LitElement {
 
     input:focus {
       border-color: var(--pigeon-border-focus, #3b82f6);
-      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+      box-shadow: var(--pigeon-ring-shadow);
     }
 
     .toggle-row {
@@ -151,7 +167,7 @@ export class PigeonRowPanel extends LitElement {
 
     .layout-preset.active {
       border-color: var(--pigeon-primary, #3b82f6);
-      background: rgba(59, 130, 246, 0.08);
+      background: color-mix(in srgb, var(--pigeon-primary) 8%, transparent);
     }
 
     .col-bar {
@@ -230,6 +246,21 @@ export class PigeonRowPanel extends LitElement {
         .value=${a.padding}
         @spacing-change=${this._onPaddingChange}
       ></pigeon-spacing-input>
+
+      <div class="field">
+        <label for="row-condition">Display condition</label>
+        <input
+          id="row-condition"
+          type="text"
+          .value=${a.condition ?? ''}
+          placeholder="e.g. user.premium"
+          @change=${this._onConditionChange}
+        />
+        <p class="hint">
+          Show this row only when the expression is truthy. Exported as
+          <code>{{#if …}}</code> for your sending platform.
+        </p>
+      </div>
     `;
   }
 
@@ -270,6 +301,12 @@ export class PigeonRowPanel extends LitElement {
 
   private _onPaddingChange(e: CustomEvent<{ value: Spacing }>) {
     this._emitRowUpdate({ padding: e.detail.value });
+  }
+
+  private _onConditionChange(e: Event) {
+    const value = (e.target as HTMLInputElement).value.trim();
+    // Store undefined (not "") when cleared so the renderer skips the wrapper.
+    this._emitRowUpdate({ condition: value || undefined });
   }
 }
 

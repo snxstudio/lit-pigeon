@@ -1,0 +1,42 @@
+{
+  "name": "@lit-pigeon/blocks",
+  "version": "0.1.0",
+  "description": "Optional standard block catalog for Lit Pigeon — video, countdown, accordion, table, carousel — shipped as plugin BlockDefinitions, not built-ins.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@lit-pigeon/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@lit-pigeon/renderer-mjml": "workspace:*",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/snxstudio/lit-pigeon.git",
+    "directory": "packages/blocks"
+  },
+  "license": "MIT"
+}

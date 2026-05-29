@@ -64,6 +64,10 @@ There is no truly open-source, self-hosted, framework-agnostic drag-and-drop ema
 | [`@lit-pigeon/svelte`](./packages/svelte) | Svelte 4/5 component wrapper | ~1 kB |
 | [`@lit-pigeon/mcp-server`](./packages/mcp-server) | Model Context Protocol server — exposes authoring + rendering as MCP tools for AI clients (Claude Code, Cursor, etc.) | Node.js |
 | [`@lit-pigeon/figma-import`](./packages/figma-import) | Convert a Figma frame into a `PigeonDocument` via the Figma REST API | Node.js |
+| [`@lit-pigeon/ssr`](./packages/ssr) | Server-side rendering API — render, parse, validate, and merge-tag-substitute documents from Node (transactional pipelines) | ~0.7 kB |
+| [`@lit-pigeon/rest`](./packages/rest) | Framework-agnostic Node REST adapter — render/parse/validate over HTTP, ships a `lit-pigeon-rest` CLI binary | ~1.6 kB |
+| [`@lit-pigeon/blocks`](./packages/blocks) | Optional standard block catalog — video, countdown, accordion, table, carousel — shipped as plugin `BlockDefinition`s | ~2 kB |
+| [`@lit-pigeon/lint`](./packages/lint) | Pre-flight QA — alt text, contrast, link, merge-tag, spam-score, image-weight, link-reachability rules. Sync + async; exposed as REST endpoints | ~2 kB |
 
 Sizes are measured by `pnpm size` and enforced in CI via [size-limit](https://github.com/ai/size-limit), excluding peer dependencies. See [`.size-limit.json`](./.size-limit.json) for the budgets.
 
@@ -79,7 +83,7 @@ Sizes are measured by `pnpm size` and enforced in CI via [size-limit](https://gi
 ### Install
 
 ```bash
-git clone https://github.com/snxstudio/unnlayer.git lit-pigeon
+git clone https://github.com/snxstudio/lit-pigeon.git
 cd lit-pigeon
 pnpm install
 pnpm build
@@ -443,31 +447,33 @@ A separate track that any AI tool — Claude Code, Cursor, custom agents, raw LL
 - [x] Pre-built email templates (welcome, newsletter, transactional, promo) — `getStarterTemplates()` from `@lit-pigeon/core`
 - [x] Editor toolbar UI for templates (Save as / Open buttons — `<pigeon-template-picker>` lazy-loaded modal)
 - [x] File-system-backed `TemplateStorage` (`FsTemplateStorage` in `@lit-pigeon/mcp-server`; persists to `~/.lit-pigeon/templates/` by default, overridable via `$LIT_PIGEON_TEMPLATES_DIR`)
-- [ ] Dark theme
-- [ ] Theme customization API
-- [ ] `::part()` CSS selectors for deep customization
+- [x] Dark theme (`<pigeon-editor theme="dark|auto">`; shadcn-style token system in `packages/editor/src/themes/tokens.ts`)
+- [x] Theme customization API (override `--pigeon-*` tokens via CSS or the `themeOverrides` map — see [`docs/theming/`](./docs/theming/))
+- [x] `::part()` CSS selectors for deep customization (toolbar/palette/canvas/properties regions plus `canvas-area`, `panel`, `palette-tab`, `palette-item`, `toolbar-button[-*]`)
 
 ### v0.4 -- Advanced Features
-- [ ] Conditional content / dynamic variables (`{{firstName}}`)
-- [ ] Mobile-responsive preview baked into the main canvas
+- [x] Conditional content / dynamic variables — row-level display conditions exported as `{{#if …}} … {{/if}}` via `<mj-raw>` (set on `RowNode.attributes.condition`; round-trips through the MJML parser); merge-tag variables (`{{firstName}}`) shipped in v0.2
+- [x] Mobile-responsive preview baked into the main canvas (desktop/tablet/mobile device-frame presets in `<pigeon-canvas>`, wired to the toolbar device toggle)
 - [x] Outlook (mso) and dark-mode rendering workarounds (heading-margin reset, color-scheme metas, `[if mso]` CSS conditional — opt-out via `RenderOptions.outlookWorkarounds: false`)
 - [ ] Email-client compatibility matrix (Gmail, Outlook, Apple Mail rendering tests)
 - [ ] Collaborative editing (CRDT-based)
-- [x] Custom block plugin API docs — [`docs/plugins/README.md`](./docs/plugins/README.md) (registry-dispatch follow-up still open; see Known gaps below)
-- [ ] Accessibility audit (WCAG 2.1 AA)
+- [x] Custom block plugin API — [`docs/plugins/README.md`](./docs/plugins/README.md); fully end-to-end via the registry: canvas (`BlockDefinition.renderCanvas`), MJML export (`renderMjml`), and an editable property panel (`propertySchema`); `createBlock` widened to construct registry types
+- [x] Accessibility audit (WCAG 2.1 AA) — initial pass: ARIA roles/labels, keyboard-operable palette, dialog semantics + Escape + focus trap/restore, visible focus rings, landmark regions, AA-contrast tokens (not yet verified with automated tooling)
 
 ### v0.5 -- Framework Wrappers & Ecosystem
 - [x] Vue wrapper (`@lit-pigeon/vue` — 712 B gz)
 - [x] Svelte wrapper (`@lit-pigeon/svelte` — 1.09 kB gz)
-- [ ] Server-side rendering API
-- [ ] REST API adapter for headless usage
+- [x] Server-side rendering API (`@lit-pigeon/ssr` — 764 B gz; render/parse/validate + merge-tag substitution, no DOM deps)
+- [x] REST API adapter for headless usage (`@lit-pigeon/rest` — 1.58 kB gz; `createHandler` for express/fastify/connect, `createServer` for stand-alone, ships `lit-pigeon-rest` CLI)
 - [x] Figma-to-email import — `@lit-pigeon/figma-import` (see [AI Integration](#ai-integration-cross-cutting-shipped))
 - [x] Hero block detection in Figma importer (image + overlay-text heuristic, in `@lit-pigeon/figma-import/converters/hero.ts`)
 - [ ] `import_figma_frame` live-sandbox smoke test in CI
 
 ### Known gaps (surfaced during plugin-API docs work)
-- `pigeon-column.ts`, `pigeon-properties.ts`, and `document-to-mjml.ts` all use closed `switch` statements over `ContentBlock['type']`. Custom block types registered via the plugin registry can be authored as TS but cannot actually render — they fall through to "Unknown block type". Registry-based dispatch in the canvas, properties panel, and MJML renderer would close the v0.4 plugin-API line item end-to-end.
-- `createBlock(type)` is typed against the built-in `BlockType` union, so it can't construct custom blocks from the registry. An overload that falls back to `getBlockDefinition(type)?.defaultValues` would let consumers use one factory.
+- ~~Closed `switch` dispatch in `pigeon-column.ts`, `pigeon-properties.ts`, and `document-to-mjml.ts`.~~ **Closed.** All three now fall back to the block registry: canvas via `BlockDefinition.renderCanvas` (or a labelled, selectable placeholder), MJML via `renderMjml` (or an explanatory comment), and the properties panel via a declarative `propertySchema` (text/textarea/number/color/checkbox/select).
+- ~~`createBlock(type)` typed only against the built-in `BlockType` union.~~ **Closed.** `createBlock` now has a `(type: string, …) => AnyBlock` overload that falls back to the registry's `defaultValues` (wired without a `defaults ↔ registry` import cycle via an injected resolver).
+- `ContentBlock` remains a `type` union rather than an interface map, so consumers still widen with `AppBlock = ContentBlock | CustomBlock` rather than declaration-merging new kinds. An interface-map shape is a possible v1.0 (breaking) change.
+- Property-panel CSS is shared via `panel-styles.ts` for ~5 panels (custom, spacer, divider, image, button); the remaining ~7 still inline the common rules. Finishing the migration is a maintainability win, **not** a size one — gzip already dedupes the repeated CSS, so the editor's 39 kB budget reflects genuine feature growth (tokens, device frame, parts, custom panel), not duplication.
 
 ### Future
 - [ ] AI-powered content suggestions

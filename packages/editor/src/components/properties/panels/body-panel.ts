@@ -63,7 +63,7 @@ export class PigeonBodyPanel extends LitElement {
 
     input:focus {
       border-color: var(--pigeon-border-focus, #3b82f6);
-      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+      box-shadow: var(--pigeon-ring-shadow);
     }
 
     select {
@@ -114,7 +114,7 @@ export class PigeonBodyPanel extends LitElement {
 
     .alignment-buttons button.active {
       background: var(--pigeon-primary, #3b82f6);
-      color: white;
+      color: var(--pigeon-primary-foreground, #ffffff);
     }
 
     .label-row {

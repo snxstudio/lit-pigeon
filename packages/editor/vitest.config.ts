@@ -4,6 +4,7 @@ export default defineConfig({
   test: {
     environment: 'happy-dom',
     include: ['__tests__/**/*.test.ts'],
+    setupFiles: ['./__tests__/setup.ts'],
   },
   resolve: {
     conditions: ['development', 'browser'],

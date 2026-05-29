@@ -28,7 +28,8 @@ export class PigeonDropIndicator extends LitElement {
       height: 4px;
       background: var(--pigeon-drop-color, #3b82f6);
       border-radius: 2px;
-      box-shadow: 0 0 6px rgba(59, 130, 246, 0.4);
+      box-shadow: 0 0 6px
+        color-mix(in srgb, var(--pigeon-drop-color, #3b82f6) 50%, transparent);
     }
 
     .dot-left,

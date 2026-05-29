@@ -79,7 +79,7 @@ export class PigeonHtmlPanel extends LitElement {
 
     textarea:focus {
       border-color: var(--pigeon-border-focus, #3b82f6);
-      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+      box-shadow: var(--pigeon-ring-shadow);
     }
 
     .tag-btn {

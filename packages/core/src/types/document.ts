@@ -149,6 +149,25 @@ export type ContentBlock =
 
 export type BlockType = ContentBlock['type'];
 
+/**
+ * A block whose `type` was contributed at runtime via the block registry
+ * (`registerBlock`) rather than being one of the built-in {@link ContentBlock}
+ * kinds. Its `values` are an open record because the editor core can't know a
+ * plugin block's shape ahead of time.
+ */
+export interface CustomBlock {
+  id: string;
+  type: string;
+  values: Record<string, unknown>;
+}
+
+/**
+ * Either a built-in {@link ContentBlock} or a registry-defined
+ * {@link CustomBlock}. Use this where code must accept plugin blocks as well as
+ * the built-ins (e.g. `createBlock`, canvas/MJML registry dispatch).
+ */
+export type AnyBlock = ContentBlock | CustomBlock;
+
 export interface ColumnNode {
   id: string;
   type: 'column';
@@ -169,6 +188,13 @@ export interface RowNode {
     backgroundImage?: string;
     padding: Spacing;
     fullWidth: boolean;
+    /**
+     * Optional display condition. When set, the row only renders when the
+     * expression is truthy in the sending platform's template engine. The
+     * renderer wraps the section in `{{#if <condition>}} … {{/if}}` (Handlebars
+     * / Liquid-style, passed through verbatim), e.g. `condition: "user.premium"`.
+     */
+    condition?: string;
   };
   columns: ColumnNode[];
   columnRatios: number[];

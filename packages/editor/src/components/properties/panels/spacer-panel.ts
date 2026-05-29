@@ -1,6 +1,7 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import type { SpacerBlock } from '@lit-pigeon/core';
+import { panelStyles } from './panel-styles.js';
 import '../controls/slider-input.js';
 
 @customElement('pigeon-spacer-panel')
@@ -14,19 +15,7 @@ export class PigeonSpacerPanel extends LitElement {
   @property({ type: String })
   columnId = '';
 
-  static styles = css`
-    :host {
-      display: block;
-    }
-
-    h3 {
-      margin: 0 0 16px;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--pigeon-text, #1e293b);
-      font-family: var(--pigeon-font);
-    }
-  `;
+  static styles = panelStyles;
 
   render() {
     if (!this.block) return html``;
