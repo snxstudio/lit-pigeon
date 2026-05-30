@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 
 export default defineConfig({
-  base: '/',
+  base: '/lit-pigeon/',
   resolve: {
     alias: {
       '@lit-pigeon/core': resolve(__dirname, '../../packages/core/src/index.ts'),
