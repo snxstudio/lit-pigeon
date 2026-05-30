@@ -3,20 +3,57 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lit Pigeon — Open Source Email Editor</title>
-  <meta name="description" content="Open-source drag & drop email editor built with web components. MJML export, framework agnostic, fully customizable." />
+  <title>Lit Pigeon — Open Source Drag & Drop Email Editor</title>
+  <meta name="description" content="Lit Pigeon is an open-source, framework-agnostic drag & drop email editor built with web components. Design responsive emails visually and export clean MJML / HTML — ~17 kB gzipped, MIT licensed, no vendor lock-in." />
+  <meta name="keywords" content="email editor, open source email editor, drag and drop email builder, MJML editor, responsive email, web components, email template builder, React email editor, Vue email editor" />
+  <meta name="author" content="snx studio" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="theme-color" content="#09090b" />
+  <link rel="canonical" href="https://wearesnx.studio/lit-pigeon/" />
   <link rel="icon" type="image/png" href="./lit-pigeon.png" />
 
   <!-- Open Graph / social cards -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Lit Pigeon — Open Source Email Editor" />
-  <meta property="og:description" content="Open-source drag & drop email editor built with web components. MJML export, framework agnostic, ~17 kB gzipped." />
+  <meta property="og:site_name" content="Lit Pigeon" />
+  <meta property="og:title" content="Lit Pigeon — Open Source Drag & Drop Email Editor" />
+  <meta property="og:description" content="Design responsive emails visually and export clean MJML / HTML. Open-source, framework-agnostic, ~17 kB gzipped, MIT licensed." />
   <meta property="og:url" content="https://wearesnx.studio/lit-pigeon/" />
-  <meta property="og:image" content="https://wearesnx.studio/lit-pigeon/lit-pigeon.png" />
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Lit Pigeon — Open Source Email Editor" />
-  <meta name="twitter:description" content="Open-source drag & drop email editor built with web components. MJML export, framework agnostic, ~17 kB gzipped." />
-  <meta name="twitter:image" content="https://wearesnx.studio/lit-pigeon/lit-pigeon.png" />
+  <meta property="og:image" content="https://wearesnx.studio/lit-pigeon/editor-hero.png" />
+  <meta property="og:image:width" content="3000" />
+  <meta property="og:image:height" content="1720" />
+  <meta property="og:image:alt" content="The Lit Pigeon visual email editor with block palette, live email canvas, and properties panel" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Lit Pigeon — Open Source Drag & Drop Email Editor" />
+  <meta name="twitter:description" content="Design responsive emails visually and export clean MJML / HTML. Open-source, framework-agnostic, ~17 kB gzipped, MIT licensed." />
+  <meta name="twitter:image" content="https://wearesnx.studio/lit-pigeon/editor-hero.png" />
+
+  <!-- Structured data (helps search + AI answer engines understand the project) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Lit Pigeon",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Web, Node.js",
+    "description": "Open-source, framework-agnostic drag & drop email editor built with web components. Design responsive emails visually and export clean MJML / HTML. ~17 kB gzipped, MIT licensed.",
+    "url": "https://wearesnx.studio/lit-pigeon/",
+    "softwareVersion": "0.5",
+    "programmingLanguage": ["TypeScript", "JavaScript"],
+    "license": "https://opensource.org/licenses/MIT",
+    "isAccessibleForFree": true,
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "codeRepository": "https://github.com/snxstudio/lit-pigeon",
+    "author": { "@type": "Organization", "name": "snx studio", "url": "https://wearesnx.studio/" },
+    "featureList": [
+      "Drag & drop visual email editor",
+      "MJML and responsive HTML export",
+      "MJML import",
+      "Framework-agnostic web components with React, Vue, Svelte, and Angular wrappers",
+      "Server-side rendering and a REST adapter",
+      "Plugin system for custom blocks"
+    ]
+  }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -159,6 +196,9 @@
       padding: 80px 0 64px;
       text-align: center;
       border-bottom: 1px solid var(--border);
+      background:
+        radial-gradient(60% 50% at 50% 0%, rgba(79, 70, 229, 0.18), transparent 70%),
+        radial-gradient(40% 30% at 80% 10%, rgba(249, 115, 22, 0.10), transparent 70%);
     }
 
     .hero-badge {
@@ -286,12 +326,27 @@
 
     /* ── Editor Mockup ── */
     .editor-mockup {
-      max-width: 800px;
+      display: block;
+      max-width: 860px;
       margin: 0 auto;
       border: 1px solid var(--border);
       border-radius: var(--radius);
       overflow: hidden;
       background: #18181b;
+      box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.6);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .editor-mockup:hover {
+      transform: translateY(-2px);
+      border-color: #3f3f46;
+      box-shadow: 0 32px 70px -20px rgba(0, 0, 0, 0.7);
+    }
+
+    .mockup-shot {
+      display: block;
+      width: 100%;
+      height: auto;
     }
 
     .mockup-titlebar {
@@ -308,127 +363,6 @@
       height: 10px;
       border-radius: 50%;
       background: #3f3f46;
-    }
-
-    .mockup-panels {
-      display: grid;
-      grid-template-columns: 180px 1fr 200px;
-      height: 260px;
-    }
-
-    .mockup-sidebar {
-      border-right: 1px solid var(--border);
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .mockup-sidebar-label {
-      font-size: 10px;
-      font-weight: 600;
-      color: #52525b;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 4px;
-    }
-
-    .mockup-block {
-      padding: 8px 10px;
-      background: #27272a;
-      border-radius: 6px;
-      font-size: 11px;
-      color: #a1a1aa;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .mockup-block-icon {
-      width: 14px;
-      height: 14px;
-      border-radius: 3px;
-      background: #3f3f46;
-      flex-shrink: 0;
-    }
-
-    .mockup-canvas {
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      background: #09090b;
-    }
-
-    .mockup-email {
-      width: 100%;
-      max-width: 320px;
-      background: #fff;
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
-    .mockup-email-header {
-      height: 40px;
-      background: #3b82f6;
-    }
-
-    .mockup-email-body {
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .mockup-email-line {
-      height: 8px;
-      background: #e4e4e7;
-      border-radius: 4px;
-    }
-
-    .mockup-email-line.short { width: 60%; }
-    .mockup-email-line.medium { width: 85%; }
-
-    .mockup-email-btn {
-      width: 80px;
-      height: 24px;
-      background: #3b82f6;
-      border-radius: 4px;
-      margin: 4px auto;
-    }
-
-    .mockup-props {
-      border-left: 1px solid var(--border);
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .mockup-prop-label {
-      font-size: 10px;
-      font-weight: 600;
-      color: #52525b;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .mockup-prop-input {
-      height: 28px;
-      background: #27272a;
-      border-radius: 4px;
-    }
-
-    .mockup-prop-color {
-      display: flex;
-      gap: 6px;
-    }
-
-    .mockup-prop-swatch {
-      width: 28px;
-      height: 28px;
-      border-radius: 4px;
     }
 
     /* ── Sections ── */
@@ -690,20 +624,6 @@
 
       .package-item { flex-direction: column; gap: 4px; }
 
-      .mockup-panels {
-        grid-template-columns: 1fr;
-        height: auto;
-      }
-
-      .mockup-sidebar,
-      .mockup-props {
-        display: none;
-      }
-
-      .mockup-canvas {
-        min-height: 200px;
-      }
-
       .comparison-table {
         font-size: 13px;
       }
@@ -756,7 +676,7 @@
         Open Source · Star on GitHub
       </a>
       <h1 class="fade-in-up"><img src="./lit-pigeon.png" alt="" width="56" height="56" style="vertical-align: middle; margin-right: 4px;"> Lit Pigeon</h1>
-      <p class="hero-tagline fade-in-up">Open-source drag &amp; drop email editor built with web components</p>
+      <p class="hero-tagline fade-in-up">Build beautiful, responsive emails visually — and ship clean HTML you own. Open-source, framework-agnostic, ~17&nbsp;kB.</p>
       <div class="hero-actions fade-in-up">
         <a href="./playground" class="btn btn-primary">
           Try the Playground
@@ -774,50 +694,15 @@
         </button>
       </div>
 
-      <!-- CSS Editor Mockup -->
-      <div class="editor-mockup fade-in-up">
+      <!-- Live editor screenshot -->
+      <a href="./playground" class="editor-mockup fade-in-up" aria-label="Open the Lit Pigeon playground">
         <div class="mockup-titlebar">
           <span class="mockup-dot"></span>
           <span class="mockup-dot"></span>
           <span class="mockup-dot"></span>
         </div>
-        <div class="mockup-panels">
-          <div class="mockup-sidebar">
-            <span class="mockup-sidebar-label">Blocks</span>
-            <div class="mockup-block"><span class="mockup-block-icon"></span> Text</div>
-            <div class="mockup-block"><span class="mockup-block-icon"></span> Image</div>
-            <div class="mockup-block"><span class="mockup-block-icon"></span> Button</div>
-            <div class="mockup-block"><span class="mockup-block-icon"></span> Divider</div>
-            <div class="mockup-block"><span class="mockup-block-icon"></span> Social</div>
-          </div>
-          <div class="mockup-canvas">
-            <div class="mockup-email">
-              <div class="mockup-email-header"></div>
-              <div class="mockup-email-body">
-                <div class="mockup-email-line medium"></div>
-                <div class="mockup-email-line"></div>
-                <div class="mockup-email-line short"></div>
-                <div class="mockup-email-btn"></div>
-                <div class="mockup-email-line" style="height: 1px; background: #e4e4e7;"></div>
-                <div class="mockup-email-line short" style="height: 6px;"></div>
-              </div>
-            </div>
-          </div>
-          <div class="mockup-props">
-            <span class="mockup-prop-label">Properties</span>
-            <div class="mockup-prop-input"></div>
-            <div class="mockup-prop-input"></div>
-            <span class="mockup-prop-label" style="margin-top: 4px;">Color</span>
-            <div class="mockup-prop-color">
-              <div class="mockup-prop-swatch" style="background: #3b82f6;"></div>
-              <div class="mockup-prop-swatch" style="background: #18181b;"></div>
-              <div class="mockup-prop-swatch" style="background: #ffffff;"></div>
-            </div>
-            <span class="mockup-prop-label" style="margin-top: 4px;">Padding</span>
-            <div class="mockup-prop-input"></div>
-          </div>
-        </div>
-      </div>
+        <img class="mockup-shot" src="./editor-hero.png" alt="The Lit Pigeon visual email editor: block palette, live email canvas, and properties panel" width="1500" height="860" loading="lazy" />
+      </a>
     </div>
   </section>
 

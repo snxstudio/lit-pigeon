@@ -1,0 +1,31 @@
+# Lit Pigeon
+
+> Lit Pigeon is an open-source, framework-agnostic drag & drop email editor built with web components. It lets developers embed a visual email builder in any app, design responsive emails, and export clean MJML and HTML. ~17 kB gzipped, MIT licensed, no vendor lock-in.
+
+Lit Pigeon is aimed at developers who need to add email-template editing to their product without adopting a heavy proprietary SaaS widget. The editor is a standard custom element (`<pigeon-editor>`) that runs anywhere web components run, with thin wrappers for popular frameworks. Rendering is handled through MJML, so the exported HTML is responsive and tested against the major email clients.
+
+## Key facts
+- License: MIT (fully open source)
+- Bundle size: ~17 kB gzipped (≈5 kB core engine + ≈12 kB editor UI)
+- Tech: TypeScript, Lit web components
+- Output: MJML and responsive HTML; can also import existing MJML
+- Frameworks: vanilla JS plus React, Vue, Svelte, and Angular wrappers
+- Not a hosted SaaS — you self-host and own your data and output
+
+## Packages
+- `@lit-pigeon/core` — document model, block types, utilities
+- `@lit-pigeon/editor` — drag & drop visual editor web component
+- `@lit-pigeon/renderer-mjml` — render documents to MJML and HTML
+- `@lit-pigeon/parser-mjml` — import MJML into the editor format
+- `@lit-pigeon/react`, `@lit-pigeon/vue`, `@lit-pigeon/svelte`, `@lit-pigeon/angular` — framework wrappers
+- `@lit-pigeon/ssr` — server-side rendering of documents and templates
+- `@lit-pigeon/rest` — REST adapter for headless rendering and linting
+- `@lit-pigeon/mcp-server` — MCP server for AI-driven email authoring
+
+## How it compares
+Unlike proprietary editors (e.g. Unlayer) it is MIT-licensed and self-hosted. Unlike code-only tools (MJML, React Email) it provides a visual drag & drop editor. Unlike framework-bound editors it ships as framework-agnostic web components.
+
+## Links
+- Live demo / playground: https://wearesnx.studio/lit-pigeon/playground
+- Home: https://wearesnx.studio/lit-pigeon/
+- Source code: https://github.com/snxstudio/lit-pigeon
