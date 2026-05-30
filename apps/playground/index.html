@@ -6,6 +6,17 @@
   <title>Lit Pigeon — Open Source Email Editor</title>
   <meta name="description" content="Open-source drag & drop email editor built with web components. MJML export, framework agnostic, fully customizable." />
   <link rel="icon" type="image/png" href="./lit-pigeon.png" />
+
+  <!-- Open Graph / social cards -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Lit Pigeon — Open Source Email Editor" />
+  <meta property="og:description" content="Open-source drag & drop email editor built with web components. MJML export, framework agnostic, ~17 kB gzipped." />
+  <meta property="og:url" content="https://wearesnx.studio/lit-pigeon/" />
+  <meta property="og:image" content="https://wearesnx.studio/lit-pigeon/lit-pigeon.png" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Lit Pigeon — Open Source Email Editor" />
+  <meta name="twitter:description" content="Open-source drag & drop email editor built with web components. MJML export, framework agnostic, ~17 kB gzipped." />
+  <meta name="twitter:image" content="https://wearesnx.studio/lit-pigeon/lit-pigeon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -889,7 +900,7 @@
         </div>
         <div class="feature-card">
           <h3>MJML Export</h3>
-          <p>Render to MJML and responsive HTML tested across Gmail, Outlook, and Apple Mail.</p>
+          <p>Render to MJML and responsive HTML built for Gmail, Outlook, and Apple Mail.</p>
         </div>
         <div class="feature-card">
           <h3>MJML Import</h3>
@@ -897,7 +908,7 @@
         </div>
         <div class="feature-card">
           <h3>Framework Agnostic</h3>
-          <p>Web components with Lit. Wrappers for React and Angular — or use vanilla JS.</p>
+          <p>Web components with Lit. Wrappers for React, Vue, Svelte, and Angular — or use vanilla JS.</p>
         </div>
         <div class="feature-card">
           <h3>~17 kB Gzipped</h3>
@@ -935,8 +946,32 @@
           <span class="package-desc">Import MJML into the editor format</span>
         </div>
         <div class="package-item">
+          <span class="package-name">@lit-pigeon/react</span>
+          <span class="package-desc">React wrapper for the editor component</span>
+        </div>
+        <div class="package-item">
+          <span class="package-name">@lit-pigeon/vue</span>
+          <span class="package-desc">Vue wrapper for the editor component</span>
+        </div>
+        <div class="package-item">
+          <span class="package-name">@lit-pigeon/svelte</span>
+          <span class="package-desc">Svelte wrapper for the editor component</span>
+        </div>
+        <div class="package-item">
           <span class="package-name">@lit-pigeon/angular</span>
           <span class="package-desc">Angular wrapper for the editor component</span>
+        </div>
+        <div class="package-item">
+          <span class="package-name">@lit-pigeon/ssr</span>
+          <span class="package-desc">Server-side rendering of documents and templates</span>
+        </div>
+        <div class="package-item">
+          <span class="package-name">@lit-pigeon/rest</span>
+          <span class="package-desc">REST adapter for headless rendering and linting</span>
+        </div>
+        <div class="package-item">
+          <span class="package-name">@lit-pigeon/mcp-server</span>
+          <span class="package-desc">MCP server for AI-driven email authoring</span>
         </div>
       </div>
     </div>
@@ -992,7 +1027,6 @@ editor.document = <span class="hl-fn">createDefaultDocument</span>(<span class="
   <footer class="footer">
     <ul class="footer-links">
       <li><a href="https://github.com/snxstudio/lit-pigeon" target="_blank" rel="noopener">GitHub</a></li>
-      <li><a href="https://www.npmjs.com/org/lit-pigeon" target="_blank" rel="noopener">npm</a></li>
       <li><a href="./playground">Playground</a></li>
     </ul>
     <p class="footer-copy">MIT License &middot; Lit Pigeon</p>
