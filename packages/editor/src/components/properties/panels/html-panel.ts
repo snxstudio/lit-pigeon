@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
 import type { HtmlBlock, Spacing, MergeTag } from '@lit-pigeon/core';
+import { panelStyles } from './panel-styles.js';
 import '../controls/spacing-input.js';
 import '../../merge-tags/pigeon-merge-tag-picker.js';
 
@@ -26,85 +27,51 @@ export class PigeonHtmlPanel extends LitElement {
   private _textareaRef: Ref<HTMLTextAreaElement> = createRef();
   private _triggerRef: Ref<HTMLButtonElement> = createRef();
 
-  static styles = css`
-    :host {
-      display: block;
-    }
+  static styles = [
+    panelStyles,
+    css`
+      /* HTML payload is raw markup — show in monospace and taller than the
+         default textarea so authors have room to work. */
+      textarea {
+        min-height: 160px;
+        font-family: var(--pigeon-font-mono);
+      }
 
-    h3 {
-      margin: 0 0 16px;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--pigeon-text, #1e293b);
-      font-family: var(--pigeon-font);
-    }
+      .label-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 6px;
+      }
 
-    .field {
-      margin-bottom: 12px;
-    }
+      .label-row label {
+        margin-bottom: 0;
+      }
 
-    .label-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 4px;
-    }
+      .tag-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        height: 22px;
+        padding: 0 8px;
+        border: 1px solid var(--pigeon-border, #e2e8f0);
+        border-radius: var(--pigeon-radius-sm, 6px);
+        background: var(--pigeon-surface, #f8fafc);
+        color: var(--pigeon-text-secondary, #64748b);
+        font-family: var(--pigeon-font);
+        font-size: 11px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.1s, color 0.1s, border-color 0.1s;
+      }
 
-    label {
-      display: block;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--pigeon-text-secondary, #64748b);
-      font-family: var(--pigeon-font);
-    }
-
-    .label-row label {
-      margin-bottom: 0;
-    }
-
-    textarea {
-      width: 100%;
-      min-height: 160px;
-      border: 1px solid var(--pigeon-border, #e2e8f0);
-      border-radius: var(--pigeon-radius-sm, 4px);
-      padding: 8px;
-      font-family: var(--pigeon-font-mono);
-      font-size: 13px;
-      color: var(--pigeon-text, #1e293b);
-      background: var(--pigeon-bg, #ffffff);
-      resize: vertical;
-      outline: none;
-      box-sizing: border-box;
-    }
-
-    textarea:focus {
-      border-color: var(--pigeon-border-focus, #3b82f6);
-      box-shadow: var(--pigeon-ring-shadow);
-    }
-
-    .tag-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      height: 22px;
-      padding: 0 8px;
-      border: 1px solid var(--pigeon-border, #e2e8f0);
-      border-radius: var(--pigeon-radius-sm, 4px);
-      background: var(--pigeon-surface, #f8fafc);
-      color: var(--pigeon-text-secondary, #64748b);
-      font-family: var(--pigeon-font);
-      font-size: 11px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.1s, color 0.1s, border-color 0.1s;
-    }
-
-    .tag-btn:hover {
-      background: var(--pigeon-surface-hover, #f1f5f9);
-      color: var(--pigeon-text, #1e293b);
-      border-color: var(--pigeon-primary, #3b82f6);
-    }
-  `;
+      .tag-btn:hover {
+        background: var(--pigeon-surface-hover, #f1f5f9);
+        color: var(--pigeon-text, #1e293b);
+        border-color: var(--pigeon-primary, #4f46e5);
+      }
+    `,
+  ];
 
   render() {
     if (!this.block) return html``;

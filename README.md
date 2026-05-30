@@ -62,7 +62,7 @@ There is no truly open-source, self-hosted, framework-agnostic drag-and-drop ema
 | [`@lit-pigeon/angular`](./packages/angular) | Angular component wrapper | ~1 kB |
 | [`@lit-pigeon/vue`](./packages/vue) | Vue 3 component wrapper | ~1 kB |
 | [`@lit-pigeon/svelte`](./packages/svelte) | Svelte 4/5 component wrapper | ~1 kB |
-| [`@lit-pigeon/mcp-server`](./packages/mcp-server) | Model Context Protocol server — exposes authoring + rendering as MCP tools for AI clients (Claude Code, Cursor, etc.) | Node.js |
+| [`@lit-pigeon/mcp-server`](./packages/mcp-server) | Model Context Protocol server — exposes authoring + rendering as MCP tools for AI clients (Cursor, Windsurf, etc.) | Node.js |
 | [`@lit-pigeon/figma-import`](./packages/figma-import) | Convert a Figma frame into a `PigeonDocument` via the Figma REST API | Node.js |
 | [`@lit-pigeon/ssr`](./packages/ssr) | Server-side rendering API — render, parse, validate, and merge-tag-substitute documents from Node (transactional pipelines) | ~0.7 kB |
 | [`@lit-pigeon/rest`](./packages/rest) | Framework-agnostic Node REST adapter — render/parse/validate over HTTP, ships a `lit-pigeon-rest` CLI binary | ~1.6 kB |
@@ -327,7 +327,7 @@ Lit Pigeon publishes a versioned **AI authoring specification** at
 example documents that let any AI tool (LLMs via JSON output, MCP-compatible
 clients, custom agents) author Lit Pigeon emails as JSON. The spec is the
 canonical contract. [`@lit-pigeon/mcp-server`](./packages/mcp-server) is the
-runtime implementation: plug it into Claude Code, Cursor, or any MCP client
+runtime implementation: plug it into Cursor, Windsurf, or any MCP client
 and ask the model to build emails for you. [`@lit-pigeon/figma-import`](./packages/figma-import)
 converts a Figma frame into the same `PigeonDocument` shape, and the MCP
 server exposes it as the `import_figma_frame` tool — turning "build me an
@@ -436,7 +436,7 @@ PigeonDocument
 
 ### AI Integration (cross-cutting, shipped)
 
-A separate track that any AI tool — Claude Code, Cursor, custom agents, raw LLM prompting — can target to author and import Lit Pigeon emails.
+A separate track that any AI tool — Cursor, Windsurf, custom agents, raw LLM prompting — can target to author and import Lit Pigeon emails.
 
 - [x] AI authoring specification 1.0 — JSON Schema + prompting guide + example documents at [`docs/ai-spec/`](./docs/ai-spec/)
 - [x] `@lit-pigeon/mcp-server` — Model Context Protocol stdio server exposing 18 tools (create/list/get/validate document, set body attribute, set metadata, list block types, add row, add/update/delete block, render to MJML/HTML, import Figma frame, list/load/save/delete template)
