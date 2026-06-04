@@ -91,10 +91,10 @@ importers:
         specifier: '>=21.2.4'
         version: 22.0.0(rxjs@7.8.2)
       '@lit-pigeon/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../core
       '@lit-pigeon/editor':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../editor
     devDependencies:
       typescript:
@@ -110,11 +110,11 @@ importers:
   packages/blocks:
     dependencies:
       '@lit-pigeon/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../core
     devDependencies:
       '@lit-pigeon/renderer-mjml':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../renderer-mjml
       typescript:
         specifier: ^5.5.0
@@ -154,7 +154,7 @@ importers:
   packages/editor:
     dependencies:
       '@lit-pigeon/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../core
       '@tiptap/core':
         specifier: ^2.10.0
@@ -206,7 +206,7 @@ importers:
   packages/figma-import:
     dependencies:
       '@lit-pigeon/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../core
     devDependencies:
       typescript:
@@ -219,7 +219,7 @@ importers:
   packages/lint:
     dependencies:
       '@lit-pigeon/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../core
     devDependencies:
       '@types/node':
@@ -235,13 +235,13 @@ importers:
   packages/mcp-server:
     dependencies:
       '@lit-pigeon/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../core
       '@lit-pigeon/figma-import':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../figma-import
       '@lit-pigeon/renderer-mjml':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../renderer-mjml
       '@modelcontextprotocol/sdk':
         specifier: ^1.0.0
@@ -263,7 +263,7 @@ importers:
   packages/parser-mjml:
     dependencies:
       '@lit-pigeon/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../core
       htmlparser2:
         specifier: ^9.1.0
@@ -285,10 +285,10 @@ importers:
   packages/react:
     dependencies:
       '@lit-pigeon/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../core
       '@lit-pigeon/editor':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../editor
       '@lit/react':
         specifier: ^1.0.0
@@ -316,7 +316,7 @@ importers:
   packages/renderer-mjml:
     dependencies:
       '@lit-pigeon/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../core
       mjml:
         specifier: ^4.15.0
@@ -341,13 +341,13 @@ importers:
   packages/rest:
     dependencies:
       '@lit-pigeon/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../core
       '@lit-pigeon/lint':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../lint
       '@lit-pigeon/ssr':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../ssr
     devDependencies:
       '@types/node':
@@ -363,13 +363,13 @@ importers:
   packages/ssr:
     dependencies:
       '@lit-pigeon/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../core
       '@lit-pigeon/parser-mjml':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../parser-mjml
       '@lit-pigeon/renderer-mjml':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../renderer-mjml
     devDependencies:
       typescript:
@@ -382,10 +382,10 @@ importers:
   packages/svelte:
     dependencies:
       '@lit-pigeon/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../core
       '@lit-pigeon/editor':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../editor
     devDependencies:
       '@sveltejs/vite-plugin-svelte':
@@ -416,10 +416,10 @@ importers:
   packages/vue:
     dependencies:
       '@lit-pigeon/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../core
       '@lit-pigeon/editor':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../editor
     devDependencies:
       '@vue/test-utils':
