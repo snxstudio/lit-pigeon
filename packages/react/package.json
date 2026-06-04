@@ -1,6 +1,6 @@
 {
   "name": "@lit-pigeon/react",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "React wrapper for the Pigeon email editor",
   "type": "module",
   "main": "./dist/index.js",
@@ -12,15 +12,17 @@
       "types": "./dist/index.d.ts"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "vite build",
     "dev": "vite build --watch",
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@lit-pigeon/core": "workspace:*",
-    "@lit-pigeon/editor": "workspace:*",
+    "@lit-pigeon/core": "workspace:^",
+    "@lit-pigeon/editor": "workspace:^",
     "@lit/react": "^1.0.0"
   },
   "peerDependencies": {

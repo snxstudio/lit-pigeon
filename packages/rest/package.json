@@ -1,6 +1,6 @@
 {
   "name": "@lit-pigeon/rest",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Framework-agnostic Node REST adapter for Lit Pigeon — render, parse, and validate documents over HTTP.",
   "type": "module",
   "main": "./dist/index.js",
@@ -26,9 +26,9 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@lit-pigeon/core": "workspace:*",
-    "@lit-pigeon/lint": "workspace:*",
-    "@lit-pigeon/ssr": "workspace:*"
+    "@lit-pigeon/core": "workspace:^",
+    "@lit-pigeon/lint": "workspace:^",
+    "@lit-pigeon/ssr": "workspace:^"
   },
   "peerDependencies": {},
   "devDependencies": {

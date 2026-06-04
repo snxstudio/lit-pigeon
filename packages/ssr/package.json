@@ -1,6 +1,6 @@
 {
   "name": "@lit-pigeon/ssr",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Server-side rendering API for Lit Pigeon — render, parse, validate, and merge-tag-substitute documents from Node with zero DOM dependencies.",
   "type": "module",
   "main": "./dist/index.js",
@@ -23,9 +23,9 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@lit-pigeon/core": "workspace:*",
-    "@lit-pigeon/parser-mjml": "workspace:*",
-    "@lit-pigeon/renderer-mjml": "workspace:*"
+    "@lit-pigeon/core": "workspace:^",
+    "@lit-pigeon/parser-mjml": "workspace:^",
+    "@lit-pigeon/renderer-mjml": "workspace:^"
   },
   "devDependencies": {
     "typescript": "^5.5.0",

@@ -1,6 +1,6 @@
 {
   "name": "@lit-pigeon/lint",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Pre-flight QA for Lit Pigeon documents — alt text, contrast, link, merge-tag, spam-score, image-weight, and link-reachability checks.",
   "type": "module",
   "main": "./dist/index.js",
@@ -23,7 +23,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@lit-pigeon/core": "workspace:*"
+    "@lit-pigeon/core": "workspace:^"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",

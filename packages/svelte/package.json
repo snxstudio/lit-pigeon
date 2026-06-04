@@ -1,6 +1,6 @@
 {
   "name": "@lit-pigeon/svelte",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Svelte wrapper for the Pigeon email editor",
   "type": "module",
   "main": "./dist/index.js",
@@ -14,7 +14,9 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "vite build",
     "dev": "vite build --watch",
@@ -22,8 +24,8 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@lit-pigeon/core": "workspace:*",
-    "@lit-pigeon/editor": "workspace:*"
+    "@lit-pigeon/core": "workspace:^",
+    "@lit-pigeon/editor": "workspace:^"
   },
   "peerDependencies": {
     "svelte": "^4.0.0 || ^5.0.0"

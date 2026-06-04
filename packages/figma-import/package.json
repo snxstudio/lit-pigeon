@@ -1,6 +1,6 @@
 {
   "name": "@lit-pigeon/figma-import",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Import a Figma frame into a Lit Pigeon PigeonDocument.",
   "type": "module",
   "main": "./dist/index.js",
@@ -23,7 +23,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@lit-pigeon/core": "workspace:*"
+    "@lit-pigeon/core": "workspace:^"
   },
   "devDependencies": {
     "typescript": "^5.5.0",

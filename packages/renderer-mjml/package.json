@@ -1,6 +1,6 @@
 {
   "name": "@lit-pigeon/renderer-mjml",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "MJML-based HTML renderer for Pigeon email editor",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -13,7 +13,9 @@
       "types": "./dist/index.d.ts"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "vite build",
     "dev": "vite build --watch",
@@ -22,7 +24,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@lit-pigeon/core": "workspace:*",
+    "@lit-pigeon/core": "workspace:^",
     "mjml": "^4.15.0"
   },
   "devDependencies": {
