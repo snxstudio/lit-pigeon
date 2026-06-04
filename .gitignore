@@ -15,6 +15,9 @@ dist/
 .env.*
 !.env.example
 
+# npm auth (reads token from $NPM_TOKEN env var; never commit a real token)
+.npmrc
+
 # OS files
 .DS_Store
 Thumbs.db
