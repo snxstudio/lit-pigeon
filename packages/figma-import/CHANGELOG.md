@@ -1,5 +1,15 @@
 # @lit-pigeon/figma-import
 
+## 0.1.2
+
+### Patch Changes
+
+- Verify the automated CI publishing pipeline: this patch release is published
+  by the Release workflow using the LIT_PIGEON_NPM_TOKEN secret with npm
+  provenance, confirming end-to-end automation.
+- Updated dependencies
+  - @lit-pigeon/core@0.1.2
+
 ## 0.1.1
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@lit-pigeon/mcp-server",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Model Context Protocol server exposing Lit Pigeon email authoring + rendering as MCP tools.",
   "type": "module",
   "main": "./dist/index.js",

@@ -1,6 +1,6 @@
 {
   "name": "@lit-pigeon/vue",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Vue 3 wrapper for the Pigeon email editor",
   "type": "module",
   "main": "./dist/index.js",
