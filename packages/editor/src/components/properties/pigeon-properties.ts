@@ -55,6 +55,49 @@ export class PigeonProperties extends LitElement {
       padding: 16px;
     }
 
+    /* Parent-selection breadcrumb shown above block/column panels so the
+       row (and column) that contain the selected block are always reachable
+       in one click — clicking a block on the canvas selects the block, and
+       this trail is how you step back out to its parent. */
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 2px;
+      margin-bottom: 12px;
+      font-family: var(--pigeon-font);
+      font-size: 11px;
+    }
+
+    .breadcrumb .crumb {
+      background: none;
+      border: none;
+      padding: 2px 6px;
+      border-radius: var(--pigeon-radius-sm, 4px);
+      color: var(--pigeon-primary, #4f46e5);
+      cursor: pointer;
+      font: inherit;
+      font-weight: 500;
+    }
+
+    .breadcrumb .crumb:hover {
+      background: var(--pigeon-surface-hover, #f1f5f9);
+    }
+
+    .breadcrumb .crumb.current {
+      color: var(--pigeon-text-secondary, #64748b);
+      cursor: default;
+    }
+
+    .breadcrumb .crumb.current:hover {
+      background: none;
+    }
+
+    .breadcrumb .sep {
+      color: var(--pigeon-text-muted, #94a3b8);
+      font-size: 10px;
+    }
+
     .empty-state {
       display: flex;
       flex-direction: column;
@@ -109,6 +152,7 @@ export class PigeonProperties extends LitElement {
       if (block) {
         return html`
           <div class="panel-wrapper" part="panel">
+            ${this._renderBreadcrumb(this.selection.rowId, this.selection.columnId, this._blockLabel(block))}
             ${this._renderBlockPanel(block, this.selection.rowId, this.selection.columnId)}
           </div>
         `;
@@ -118,6 +162,9 @@ export class PigeonProperties extends LitElement {
     if (this.selection.type === 'column') {
       return html`
         <div class="panel-wrapper" part="panel">
+          ${this.selection.rowId && this.selection.columnId
+            ? this._renderBreadcrumb(this.selection.rowId, this.selection.columnId)
+            : ''}
           <div class="empty-state">
             <p>Column selected. Select a block within the column to edit its properties.</p>
           </div>
@@ -135,6 +182,53 @@ export class PigeonProperties extends LitElement {
         </div>
       </div>
     `;
+  }
+
+  /**
+   * Renders the parent-selection trail. `Row` is always a clickable jump to
+   * the parent row. When a block is selected (`current` set), `Column` is also
+   * clickable and the block label is the trailing, non-interactive crumb. For
+   * a column selection (`current` omitted) `Column` is the trailing crumb.
+   */
+  private _renderBreadcrumb(rowId: string, columnId?: string, current?: string) {
+    return html`
+      <nav class="breadcrumb" aria-label="Selection path">
+        <button class="crumb" title="Select row" @click=${() => this._select('row-select', { rowId })}>
+          Row
+        </button>
+        ${columnId
+          ? html`
+              <span class="sep" aria-hidden="true">▸</span>
+              ${current
+                ? html`<button
+                    class="crumb"
+                    title="Select column"
+                    @click=${() => this._select('column-select', { rowId, columnId })}
+                  >
+                    Column
+                  </button>`
+                : html`<span class="crumb current">Column</span>`}
+            `
+          : ''}
+        ${current
+          ? html`<span class="sep" aria-hidden="true">▸</span>
+              <span class="crumb current">${current}</span>`
+          : ''}
+      </nav>
+    `;
+  }
+
+  private _select(type: 'row-select' | 'column-select', detail: Record<string, string>) {
+    this.dispatchEvent(new CustomEvent(type, { detail, bubbles: true, composed: true }));
+  }
+
+  private _blockLabel(block: ContentBlock): string {
+    const labels: Record<string, string> = {
+      text: 'Text', image: 'Image', button: 'Button', divider: 'Divider',
+      spacer: 'Spacer', social: 'Social', html: 'HTML', hero: 'Hero', navbar: 'Navbar',
+    };
+    const type = (block as { type: string }).type;
+    return labels[type] ?? getBlockDefinition(type)?.label ?? type;
   }
 
   private _renderBlockPanel(block: ContentBlock, rowId: string, columnId: string) {

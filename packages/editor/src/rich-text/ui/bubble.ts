@@ -28,8 +28,21 @@ export class PigeonRichTextBubble extends LitElement {
   @state() private _linkValue = '';
 
   private _onSelectionUpdate = () => this._sync();
-  private _onBlur = () => { this._visible = false; this._linkPopoverOpen = false; };
+  private _onBlur = () => {
+    // Focus moved to one of this bar's own controls (e.g. the link field).
+    // Keep the bar visible — it will be torn down on a genuine blur instead.
+    if (richTextController.isHeld()) return;
+    this._visible = false;
+    this._linkPopoverOpen = false;
+  };
   private _unsubscribe: (() => void) | null = null;
+
+  /**
+   * Prevent the editable from losing focus when a toolbar button is pressed.
+   * Without this, `mousedown` blurs the editor — which tears down the inline
+   * editing session before the button's `click` handler can run its command.
+   */
+  private _preventBlur = (e: Event) => e.preventDefault();
 
   static styles = css`
     :host {
@@ -44,6 +57,11 @@ export class PigeonRichTextBubble extends LitElement {
     }
 
     .bar {
+      /* Fixed so the inline top/left (viewport coords from coordsAtPos) take
+         effect; the translate below anchors the bar's bottom-centre to the
+         selection. Without an explicit position the coords are ignored and the
+         bar collapses to the host's top-left corner. */
+      position: fixed;
       pointer-events: auto;
       display: inline-flex;
       align-items: center;
@@ -166,7 +184,7 @@ export class PigeonRichTextBubble extends LitElement {
   render() {
     const style = `top: ${this._top}px; left: ${this._left}px;`;
     return html`
-      <div class="bar" style=${style}>
+      <div class="bar" style=${style} @mousedown=${this._preventBlur}>
         <button title="Bold (Cmd+B)" ?data-active=${this._activeBold} @click=${() => this._toggle('toggleBold')}>B</button>
         <button title="Italic (Cmd+I)" ?data-active=${this._activeItalic} @click=${() => this._toggle('toggleItalic')}><em>I</em></button>
         <button title="Underline (Cmd+U)" ?data-active=${this._activeUnderline} @click=${() => this._toggle('toggleUnderline')}><u>U</u></button>
@@ -181,11 +199,17 @@ export class PigeonRichTextBubble extends LitElement {
 
   private _renderLinkPopover() {
     return html`
-      <div class="link-popover" @click=${(e: Event) => e.stopPropagation()}>
+      <div
+        class="link-popover"
+        @click=${(e: Event) => e.stopPropagation()}
+        @mousedown=${(e: Event) => e.stopPropagation()}
+      >
         <input
           type="url"
           placeholder="https://…"
           .value=${this._linkValue}
+          @mousedown=${() => richTextController.holdFocus()}
+          @blur=${() => richTextController.releaseFocus()}
           @input=${(e: Event) => this._linkValue = (e.target as HTMLInputElement).value}
           @keydown=${(e: KeyboardEvent) => e.key === 'Enter' && this._applyLink()}
         />

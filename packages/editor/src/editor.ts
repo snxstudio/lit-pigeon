@@ -20,6 +20,7 @@ import {
   createColumn,
   createBodySelection,
   createRowSelection,
+  createColumnSelection,
   createBlockSelection,
   insertBlock,
   updateBlock,
@@ -431,6 +432,8 @@ export class PigeonEditor extends LitElement {
           @row-property-change=${this._handleRowPropertyChange}
           @row-layout-change=${this._handleRowLayoutChange}
           @body-property-change=${this._handleBodyPropertyChange}
+          @row-select=${this._handleRowSelect}
+          @column-select=${this._handleColumnSelect}
         ></pigeon-properties>
       </div>
 
@@ -694,8 +697,17 @@ export class PigeonEditor extends LitElement {
   }
 
   private _handleRowSelect(e: CustomEvent<{ rowId: string }>) {
+    // Exit any inline edit when jumping to the row (e.g. via the breadcrumb).
+    this._editingBlockId = null;
     const tr = this._state.createTransaction();
     tr.setSelection(createRowSelection(e.detail.rowId));
+    this._dispatch(tr);
+  }
+
+  private _handleColumnSelect(e: CustomEvent<{ rowId: string; columnId: string }>) {
+    this._editingBlockId = null;
+    const tr = this._state.createTransaction();
+    tr.setSelection(createColumnSelection(e.detail.rowId, e.detail.columnId));
     this._dispatch(tr);
   }
 

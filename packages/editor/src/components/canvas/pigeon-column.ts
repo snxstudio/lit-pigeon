@@ -229,8 +229,11 @@ export class PigeonColumn extends LitElement {
     const dragData = getDragData();
     if (!dragData) return;
 
-    // Only accept block drops (not row drops)
-    if (dragData.type === 'palette-row') return;
+    // Columns only accept block drags. Row drags (palette-row / existing-row)
+    // must bubble up to the canvas, which owns row insertion/reordering — so
+    // bail BEFORE touching the event, otherwise stopPropagation() here would
+    // swallow the row drop and reordering would silently fail.
+    if (dragData.type !== 'palette-block' && dragData.type !== 'existing-block') return;
 
     e.preventDefault();
     e.stopPropagation();
@@ -267,13 +270,15 @@ export class PigeonColumn extends LitElement {
   }
 
   private _onDrop(e: DragEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-
     const dragData = getDragData();
     if (!dragData) return;
 
-    if (dragData.type === 'palette-row') return;
+    // Let row drags fall through to the canvas (see _onDragOver). Guard before
+    // calling stopPropagation so the canvas still receives the row drop.
+    if (dragData.type !== 'palette-block' && dragData.type !== 'existing-block') return;
+
+    e.preventDefault();
+    e.stopPropagation();
 
     const index = this._dropIndex >= 0 ? this._dropIndex : this.column.blocks.length;
 

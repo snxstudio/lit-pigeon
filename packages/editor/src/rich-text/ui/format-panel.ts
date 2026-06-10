@@ -137,7 +137,7 @@ export class PigeonRichTextFormat extends LitElement {
   render() {
     const enabled = this._editor !== null;
     return html`
-      <div class="section" ?hidden=${!enabled}>
+      <div class="section" ?hidden=${!enabled} @pointerdown=${this._holdFocus}>
         <h4>Format</h4>
 
         <div class="field">
@@ -188,6 +188,20 @@ export class PigeonRichTextFormat extends LitElement {
       </div>
     `;
   }
+
+  /**
+   * Pressing a control here (a `<select>` or the color input) moves DOM focus
+   * out of the editable, which would normally blur and tear down the inline
+   * editor. Hold the editor across that synchronous focus shift, then release
+   * on the next macrotask — by which point the editor has survived the blur
+   * and is still alive, so the control's command applies to the preserved
+   * selection. Releasing promptly keeps a later "click away" blur committing
+   * normally.
+   */
+  private _holdFocus = () => {
+    richTextController.holdFocus();
+    setTimeout(() => richTextController.releaseFocus(), 0);
+  };
 
   private _bind(next: Editor | null) {
     if (this._editor === next) return;

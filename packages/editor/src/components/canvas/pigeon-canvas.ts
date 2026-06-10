@@ -33,6 +33,11 @@ export class PigeonCanvas extends LitElement {
   @state()
   private _isDragOver = false;
 
+  /** Row currently under the pointer, or null. Drives which single row shows
+   *  its action bar so adjacent rows' bars never overlap. */
+  @state()
+  private _hoveredRowId: string | null = null;
+
   static styles = css`
     :host {
       display: block;
@@ -176,6 +181,7 @@ export class PigeonCanvas extends LitElement {
         class="canvas-scroll"
         style=${framed ? '' : `background: ${bgColor};`}
         @click=${this._onCanvasClick}
+        @mouseover=${this._onPointerOverRow}
       >
         ${framed
           ? html`
@@ -206,6 +212,9 @@ export class PigeonCanvas extends LitElement {
   private _renderCanvasArea(bodyWidth: number, bg?: string) {
     const rows = this.doc.body.rows;
     const bgStyle = bg ? `background: ${bg};` : '';
+    // Only one row shows its action bar at a time: the hovered row, or the
+    // selected row when nothing is hovered. Prevents adjacent bars overlapping.
+    const selectedRowId = this.selection?.type === 'row' ? this.selection.rowId : null;
     return html`
       <div
         class="canvas-area"
@@ -240,6 +249,8 @@ export class PigeonCanvas extends LitElement {
                       .totalRows=${rows.length}
                       .selection=${this.selection}
                       .editingBlockId=${this.editingBlockId}
+                      ?show-actions=${this._hoveredRowId === row.id ||
+                      (this._hoveredRowId === null && selectedRowId === row.id)}
                     ></pigeon-row>
                   `,
                 )}
@@ -251,6 +262,21 @@ export class PigeonCanvas extends LitElement {
       </div>
     `;
   }
+
+  /**
+   * Tracks the row under the pointer by walking the composed path for the
+   * nearest `<pigeon-row>`. Because the action bar is a DOM child of the row
+   * (even though it sits in the outer margin), hovering the bar still resolves
+   * to that row, so it stays visible. Over empty canvas it resolves to null,
+   * falling back to the selected row.
+   */
+  private _onPointerOverRow = (e: Event) => {
+    const rowEl = e.composedPath().find(
+      (el) => el instanceof HTMLElement && el.tagName.toLowerCase() === 'pigeon-row'
+    ) as (HTMLElement & { row?: RowNode }) | undefined;
+    const id = rowEl?.row?.id ?? null;
+    if (id !== this._hoveredRowId) this._hoveredRowId = id;
+  };
 
   private _onCanvasClick(e: Event) {
     // If clicking on the canvas background (not on a row/block), select body

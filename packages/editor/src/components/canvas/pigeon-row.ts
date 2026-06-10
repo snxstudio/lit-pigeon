@@ -21,6 +21,11 @@ export class PigeonRow extends LitElement {
   @property({ type: String, attribute: 'editing-block-id' })
   editingBlockId: string | null = null;
 
+  /** Whether to show this row's action bar / label. The canvas drives this so
+   *  that only one row shows its bar at a time (see pigeon-canvas). */
+  @property({ type: Boolean, attribute: 'show-actions', reflect: true })
+  showActions = false;
+
   @state()
   private _dragging = false;
 
@@ -76,6 +81,11 @@ export class PigeonRow extends LitElement {
       position: absolute;
       top: -1px;
       right: -40px;
+      /* Transparent left padding bridges the gap between the row's right edge
+         and the buttons so the hover region stays contiguous — otherwise the
+         cursor crosses dead space, :host(:hover) drops, and the bar fades out
+         before it can be reached. The buttons stay put (anchored by right). */
+      padding-left: 16px;
       display: flex;
       flex-direction: column;
       gap: 2px;
@@ -85,8 +95,7 @@ export class PigeonRow extends LitElement {
       z-index: 10;
     }
 
-    :host(:hover) .actions,
-    .row-wrapper.selected .actions {
+    :host([show-actions]) .actions {
       opacity: 1;
       pointer-events: auto;
     }
@@ -146,7 +155,7 @@ export class PigeonRow extends LitElement {
       white-space: nowrap;
     }
 
-    :host(:hover) .row-label,
+    :host([show-actions]) .row-label,
     .row-wrapper.selected .row-label {
       opacity: 1;
     }
