@@ -36,22 +36,7 @@ export class PigeonImagePanel extends LitElement {
     panelStyles,
     css`
     .upload-btn {
-      height: 28px;
-      padding: 0 12px;
-      border: 1px solid var(--pigeon-border, #e2e8f0);
-      border-radius: var(--pigeon-radius-sm, 4px);
-      background: var(--pigeon-surface, #f8fafc);
-      color: var(--pigeon-text, #1e293b);
-      cursor: pointer;
-      font-family: var(--pigeon-font);
-      font-size: 12px;
-      font-weight: 500;
-      margin-top: 4px;
-    }
-
-    .upload-btn:hover {
-      background: var(--pigeon-surface-hover, #f1f5f9);
-      border-color: var(--pigeon-primary, #3b82f6);
+      margin-top: 6px;
     }
   `,
   ];
@@ -75,7 +60,7 @@ export class PigeonImagePanel extends LitElement {
           @change=${this._onSrcChange}
         />
         ${uploadEnabled
-          ? html`<button class="upload-btn" @click=${this._openAssetManager}>Upload Image</button>`
+          ? html`<button class="btn-secondary upload-btn" @click=${this._openAssetManager}>Upload Image</button>`
           : ''}
       </div>
 
@@ -99,12 +84,12 @@ export class PigeonImagePanel extends LitElement {
       </div>
 
       <pigeon-slider-input
-        label="Width"
+        label="Width (0 = auto)"
         .value=${widthVal as number}
         min=${0}
         max=${800}
         step=${1}
-        unit="px (0 = auto)"
+        unit="px"
         @slider-change=${this._onWidthChange}
       ></pigeon-slider-input>
 

@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import type { ButtonBlock, Spacing } from '@lit-pigeon/core';
 import { panelStyles } from './panel-styles.js';
@@ -18,69 +18,7 @@ export class PigeonButtonPanel extends LitElement {
   @property({ type: String })
   columnId = '';
 
-  static styles = [
-    panelStyles,
-    css`
-    .toggle-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
-    }
-
-    .toggle-label {
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--pigeon-text-secondary, #64748b);
-      font-family: var(--pigeon-font);
-    }
-
-    .toggle {
-      position: relative;
-      width: 40px;
-      height: 22px;
-    }
-
-    .toggle input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .toggle-track {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: var(--pigeon-border, #e2e8f0);
-      border-radius: 11px;
-      transition: background 0.2s ease;
-    }
-
-    .toggle-track::after {
-      content: '';
-      position: absolute;
-      width: 18px;
-      height: 18px;
-      left: 2px;
-      top: 2px;
-      background: white;
-      border-radius: 50%;
-      transition: transform 0.2s ease;
-      box-shadow: var(--pigeon-shadow-sm);
-    }
-
-    .toggle input:checked + .toggle-track {
-      background: var(--pigeon-primary, #3b82f6);
-    }
-
-    .toggle input:checked + .toggle-track::after {
-      transform: translateX(18px);
-    }
-  `,
-  ];
+  static styles = panelStyles;
 
   render() {
     if (!this.block) return html``;
