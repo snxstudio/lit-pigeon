@@ -13,7 +13,7 @@ export class PigeonSpacingInput extends LitElement {
   static styles = css`
     :host {
       display: block;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
 
     .label {
@@ -25,65 +25,64 @@ export class PigeonSpacingInput extends LitElement {
       font-family: var(--pigeon-font);
     }
 
-    .box-model {
+    /* Four joined cells in one bordered group (Figma-style) instead of the
+       old box-model diamond — half the height, and the group reads as a
+       single control. The ring sits on the group via :focus-within. */
+    .group {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      grid-template-rows: auto auto auto;
-      gap: 4px;
-      align-items: center;
-      justify-items: center;
-      max-width: 200px;
-    }
-
-    .top {
-      grid-column: 2;
-      grid-row: 1;
-    }
-
-    .left {
-      grid-column: 1;
-      grid-row: 2;
-    }
-
-    .center-label {
-      grid-column: 2;
-      grid-row: 2;
-      font-size: 10px;
-      color: var(--pigeon-text-secondary, #64748b);
-      font-family: var(--pigeon-font);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .right {
-      grid-column: 3;
-      grid-row: 2;
-    }
-
-    .bottom {
-      grid-column: 2;
-      grid-row: 3;
-    }
-
-    input[type='number'] {
-      width: 52px;
-      height: 28px;
+      grid-template-columns: repeat(4, 1fr);
       border: 1px solid var(--pigeon-input, #cbd5e1);
-      border-radius: var(--pigeon-radius-sm, 4px);
-      padding: 0 4px;
-      font-family: var(--pigeon-font-mono);
-      font-size: 12px;
-      color: var(--pigeon-text, #1e293b);
+      border-radius: var(--pigeon-radius-sm, 6px);
       background: var(--pigeon-bg, #ffffff);
-      text-align: center;
-      outline: none;
-      box-sizing: border-box;
+      overflow: hidden;
       transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
 
-    input[type='number']:focus-visible {
+    .group:focus-within {
       border-color: var(--pigeon-ring);
       box-shadow: var(--pigeon-ring-shadow);
+    }
+
+    .group:hover:not(:focus-within) {
+      border-color: color-mix(
+        in srgb,
+        var(--pigeon-input, #cbd5e1) 60%,
+        var(--pigeon-text, #0f172a)
+      );
+    }
+
+    input[type='number'] {
+      width: 100%;
+      height: 32px;
+      border: none;
+      outline: none;
+      padding: 0 2px;
+      font-family: var(--pigeon-font-mono);
+      font-size: 12px;
+      color: var(--pigeon-text, #1e293b);
+      background: transparent;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    input[type='number']:not(:first-child) {
+      border-left: 1px solid var(--pigeon-border, #e2e8f0);
+    }
+
+    .sides {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      margin-top: 3px;
+    }
+
+    .side {
+      text-align: center;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--pigeon-text-muted, #94a3b8);
+      font-family: var(--pigeon-font);
     }
 
     /* Hide spinner arrows */
@@ -99,41 +98,46 @@ export class PigeonSpacingInput extends LitElement {
 
   render() {
     return html`
-      <span class="label">${this.label}</span>
-      <div class="box-model">
+      <span class="label" id="spacing-label">${this.label}</span>
+      <div class="group" role="group" aria-labelledby="spacing-label">
         <input
-          class="top"
           type="number"
           .value=${String(this.value.top)}
           min="0"
           @change=${(e: Event) => this._onChange('top', e)}
-          title="Top"
+          title="Top (px)"
+          aria-label="Top"
         />
         <input
-          class="left"
-          type="number"
-          .value=${String(this.value.left)}
-          min="0"
-          @change=${(e: Event) => this._onChange('left', e)}
-          title="Left"
-        />
-        <span class="center-label">px</span>
-        <input
-          class="right"
           type="number"
           .value=${String(this.value.right)}
           min="0"
           @change=${(e: Event) => this._onChange('right', e)}
-          title="Right"
+          title="Right (px)"
+          aria-label="Right"
         />
         <input
-          class="bottom"
           type="number"
           .value=${String(this.value.bottom)}
           min="0"
           @change=${(e: Event) => this._onChange('bottom', e)}
-          title="Bottom"
+          title="Bottom (px)"
+          aria-label="Bottom"
         />
+        <input
+          type="number"
+          .value=${String(this.value.left)}
+          min="0"
+          @change=${(e: Event) => this._onChange('left', e)}
+          title="Left (px)"
+          aria-label="Left"
+        />
+      </div>
+      <div class="sides" aria-hidden="true">
+        <span class="side">Top</span>
+        <span class="side">Right</span>
+        <span class="side">Bottom</span>
+        <span class="side">Left</span>
       </div>
     `;
   }

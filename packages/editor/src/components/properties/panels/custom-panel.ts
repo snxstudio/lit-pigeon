@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import type { ContentBlock, PropertyField } from '@lit-pigeon/core';
 import { panelStyles } from './panel-styles.js';
@@ -27,24 +27,7 @@ export class PigeonCustomPanel extends LitElement {
   @property({ type: Array })
   schema: PropertyField[] = [];
 
-  static styles = [
-    panelStyles,
-    css`
-      :host {
-        display: block;
-      }
-
-      .checkbox-row {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .checkbox-row label {
-        margin-bottom: 0;
-      }
-    `,
-  ];
+  static styles = panelStyles;
 
   render() {
     if (!this.block) return html``;
@@ -97,15 +80,18 @@ export class PigeonCustomPanel extends LitElement {
         `;
       case 'checkbox':
         return html`
-          <div class="field checkbox-row">
-            <input
-              id=${field.key}
-              type="checkbox"
-              .checked=${Boolean(value)}
-              @change=${(e: Event) =>
-                this._emit(field.key, (e.target as HTMLInputElement).checked)}
-            />
-            <label for=${field.key}>${field.label}</label>
+          <div class="toggle-row">
+            <label class="toggle-label" for=${field.key}>${field.label}</label>
+            <label class="toggle">
+              <input
+                id=${field.key}
+                type="checkbox"
+                .checked=${Boolean(value)}
+                @change=${(e: Event) =>
+                  this._emit(field.key, (e.target as HTMLInputElement).checked)}
+              />
+              <span class="toggle-track"></span>
+            </label>
           </div>
         `;
       case 'select':

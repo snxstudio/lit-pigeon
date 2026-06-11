@@ -126,4 +126,104 @@ export const panelStyles = css`
     -webkit-appearance: none;
     margin: 0;
   }
+
+  /* Toggle switch — label left, switch right. Shared by the Full Width rows
+     (button/row panels) and the schema-driven checkbox field, so boolean
+     options look the same everywhere instead of falling back to the native
+     checkbox. */
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .toggle-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--pigeon-text-secondary, #64748b);
+    font-family: var(--pigeon-font);
+  }
+
+  .toggle {
+    position: relative;
+    width: 40px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+
+  .toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .toggle-track {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--pigeon-border, #e2e8f0);
+    border-radius: 11px;
+    transition: background 0.2s ease;
+  }
+
+  .toggle-track::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 2px;
+    top: 2px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+    box-shadow: var(--pigeon-shadow-sm);
+  }
+
+  .toggle input:checked + .toggle-track {
+    background: var(--pigeon-primary, #4f46e5);
+  }
+
+  .toggle input:checked + .toggle-track::after {
+    transform: translateX(18px);
+  }
+
+  .toggle input:focus-visible + .toggle-track {
+    box-shadow: var(--pigeon-ring-shadow);
+  }
+
+  /* Secondary action button (e.g. "Upload Image") — matches the input
+     chrome so panel actions don't read as unstyled native buttons. */
+  .btn-secondary {
+    height: 32px;
+    padding: 0 12px;
+    border: 1px solid var(--pigeon-input, #cbd5e1);
+    border-radius: var(--pigeon-radius-sm, 6px);
+    background: var(--pigeon-bg, #ffffff);
+    color: var(--pigeon-text, #1e293b);
+    cursor: pointer;
+    font-family: var(--pigeon-font);
+    font-size: 12px;
+    font-weight: 500;
+    transition: background 0.15s ease, border-color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  .btn-secondary:hover {
+    background: var(--pigeon-surface-hover, #f1f5f9);
+    border-color: color-mix(
+      in srgb,
+      var(--pigeon-input, #cbd5e1) 60%,
+      var(--pigeon-text, #0f172a)
+    );
+  }
+
+  .btn-secondary:focus-visible {
+    outline: none;
+    border-color: var(--pigeon-ring);
+    box-shadow: var(--pigeon-ring-shadow);
+  }
 `;
