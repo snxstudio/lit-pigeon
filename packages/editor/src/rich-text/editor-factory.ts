@@ -27,6 +27,11 @@ export function createEditor(opts: CreateEditorOptions): Editor {
 
   editor.on('focus', ({ editor: e }) => richTextController.setActive(e));
   editor.on('blur', ({ editor: e }) => {
+    // The user is operating a formatting control (font-size select, color
+    // input, link field) that stole DOM focus. Keep the editor alive and the
+    // active binding intact so the command can apply to the preserved
+    // selection; the real commit happens on the next genuine blur.
+    if (richTextController.isHeld()) return;
     richTextController.clearIfActive(e);
     opts.onBlur?.(sanitizeHTML(e.getHTML()));
   });

@@ -14,6 +14,7 @@ type Listener = (editor: Editor | null) => void;
 class RichTextController {
   private _active: Editor | null = null;
   private _listeners = new Set<Listener>();
+  private _held = false;
 
   setActive(editor: Editor | null): void {
     if (this._active === editor) return;
@@ -24,6 +25,26 @@ class RichTextController {
   /** Clear only if `editor` is the currently-active one (avoids races on rapid focus changes). */
   clearIfActive(editor: Editor): void {
     if (this._active === editor) this.setActive(null);
+  }
+
+  /**
+   * "Focus hold" — set while the user operates a formatting control that lives
+   * outside the editable (the bubble's link field, the sidebar format panel's
+   * `<select>`/color inputs). Native form controls steal DOM focus, which would
+   * otherwise blur the editor and tear it down before the command runs. While
+   * held, the editor's blur handler keeps the editor alive and the active
+   * binding intact so the command can apply to the preserved selection.
+   */
+  holdFocus(): void {
+    this._held = true;
+  }
+
+  releaseFocus(): void {
+    this._held = false;
+  }
+
+  isHeld(): boolean {
+    return this._held;
   }
 
   getActive(): Editor | null {

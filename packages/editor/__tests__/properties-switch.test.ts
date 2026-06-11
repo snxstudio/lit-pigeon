@@ -84,6 +84,44 @@ describe('pigeon-properties switch', () => {
     });
   }
 
+  it('renders a breadcrumb for a block selection and "Row" jumps to the parent row', async () => {
+    const { doc, rowId, columnId, blockId } = makeDocWithBlock('text');
+    const el = await mount(doc, { type: 'block', rowId, columnId, blockId });
+
+    const crumbs = el.shadowRoot!.querySelectorAll('.breadcrumb .crumb');
+    // Row, Column, and the (current) block label.
+    expect(crumbs.length).toBe(3);
+    expect(crumbs[0].textContent?.trim()).toBe('Row');
+    expect(crumbs[2].textContent?.trim()).toBe('Text');
+
+    let rowSelectId: string | null = null;
+    el.addEventListener('row-select', (e) => {
+      rowSelectId = (e as CustomEvent<{ rowId: string }>).detail.rowId;
+    });
+    (crumbs[0] as HTMLButtonElement).click();
+    expect(rowSelectId).toBe(rowId);
+  });
+
+  it('breadcrumb "Column" emits column-select with the right ids', async () => {
+    const { doc, rowId, columnId, blockId } = makeDocWithBlock('text');
+    const el = await mount(doc, { type: 'block', rowId, columnId, blockId });
+
+    let detail: { rowId: string; columnId: string } | null = null;
+    el.addEventListener('column-select', (e) => {
+      detail = (e as CustomEvent<{ rowId: string; columnId: string }>).detail;
+    });
+    const colCrumb = el.shadowRoot!.querySelectorAll('.breadcrumb .crumb')[1] as HTMLButtonElement;
+    expect(colCrumb.textContent?.trim()).toBe('Column');
+    colCrumb.click();
+    expect(detail).toEqual({ rowId, columnId });
+  });
+
+  it('does not render a breadcrumb for a row selection', async () => {
+    const { doc, rowId } = makeDocWithBlock('text');
+    const el = await mount(doc, { type: 'row', rowId });
+    expect(el.shadowRoot!.querySelector('.breadcrumb')).toBeNull();
+  });
+
   it('forwards mergeTags down to the text panel', async () => {
     const { doc, rowId, columnId, blockId } = makeDocWithBlock('text');
     const tags = [{ name: '{{x}}', label: 'X' }];
