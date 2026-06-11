@@ -1,5 +1,12 @@
 # @lit-pigeon/editor
 
+## 0.1.3
+
+### Patch Changes
+
+- af5896c: Fix the TS2322 strictFunctionTypes error in the FontSize TipTap extension: the `renderHTML` callback parameter is now contextually typed by TipTap's `Attribute` interface instead of an over-narrow explicit annotation. The package now passes `tsc --noEmit` with zero errors.
+- ccb858f: Properties-panel polish: replace the box-model diamond spacing editor with a compact Figma-style segmented row (T/R/B/L), render schema-driven checkbox fields as toggle switches, hoist the toggle-switch and secondary-button styles into the shared panel stylesheet (deduped from button/row panels), and style the image Upload button to match the input chrome.
+
 ## 0.1.2
 
 ### Patch Changes
