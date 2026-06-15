@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css, type PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { getAllBlockDefinitions } from '@lit-pigeon/core';
 import type { BrandKit, BlockDefinition, PigeonDocument, Selection } from '@lit-pigeon/core';
@@ -121,6 +121,12 @@ export class PigeonPalette extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     this._blockDefs = getAllBlockDefinitions();
+  }
+
+  override updated(changed: PropertyValues) {
+    if (changed.has('brandKit') && !this.brandKit && this._activeTab === 'brand') {
+      this._activeTab = 'content';
+    }
   }
 
   render() {

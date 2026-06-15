@@ -37,4 +37,23 @@ describe('pigeon-palette brand tab', () => {
     await el.updateComplete;
     expect(el.shadowRoot!.querySelector('pigeon-brand-tab')).toBeTruthy();
   });
+
+  it('does not render pigeon-brand-tab before the Brand tab is selected', async () => {
+    const el = await mount(createDefaultDocument(), KIT);
+    expect(el.shadowRoot!.querySelector('pigeon-brand-tab')).toBeNull();
+  });
+
+  it('falls back to the Content tab when brandKit becomes null while Brand is active', async () => {
+    const el = await mount(createDefaultDocument(), KIT);
+    (el.shadowRoot!.querySelector('#pigeon-tab-brand') as HTMLButtonElement).click();
+    await el.updateComplete;
+    expect(el.shadowRoot!.querySelector('pigeon-brand-tab')).toBeTruthy();
+    el.brandKit = null;
+    await el.updateComplete;
+    await el.updateComplete; // allow the updated() re-render to flush
+    expect(el.shadowRoot!.querySelector('pigeon-brand-tab')).toBeNull();
+    expect(el.shadowRoot!.querySelector('#pigeon-tab-brand')).toBeNull();
+    // Content tab is now active again
+    expect(el.shadowRoot!.querySelector('.tab.active')?.id).toBe('pigeon-tab-content');
+  });
 });
