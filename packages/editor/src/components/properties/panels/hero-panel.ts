@@ -1,6 +1,7 @@
 import { LitElement, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import type {
+  BrandColor,
   HeroBlock,
   Spacing,
   AssetManagerConfig,
@@ -29,6 +30,9 @@ export class PigeonHeroPanel extends LitElement {
 
   @property({ attribute: false })
   assetStorage?: AssetStorage;
+
+  @property({ attribute: false })
+  swatches: BrandColor[] = [];
 
   @state()
   private _assetManagerOpen = false;
@@ -112,6 +116,7 @@ export class PigeonHeroPanel extends LitElement {
       <pigeon-color-picker
         label="Background Color"
         .value=${v.backgroundColor}
+        .swatches=${this.swatches}
         @color-change=${this._onBgColorChange}
       ></pigeon-color-picker>
 
