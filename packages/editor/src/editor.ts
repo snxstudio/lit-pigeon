@@ -249,7 +249,7 @@ export class PigeonEditor extends LitElement {
     this._resolveBrandKit();
     this._applyTheme();
     document.addEventListener('keydown', this._handleKeyDown);
-    this.addEventListener('brand-kit-edit', this._handleBrandKitEdit as EventListener);
+    this.addEventListener('brand-kit-edit', this._handleBrandKitEdit as unknown as EventListener);
     this.addEventListener('brand-color-apply', this._handleBrandColorApply as EventListener);
     this.addEventListener('brand-font-apply', this._handleBrandFontApply as EventListener);
     this.addEventListener('brand-logo-insert', this._handleBrandLogoInsert as EventListener);
@@ -258,7 +258,7 @@ export class PigeonEditor extends LitElement {
   disconnectedCallback() {
     super.disconnectedCallback();
     document.removeEventListener('keydown', this._handleKeyDown);
-    this.removeEventListener('brand-kit-edit', this._handleBrandKitEdit as EventListener);
+    this.removeEventListener('brand-kit-edit', this._handleBrandKitEdit as unknown as EventListener);
     this.removeEventListener('brand-color-apply', this._handleBrandColorApply as EventListener);
     this.removeEventListener('brand-font-apply', this._handleBrandFontApply as EventListener);
     this.removeEventListener('brand-logo-insert', this._handleBrandLogoInsert as EventListener);

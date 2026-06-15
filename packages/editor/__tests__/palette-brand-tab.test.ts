@@ -34,6 +34,8 @@ describe('pigeon-palette brand tab', () => {
   it('renders pigeon-brand-tab when the Brand tab is selected', async () => {
     const el = await mount(createDefaultDocument(), KIT);
     (el.shadowRoot!.querySelector('#pigeon-tab-brand') as HTMLButtonElement).click();
+    // Brand tab is dynamically imported on first activation — let macrotasks settle.
+    await new Promise((r) => setTimeout(r, 50));
     await el.updateComplete;
     expect(el.shadowRoot!.querySelector('pigeon-brand-tab')).toBeTruthy();
   });
@@ -46,6 +48,8 @@ describe('pigeon-palette brand tab', () => {
   it('falls back to the Content tab when brandKit becomes null while Brand is active', async () => {
     const el = await mount(createDefaultDocument(), KIT);
     (el.shadowRoot!.querySelector('#pigeon-tab-brand') as HTMLButtonElement).click();
+    // Brand tab is dynamically imported on first activation — let macrotasks settle.
+    await new Promise((r) => setTimeout(r, 50));
     await el.updateComplete;
     expect(el.shadowRoot!.querySelector('pigeon-brand-tab')).toBeTruthy();
     el.brandKit = null;

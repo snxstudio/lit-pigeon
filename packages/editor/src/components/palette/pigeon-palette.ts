@@ -3,8 +3,21 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { getAllBlockDefinitions } from '@lit-pigeon/core';
 import type { BrandKit, BlockDefinition, PigeonDocument, Selection } from '@lit-pigeon/core';
 import './pigeon-palette-item.js';
-import './pigeon-brand-tab.js';
 import '../layers/pigeon-layers.js';
+
+/**
+ * Lazily loads the brand-tab component the first time the user activates the
+ * Brand tab. This keeps pigeon-brand-tab (and pigeon-font-picker) out of the
+ * editor's base bundle so the 43 kB size budget is not exceeded.
+ * The resolved promise is memoised so subsequent activations do not re-import.
+ */
+let _brandTabPromise: Promise<unknown> | null = null;
+function loadBrandTab(): Promise<unknown> {
+  if (!_brandTabPromise) {
+    _brandTabPromise = import('./pigeon-brand-tab.js');
+  }
+  return _brandTabPromise;
+}
 
 interface RowLayout {
   label: string;
@@ -37,6 +50,9 @@ export class PigeonPalette extends LitElement {
 
   @state()
   private _activeTab: PaletteTab = 'content';
+
+  @state()
+  private _brandTabLoaded = false;
 
   static styles = css`
     :host {
@@ -158,7 +174,7 @@ export class PigeonPalette extends LitElement {
               aria-selected=${this._activeTab === 'brand'}
               aria-controls="pigeon-tabpanel"
               class="tab ${this._activeTab === 'brand' ? 'active' : ''}"
-              @click=${() => (this._activeTab = 'brand')}
+              @click=${this._handleBrandTabClick}
             >Brand</button>`
           : ''}
       </div>
@@ -222,7 +238,16 @@ export class PigeonPalette extends LitElement {
     `;
   }
 
+  private _handleBrandTabClick = async () => {
+    this._activeTab = 'brand';
+    if (!this._brandTabLoaded) {
+      await loadBrandTab();
+      this._brandTabLoaded = true;
+    }
+  };
+
   private _renderBrandTab() {
+    if (!this._brandTabLoaded) return html``;
     return html`<pigeon-brand-tab .brandKit=${this.brandKit}></pigeon-brand-tab>`;
   }
 }
