@@ -44,7 +44,7 @@ import {
   createDocStep,
   generateId,
 } from '@lit-pigeon/core';
-import type { HistoryState, TransactionSnapshot } from '@lit-pigeon/core';
+import type { HistoryState, TransactionSnapshot, BrandKit, BrandKitStorage } from '@lit-pigeon/core';
 
 import './components/toolbar/pigeon-toolbar.js';
 import './components/palette/pigeon-palette.js';
@@ -203,6 +203,9 @@ export class PigeonEditor extends LitElement {
   /** In-memory clipboard for Cmd/Ctrl+C / Cmd/Ctrl+V on blocks. */
   private _clipboard: ContentBlock | null = null;
 
+  @state() private _activeBrandKit: BrandKit | null = null;
+  private _brandKitStorage: BrandKitStorage | null = null;
+
   /* ------------------------------------------------------------------ */
   /*  Styles                                                             */
   /* ------------------------------------------------------------------ */
@@ -243,6 +246,7 @@ export class PigeonEditor extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     this._initState();
+    this._resolveBrandKit();
     this._applyTheme();
     document.addEventListener('keydown', this._handleKeyDown);
   }
@@ -268,6 +272,9 @@ export class PigeonEditor extends LitElement {
     }
     if (changed.has('theme') || changed.has('themeOverrides')) {
       this._applyTheme();
+    }
+    if (changed.has('config')) {
+      this._resolveBrandKit();
     }
   }
 
@@ -390,6 +397,7 @@ export class PigeonEditor extends LitElement {
           exportparts="palette-tab, palette-item"
           .doc=${doc}
           .selection=${sel}
+          .brandKit=${this._activeBrandKit}
           @row-select=${this._handleRowSelect}
           @block-select=${this._handleBlockSelect}
           @palette-item-activate=${this._handlePaletteActivate}
@@ -428,6 +436,7 @@ export class PigeonEditor extends LitElement {
           .mergeTags=${this.config.mergeTags?.tags ?? []}
           .assetManagerConfig=${this.config.assetManager ?? {}}
           .assetStorage=${this.assetStorage ?? this.config.assetStorage}
+          .brandKit=${this._activeBrandKit}
           @property-change=${this._handlePropertyChange}
           @row-property-change=${this._handleRowPropertyChange}
           @row-layout-change=${this._handleRowLayoutChange}
@@ -472,6 +481,44 @@ export class PigeonEditor extends LitElement {
       this._defaultTemplateStorage = new InMemoryTemplateStorage();
     }
     return this._defaultTemplateStorage;
+  }
+
+  /**
+   * Resolve `config.brandKit` into a single active kit. A plain `BrandKit` is
+   * used directly; a `BrandKitStorage` (duck-typed by a `list` method) is
+   * async-loaded and the first kit becomes active.
+   */
+  private async _resolveBrandKit() {
+    const bk = this.config.brandKit;
+    if (!bk) {
+      this._brandKitStorage = null;
+      this._activeBrandKit = null;
+      return;
+    }
+    if (typeof (bk as BrandKitStorage).list === 'function') {
+      this._brandKitStorage = bk as BrandKitStorage;
+      try {
+        const kits = await this._brandKitStorage.list();
+        this._activeBrandKit = kits[0] ?? null;
+      } catch (error) {
+        this._activeBrandKit = null;
+        this._emitBrandKitError(error, 'list');
+      }
+    } else {
+      this._brandKitStorage = null;
+      this._activeBrandKit = bk as BrandKit;
+    }
+    this.requestUpdate();
+  }
+
+  private _emitBrandKitError(error: unknown, operation: 'list' | 'save') {
+    this.dispatchEvent(
+      new CustomEvent('brand-kit-error', {
+        detail: { error, operation },
+        bubbles: true,
+        composed: true,
+      }),
+    );
   }
 
   private async _handleTemplatesOpen() {
