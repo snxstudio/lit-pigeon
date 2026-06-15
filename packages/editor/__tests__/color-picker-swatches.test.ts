@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 import { html, render } from 'lit';
 import type { BrandColor } from '@lit-pigeon/core';
 import '../src/components/properties/controls/color-picker.js';
@@ -22,7 +22,7 @@ async function mount(swatches: BrandColor[]) {
 }
 
 describe('pigeon-color-picker swatches', () => {
-  beforeEach(() => { document.body.innerHTML = ''; });
+  afterEach(() => { document.body.innerHTML = ''; });
 
   it('renders one swatch button per brand color', async () => {
     const el = await mount(SWATCHES);
@@ -42,5 +42,13 @@ describe('pigeon-color-picker swatches', () => {
     expect(events).toHaveLength(1);
     expect(events[0].detail).toEqual({ value: '#db2777' });
     expect(el.value).toBe('#db2777');
+  });
+
+  it('shows/hides the swatch row reactively when swatches changes', async () => {
+    const el = await mount([]);
+    expect(el.shadowRoot!.querySelector('.swatches')).toBeNull();
+    el.swatches = SWATCHES;
+    await el.updateComplete;
+    expect(el.shadowRoot!.querySelectorAll('.swatch').length).toBe(2);
   });
 });

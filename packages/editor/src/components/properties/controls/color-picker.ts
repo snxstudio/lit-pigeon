@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import { styleMap } from 'lit/directives/style-map.js';
 import type { BrandColor } from '@lit-pigeon/core';
 
 @customElement('pigeon-color-picker')
@@ -97,6 +98,11 @@ export class PigeonColorPicker extends LitElement {
       border: 1px solid var(--pigeon-input, #cbd5e1);
       padding: 0;
       cursor: pointer;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .swatch:hover {
+      border-color: var(--pigeon-ring);
     }
 
     .swatch:focus-visible {
@@ -114,12 +120,14 @@ export class PigeonColorPicker extends LitElement {
       </div>
       ${this.swatches.length
         ? html`<div class="swatches">
-            ${this.swatches.map(
+            ${/* BrandColor.value is trusted brand-kit config */
+            this.swatches.map(
               (s) => html`<button
                 class="swatch"
                 type="button"
                 title=${`${s.name} (${s.value})`}
-                style=${`background:${s.value}`}
+                aria-label=${s.name}
+                style=${styleMap({ background: s.value })}
                 @click=${() => this._applySwatch(s.value)}
               ></button>`,
             )}
