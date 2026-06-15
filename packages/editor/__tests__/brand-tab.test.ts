@@ -74,4 +74,48 @@ describe('pigeon-brand-tab', () => {
     expect(events[0].detail.kit.colors).toHaveLength(2);
     expect(events[0].detail.kit.colors[1].value).toBe('#000000');
   });
+
+  it('emits brand-kit-edit with the renamed color', async () => {
+    const el = await mount(kit());
+    const events: CustomEvent[] = [];
+    el.addEventListener('brand-kit-edit', (e) => events.push(e as CustomEvent));
+    const input = el.shadowRoot!.querySelector('[data-color-id="c1"] .name-input') as HTMLInputElement;
+    input.value = 'Primary';
+    input.dispatchEvent(new Event('change'));
+    expect(events[0].detail.kit.colors[0].name).toBe('Primary');
+    expect(events[0].detail.kit.colors[0].value).toBe('#4f46e5');
+  });
+
+  it('emits brand-kit-edit with the recolored color', async () => {
+    const el = await mount(kit());
+    const events: CustomEvent[] = [];
+    el.addEventListener('brand-kit-edit', (e) => events.push(e as CustomEvent));
+    const input = el.shadowRoot!.querySelector('[data-color-id="c1"] input[type="color"]') as HTMLInputElement;
+    input.value = '#ff0000';
+    input.dispatchEvent(new Event('input'));
+    expect(events[0].detail.kit.colors[0].value).toBe('#ff0000');
+  });
+
+  it('emits brand-kit-edit with the font removed when font delete is clicked', async () => {
+    const el = await mount(kit());
+    const events: CustomEvent[] = [];
+    el.addEventListener('brand-kit-edit', (e) => events.push(e as CustomEvent));
+    (el.shadowRoot!.querySelector('[data-font-id="f1"] .delete') as HTMLButtonElement).click();
+    expect(events[0].detail.kit.fonts).toHaveLength(0);
+  });
+
+  it('emits brand-kit-edit with the logo removed when logo delete is clicked', async () => {
+    const el = await mount(kit());
+    const events: CustomEvent[] = [];
+    el.addEventListener('brand-kit-edit', (e) => events.push(e as CustomEvent));
+    (el.shadowRoot!.querySelector('[data-logo-id="l1"] .delete') as HTMLButtonElement).click();
+    expect(events[0].detail.kit.logos).toHaveLength(0);
+  });
+
+  it('does not mutate the original kit on delete', async () => {
+    const original = kit();
+    const el = await mount(original);
+    (el.shadowRoot!.querySelector('[data-color-id="c1"] .delete') as HTMLButtonElement).click();
+    expect(original.colors).toHaveLength(1); // original untouched
+  });
 });

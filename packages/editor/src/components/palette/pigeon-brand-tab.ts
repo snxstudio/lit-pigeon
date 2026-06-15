@@ -106,7 +106,7 @@ export class PigeonBrandTab extends LitElement {
         ${kit.fonts.length === 0 ? html`<div class="empty">No fonts yet</div>` : ''}
         ${kit.fonts.map(
           (f) => html`<div class="row" data-font-id=${f.id}>
-            <button class="apply" type="button" title=${`Apply ${f.name}`} @click=${() => this._applyFont(f)}>
+            <button class="apply" type="button" title=${`Apply ${f.name}`} aria-label=${`Apply font ${f.name}`} @click=${() => this._applyFont(f)}>
               ${f.name}
             </button>
             <button class="delete" type="button" title="Delete" aria-label=${`Delete ${f.name}`} @click=${() => this._deleteFont(f)}>×</button>
@@ -127,7 +127,7 @@ export class PigeonBrandTab extends LitElement {
         ${kit.logos.map(
           (l) => html`<div class="row" data-logo-id=${l.id}>
             <img class="logo-thumb" src=${l.src} alt=${l.name} />
-            <button class="apply" type="button" title="Insert logo" @click=${() => this._insertLogo(l)}>
+            <button class="apply" type="button" title="Insert logo" aria-label=${`Insert logo ${l.name}`} @click=${() => this._insertLogo(l)}>
               ${l.name}
             </button>
             <button class="delete" type="button" title="Delete" aria-label=${`Delete ${l.name}`} @click=${() => this._deleteLogo(l)}>×</button>
