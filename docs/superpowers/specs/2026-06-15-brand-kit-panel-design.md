@@ -114,13 +114,28 @@ When a brand color swatch in the Brand tab is clicked:
 
 | Current selection | Property set |
 |---|---|
-| text block        | text color |
-| button block      | button background color |
-| body / no selection | body background color |
-| other / incompatible | no-op + subtle "select a text or button block" hint |
+| button block      | `values.backgroundColor` |
+| body / no selection | `body.attributes.backgroundColor` |
+| text / other block | no-op + subtle hint ("Select a button, or pick a color in the panel") |
+
+> **Plan-time correction (2026-06-15):** the original mapping listed
+> "text block → text color", but `TextBlock.values` (document.ts:15) has **no
+> color field** — text colour is set via inline rich-text (TipTap) only, not a
+> block property. So text blocks fall into the no-op + hint case. Button
+> background and body background are the only block-level colour targets a
+> swatch click can drive.
 
 Applied via the existing property-change transaction path (same events the
-panels already emit), so it flows through undo/redo normally.
+panels already emit — `property-change` with `{rowId, columnId, blockId,
+values}` for blocks, `body-property-change` with `{attribute, value}` for the
+body), so it flows through undo/redo normally.
+
+### Brand-tab font-apply mapping
+
+`body.attributes.fontFamily` is the only font-bearing property in the document
+model (blocks have no block-level `fontFamily`). So clicking a brand font in
+the Brand tab sets the body `fontFamily` (via `body-property-change`), and the
+same brand fonts populate the body-panel font picker.
 
 ## Error handling
 
