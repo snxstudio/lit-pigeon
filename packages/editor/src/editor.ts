@@ -522,7 +522,7 @@ export class PigeonEditor extends LitElement {
     );
   }
 
-  private async _handleBrandKitEdit(e: CustomEvent<{ kit: BrandKit }>) {
+  private _handleBrandKitEdit = async (e: CustomEvent<{ kit: BrandKit }>) => {
     e.stopPropagation();
     const kit = e.detail.kit;
     this._activeBrandKit = kit; // optimistic in-memory update
@@ -541,7 +541,7 @@ export class PigeonEditor extends LitElement {
         this._emitBrandKitError(error, 'save');
       }
     }
-  }
+  };
 
   private async _handleTemplatesOpen() {
     if (!this._templatePickerLoaded) {
