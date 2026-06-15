@@ -508,7 +508,6 @@ export class PigeonEditor extends LitElement {
       this._brandKitStorage = null;
       this._activeBrandKit = bk as BrandKit;
     }
-    this.requestUpdate();
   }
 
   private _emitBrandKitError(error: unknown, operation: 'list' | 'save') {
