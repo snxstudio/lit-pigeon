@@ -249,11 +249,13 @@ export class PigeonEditor extends LitElement {
     this._resolveBrandKit();
     this._applyTheme();
     document.addEventListener('keydown', this._handleKeyDown);
+    this.addEventListener('brand-kit-edit', this._handleBrandKitEdit as EventListener);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     document.removeEventListener('keydown', this._handleKeyDown);
+    this.removeEventListener('brand-kit-edit', this._handleBrandKitEdit as EventListener);
   }
 
   updated(changed: Map<string, unknown>) {
@@ -518,6 +520,27 @@ export class PigeonEditor extends LitElement {
         composed: true,
       }),
     );
+  }
+
+  private async _handleBrandKitEdit(e: CustomEvent<{ kit: BrandKit }>) {
+    e.stopPropagation();
+    const kit = e.detail.kit;
+    this._activeBrandKit = kit; // optimistic in-memory update
+    // Emit the public change first so hosts see the new state even if save fails.
+    this.dispatchEvent(
+      new CustomEvent('brand-kit-change', {
+        detail: { brandKit: kit },
+        bubbles: true,
+        composed: true,
+      }),
+    );
+    if (this._brandKitStorage) {
+      try {
+        await this._brandKitStorage.save(kit);
+      } catch (error) {
+        this._emitBrandKitError(error, 'save');
+      }
+    }
   }
 
   private async _handleTemplatesOpen() {
