@@ -1,9 +1,10 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
-import type { PigeonDocument, MergeTag } from '@lit-pigeon/core';
+import type { PigeonDocument, MergeTag, BrandColor, BrandFont } from '@lit-pigeon/core';
 import { panelStyles } from './panel-styles.js';
 import '../controls/color-picker.js';
+import '../controls/font-picker.js';
 import '../controls/slider-input.js';
 import '../../merge-tags/pigeon-merge-tag-picker.js';
 
@@ -14,6 +15,12 @@ export class PigeonBodyPanel extends LitElement {
 
   @property({ type: Array })
   mergeTags: MergeTag[] = [];
+
+  @property({ attribute: false })
+  swatches: BrandColor[] = [];
+
+  @property({ attribute: false })
+  brandFonts: BrandFont[] = [];
 
   @state() private _pickerOpen = false;
   @state() private _pickerX = 0;
@@ -97,16 +104,6 @@ export class PigeonBodyPanel extends LitElement {
     `,
   ];
 
-  private _fontFamilies = [
-    'Arial, Helvetica, sans-serif',
-    'Georgia, Times, serif',
-    "'Courier New', Courier, monospace",
-    'Verdana, Geneva, sans-serif',
-    'Tahoma, Geneva, sans-serif',
-    "'Trebuchet MS', sans-serif",
-    "'Times New Roman', Times, serif",
-  ];
-
   render() {
     if (!this.doc) return html``;
     const a = this.doc.body.attributes;
@@ -126,17 +123,16 @@ export class PigeonBodyPanel extends LitElement {
       <pigeon-color-picker
         label="Background Color"
         .value=${a.backgroundColor}
+        .swatches=${this.swatches}
         @color-change=${this._onBgColorChange}
       ></pigeon-color-picker>
 
-      <div class="field">
-        <label>Font Family</label>
-        <select @change=${this._onFontFamilyChange}>
-          ${this._fontFamilies.map(font => html`
-            <option value="${font}" ?selected=${a.fontFamily === font}>${font.split(',')[0].replace(/'/g, '')}</option>
-          `)}
-        </select>
-      </div>
+      <pigeon-font-picker
+        label="Font Family"
+        .value=${a.fontFamily}
+        .brandFonts=${this.brandFonts}
+        @font-change=${this._onFontFamilyChange}
+      ></pigeon-font-picker>
 
       <div class="field">
         <label>Content Alignment</label>
@@ -233,8 +229,8 @@ export class PigeonBodyPanel extends LitElement {
     this._emit({ attribute: 'backgroundColor', value: e.detail.value });
   }
 
-  private _onFontFamilyChange(e: Event) {
-    this._emit({ attribute: 'fontFamily', value: (e.target as HTMLSelectElement).value });
+  private _onFontFamilyChange(e: CustomEvent<{ value: string }>) {
+    this._emit({ attribute: 'fontFamily', value: e.detail.value });
   }
 
   private _onAlignChange(align: 'left' | 'center') {
