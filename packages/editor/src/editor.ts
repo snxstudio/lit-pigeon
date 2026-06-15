@@ -44,7 +44,7 @@ import {
   createDocStep,
   generateId,
 } from '@lit-pigeon/core';
-import type { HistoryState, TransactionSnapshot, BrandKit, BrandKitStorage } from '@lit-pigeon/core';
+import type { HistoryState, TransactionSnapshot, BrandKit, BrandKitStorage, BrandLogo, ImageBlock } from '@lit-pigeon/core';
 
 import './components/toolbar/pigeon-toolbar.js';
 import './components/palette/pigeon-palette.js';
@@ -250,12 +250,18 @@ export class PigeonEditor extends LitElement {
     this._applyTheme();
     document.addEventListener('keydown', this._handleKeyDown);
     this.addEventListener('brand-kit-edit', this._handleBrandKitEdit as EventListener);
+    this.addEventListener('brand-color-apply', this._handleBrandColorApply as EventListener);
+    this.addEventListener('brand-font-apply', this._handleBrandFontApply as EventListener);
+    this.addEventListener('brand-logo-insert', this._handleBrandLogoInsert as EventListener);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     document.removeEventListener('keydown', this._handleKeyDown);
     this.removeEventListener('brand-kit-edit', this._handleBrandKitEdit as EventListener);
+    this.removeEventListener('brand-color-apply', this._handleBrandColorApply as EventListener);
+    this.removeEventListener('brand-font-apply', this._handleBrandFontApply as EventListener);
+    this.removeEventListener('brand-logo-insert', this._handleBrandLogoInsert as EventListener);
   }
 
   updated(changed: Map<string, unknown>) {
@@ -540,6 +546,66 @@ export class PigeonEditor extends LitElement {
       } catch (error) {
         this._emitBrandKitError(error, 'save');
       }
+    }
+  };
+
+  /** Apply a single body attribute through an undoable transaction. */
+  private _applyBodyAttribute(attribute: string, value: unknown) {
+    const tr = this._state.createTransaction();
+    const attrs = this._state.doc.body.attributes as Record<string, unknown>;
+    const oldValue = attrs[attribute];
+    const step = createDocStep(
+      'updateBodyAttribute',
+      `body.attributes.${attribute}`,
+      (doc: PigeonDocument) => { (doc.body.attributes as Record<string, unknown>)[attribute] = value; },
+      (doc: PigeonDocument) => { (doc.body.attributes as Record<string, unknown>)[attribute] = oldValue; },
+    );
+    tr.addStep(step);
+    this._dispatch(tr);
+  }
+
+  private _handleBrandColorApply = (e: CustomEvent<{ value: string }>) => {
+    e.stopPropagation();
+    const value = e.detail.value;
+    const sel = this._state.selection;
+    if (sel?.type === 'block' && sel.rowId && sel.columnId && sel.blockId) {
+      const block = this._findBlock(sel.rowId, sel.columnId, sel.blockId);
+      if (block?.type === 'button') {
+        updateBlock(sel.rowId, sel.columnId, sel.blockId, { backgroundColor: value })(this._state, this._dispatch);
+      }
+      // text/other blocks: no block-level colour → no-op (hint shown by the UI).
+      return;
+    }
+    // body or no selection → body background.
+    this._applyBodyAttribute('backgroundColor', value);
+  };
+
+  private _handleBrandFontApply = (e: CustomEvent<{ family: string }>) => {
+    e.stopPropagation();
+    this._applyBodyAttribute('fontFamily', e.detail.family);
+  };
+
+  private _handleBrandLogoInsert = (e: CustomEvent<{ logo: BrandLogo }>) => {
+    e.stopPropagation();
+    const { logo } = e.detail;
+    const block = createBlock('image') as ImageBlock;
+    block.values.src = logo.src;
+    block.values.alt = logo.name;
+    if (logo.width) block.values.width = logo.width;
+
+    const sel = this._state.selection;
+    if (sel?.rowId && sel?.columnId) {
+      insertBlock(sel.rowId, sel.columnId, block)(this._state, this._dispatch);
+      return;
+    }
+    const rows = this._state.doc.body.rows;
+    if (rows.length > 0) {
+      const lastRow = rows[rows.length - 1];
+      const col = lastRow.columns[0];
+      insertBlock(lastRow.id, col.id, block, col.blocks.length)(this._state, this._dispatch);
+    } else {
+      const col = createColumn([block]);
+      insertRow(createRow([col]), 0)(this._state, this._dispatch);
     }
   };
 
