@@ -137,3 +137,8 @@ export {
   type AssetListFilter,
   type AssetStorage,
 } from './assets/index.js';
+
+// Row Library
+export type { LibraryEntry, RowLibraryStorage } from './types/row-library.js';
+export { InMemoryRowLibraryStorage } from './row-library/in-memory-storage.js';
+export { cloneRowWithNewIds } from './row-library/clone.js';

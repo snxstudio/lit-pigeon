@@ -2,6 +2,7 @@ import type { PigeonDocument, ContentBlock, RowNode, ColumnNode } from './docume
 import type { AssetStorage } from './asset.js';
 import type { BrandKit, BrandKitStorage } from './brand-kit.js';
 import type { FontDefinition } from './font.js';
+import type { RowLibraryStorage } from './row-library.js';
 
 export interface Selection {
   type: 'block' | 'row' | 'column' | 'body';
@@ -69,6 +70,12 @@ export interface EditorConfig {
    * fallbacks.
    */
   fontConfig?: FontDefinition[];
+  /**
+   * Optional persistence for the user's saved-rows library. When unset, the
+   * editor falls back to an in-memory store so the "Saved" palette tab works
+   * in-session. A filesystem implementation ships in `@lit-pigeon/mcp-server`.
+   */
+  rowLibrary?: RowLibraryStorage;
 }
 
 export interface Step {
