@@ -5,6 +5,7 @@ import type {
   ContentBlock,
   HeroBlock,
   RegisteredBlock,
+  FontDefinition,
 } from '@lit-pigeon/core';
 import { getBlockDefinition } from '@lit-pigeon/core';
 import { spacingToMjml } from './utils/spacing.js';
@@ -176,6 +177,11 @@ export interface DocumentToMjmlOptions {
    * `[if mso]` conditional block.
    */
   outlookWorkarounds?: boolean;
+  /**
+   * Web fonts to emit as `<mj-font>` in the head. Each font with a `url`
+   * produces one stylesheet link (deduped by url); URL-less fonts are skipped.
+   */
+  fonts?: FontDefinition[];
 }
 
 /**
@@ -215,6 +221,23 @@ const HEADING_MARGIN_RESET_BLOCK = `    <mj-style inline="inline">
     </mj-style>`;
 
 /**
+ * Builds `<mj-font>` tags for each registered font that has a URL, deduped by
+ * href. `name` is the primary family token (first entry of the stack), which
+ * is what MJML matches against `font-family` declarations.
+ */
+function renderFontTags(fonts: FontDefinition[]): string {
+  const seen = new Set<string>();
+  const tags: string[] = [];
+  for (const font of fonts) {
+    if (!font.url || seen.has(font.url)) continue;
+    seen.add(font.url);
+    const name = font.family.split(',')[0].trim().replace(/^['"]|['"]$/g, '');
+    tags.push(`    <mj-font name="${escapeAttr(name)}" href="${escapeAttr(font.url)}" />`);
+  }
+  return tags.join('\n');
+}
+
+/**
  * Builds the <mj-head> section of the MJML document, including:
  * - Outlook + dark-mode workarounds (unless disabled)
  * - <mj-attributes> for default styling
@@ -232,6 +255,9 @@ function renderHead(doc: PigeonDocument, options: Required<DocumentToMjmlOptions
     headParts.push(DARK_MODE_META_BLOCK);
     headParts.push(HEADING_MARGIN_RESET_BLOCK);
   }
+
+  const fontTags = renderFontTags(options.fonts);
+  if (fontTags) headParts.push(fontTags);
 
   // Default attributes
   headParts.push(`    <mj-attributes>
@@ -264,6 +290,7 @@ ${headParts.join('\n')}
 export function documentToMjml(doc: PigeonDocument, options?: DocumentToMjmlOptions): string {
   const resolved: Required<DocumentToMjmlOptions> = {
     outlookWorkarounds: options?.outlookWorkarounds ?? true,
+    fonts: options?.fonts ?? [],
   };
 
   const { width, backgroundColor } = doc.body.attributes;
