@@ -7,3 +7,5 @@ export { FsBrandKitStorage } from './store/fs-brand-kit-storage.js';
 export type { FsBrandKitStorageOptions } from './store/fs-brand-kit-storage.js';
 export { FsAssetStorage } from './store/fs-asset-storage.js';
 export type { FsAssetStorageOptions } from './store/fs-asset-storage.js';
+export { FsRowLibraryStorage } from './store/fs-row-library-storage.js';
+export type { FsRowLibraryStorageOptions } from './store/fs-row-library-storage.js';
