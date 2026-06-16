@@ -221,9 +221,14 @@ const HEADING_MARGIN_RESET_BLOCK = `    <mj-style inline="inline">
     </mj-style>`;
 
 /**
- * Builds `<mj-font>` tags for each registered font that has a URL, deduped by
- * href. `name` is the primary family token (first entry of the stack), which
- * is what MJML matches against `font-family` declarations.
+ * Builds font tags for each registered font that has a URL, deduped by href.
+ *
+ * Emits both:
+ * - `<mj-font>` so MJML can resolve `font-family` declarations to the correct
+ *   stylesheet (MJML only injects the `<link>` when the name matches a used
+ *   font-family, so we also emit a `<mj-raw>` link to guarantee the URL is
+ *   always present in the rendered HTML regardless of font-family usage).
+ * - `<mj-raw><link>` to unconditionally inject the stylesheet into the `<head>`.
  */
 function renderFontTags(fonts: FontDefinition[]): string {
   const seen = new Set<string>();
@@ -232,7 +237,10 @@ function renderFontTags(fonts: FontDefinition[]): string {
     if (!font.url || seen.has(font.url)) continue;
     seen.add(font.url);
     const name = font.family.split(',')[0].trim().replace(/^['"]|['"]$/g, '');
-    tags.push(`    <mj-font name="${escapeAttr(name)}" href="${escapeAttr(font.url)}" />`);
+    const escapedUrl = escapeAttr(font.url);
+    const escapedName = escapeAttr(name);
+    tags.push(`    <mj-font name="${escapedName}" href="${escapedUrl}" />`);
+    tags.push(`    <mj-raw><link rel="stylesheet" href="${escapedUrl}"></mj-raw>`);
   }
   return tags.join('\n');
 }

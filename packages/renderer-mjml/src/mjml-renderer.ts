@@ -25,6 +25,7 @@ export class MjmlRenderer implements Renderer {
   async render(doc: PigeonDocument, options?: RenderOptions): Promise<RenderResult> {
     const mjmlMarkup = documentToMjml(doc, {
       outlookWorkarounds: options?.outlookWorkarounds,
+      fonts: options?.fonts,
     });
 
     const mjmlOptions: Record<string, unknown> = {
