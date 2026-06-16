@@ -21,6 +21,8 @@ export type {
   SocialIcon,
 } from './types/document.js';
 
+export type { FontDefinition } from './types/font.js';
+
 export type {
   Selection,
   EditorConfig,
