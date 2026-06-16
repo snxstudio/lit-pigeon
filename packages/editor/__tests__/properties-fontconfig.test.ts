@@ -49,4 +49,19 @@ describe('pigeon-properties fontConfig', () => {
     const values = Array.from(picker.shadowRoot!.querySelectorAll('option')).map((o) => (o as HTMLOptionElement).value);
     expect(values).toContain('Inter, Arial, sans-serif');
   });
+
+  it('deduplicates by family, fontConfig entry wins on collision', async () => {
+    const overrideKit: BrandKit = {
+      ...KIT,
+      fonts: [{ id: 'inter-kit', name: 'Inter Kit', family: 'Inter, Arial, sans-serif' }],
+    };
+    const el = await mount(createDefaultDocument(), overrideKit, FONT_CONFIG);
+    const body = el.shadowRoot!.querySelector('pigeon-body-panel') as HTMLElement & {
+      brandFonts: FontDefinition[]; updateComplete: Promise<unknown>;
+    };
+    await body.updateComplete;
+    const interEntries = body.brandFonts.filter((f) => f.family === 'Inter, Arial, sans-serif');
+    expect(interEntries).toHaveLength(1);
+    expect(interEntries[0].name).toBe('Inter'); // the fontConfig entry, not 'Inter Kit'
+  });
 });
