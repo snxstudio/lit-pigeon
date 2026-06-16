@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import type { PigeonDocument, Renderer } from '@lit-pigeon/core';
+import type { PigeonDocument, Renderer, FontDefinition } from '@lit-pigeon/core';
 
 type ViewMode = 'preview' | 'html' | 'mjml' | 'json';
 
@@ -12,8 +12,11 @@ export class PigeonPreview extends LitElement {
   @property({ type: Object })
   doc?: PigeonDocument;
 
-  @property({ type: Object })
-  documentToMjml?: (doc: PigeonDocument) => string;
+  @property({ attribute: false })
+  documentToMjml?: (doc: PigeonDocument, options?: { fonts?: FontDefinition[] }) => string;
+
+  @property({ attribute: false })
+  fonts: FontDefinition[] = [];
 
   @property({ type: Boolean, reflect: true })
   open = false;
@@ -348,13 +351,13 @@ export class PigeonPreview extends LitElement {
 
     // Generate MJML if converter available
     if (this.documentToMjml) {
-      this._mjmlContent = this.documentToMjml(this.doc);
+      this._mjmlContent = this.documentToMjml(this.doc, { fonts: this.fonts });
     }
 
     // Render HTML if renderer available
     if (this.renderer) {
       try {
-        const result = await this.renderer.render(this.doc);
+        const result = await this.renderer.render(this.doc, { fonts: this.fonts });
         this._htmlContent = result.html;
       } catch {
         this._htmlContent = '<p>Failed to render preview</p>';
