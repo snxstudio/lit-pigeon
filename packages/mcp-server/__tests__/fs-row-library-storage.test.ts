@@ -35,4 +35,27 @@ describe('FsRowLibraryStorage', () => {
     await expect(store.save(entry('../escape'))).rejects.toThrow();
     expect(await store.get('../escape')).toBeNull();
   });
+
+  it('preserves createdAt across updates and refreshes updatedAt', async () => {
+    const dir = await tmpDir();
+    const store = new FsRowLibraryStorage({ dir });
+    await store.save(entry('hero'));
+    const first = (await store.get('hero'))!;
+    // save again with a different name
+    await store.save({ ...entry('hero'), name: 'Renamed' });
+    const second = (await store.get('hero'))!;
+    expect(second.name).toBe('Renamed');
+    expect(second.createdAt).toBe(first.createdAt); // preserved
+    expect(Date.parse(second.updatedAt)).toBeGreaterThanOrEqual(Date.parse(first.updatedAt));
+  });
+
+  it('lists entries sorted by updatedAt descending', async () => {
+    const dir = await tmpDir();
+    const store = new FsRowLibraryStorage({ dir });
+    await store.save(entry('old'));
+    await new Promise((r) => setTimeout(r, 5));
+    await store.save(entry('new'));
+    const list = await store.list();
+    expect(list.map((e) => e.id)).toEqual(['new', 'old']);
+  });
 });
