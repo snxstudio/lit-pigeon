@@ -37,4 +37,11 @@ describe('documentToMjml <mj-font> emission', () => {
     const mjml = documentToMjml(createDefaultDocument(), { fonts: FONTS });
     expect(mjml.indexOf('<mj-font')).toBeLessThan(mjml.indexOf('<mj-attributes>'));
   });
+
+  it('strips surrounding quotes from the primary family token in the name', () => {
+    const mjml = documentToMjml(createDefaultDocument(), {
+      fonts: [{ name: 'Trebuchet', family: "'Trebuchet MS', Tahoma, sans-serif", url: 'https://x/treb.css' }],
+    });
+    expect(mjml).toContain('<mj-font name="Trebuchet MS" href="https://x/treb.css" />');
+  });
 });
