@@ -141,4 +141,5 @@ export {
 // Row Library
 export type { LibraryEntry, RowLibraryStorage } from './types/row-library.js';
 export { InMemoryRowLibraryStorage } from './row-library/in-memory-storage.js';
+export type { InMemoryRowLibraryStorageOptions } from './row-library/in-memory-storage.js';
 export { cloneRowWithNewIds } from './row-library/clone.js';
