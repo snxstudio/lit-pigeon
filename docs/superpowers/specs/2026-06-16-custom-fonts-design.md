@@ -69,17 +69,27 @@ brandKit.fonts ─────────┘            │
 1. `DocumentToMjmlOptions` gains `fonts?: FontDefinition[]`
    (`document-to-mjml.ts:171`).
 2. `renderHead()` (`document-to-mjml.ts:223`) emits, for each font in
-   `options.fonts` that has a non-empty `url`, an `<mj-font>` tag, placed in
+   `options.fonts` that has a non-empty `url`, font-load tags placed in
    `<mj-head>` **before** `<mj-attributes>`:
    ```
    <mj-font name="Inter" href="https://fonts.googleapis.com/css?family=Inter" />
+   <mj-raw><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter"></mj-raw>
    ```
-   - `name` = the primary family token: `family.split(',')[0].trim()` with
-     surrounding quotes stripped.
+   - `name` (on `<mj-font>`) = the primary family token:
+     `family.split(',')[0].trim()` with surrounding quotes stripped.
+   - **Why both tags:** MJML's `<mj-font>` only injects a stylesheet into the
+     HTML when the font's family is *actually used* in the document. The agreed
+     decision is to load **all** registered fonts with a URL (not just used
+     ones), so a companion `<mj-raw><link rel="stylesheet">` guarantees the
+     stylesheet loads regardless of usage. (Verified empirically:
+     `<mj-font>` alone emits zero URLs for an unused font.)
    - Deduped by `href` (a font registered twice, or two fonts sharing a URL,
-     emit one tag).
+     emit one pair of tags).
    - URL and name go through the existing `escapeAttr`.
    - Fonts without a `url` are skipped (selection-only).
+   - *Known minor:* when a registered font IS the document font, its URL appears
+     redundantly (mj-font `<link>` + mj-font `@import` + the raw `<link>`);
+     clients dedupe by URL. A follow-up could switch to raw-link-only.
 3. `documentToMjml(doc, options)` resolves `fonts: options?.fonts ?? []` into
    the `Required<DocumentToMjmlOptions>` shape and passes it to `renderHead`.
 4. `mjml-renderer.ts` threads `options.fonts` from `RenderOptions` into its
