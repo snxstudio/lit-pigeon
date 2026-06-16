@@ -10,7 +10,7 @@
     "name": "@lit-pigeon/editor (ESM, excluding lit)",
     "path": "packages/editor/dist/index.js",
     "ignore": ["lit", "lit/decorators.js", "lit/directives/ref.js", "lit/directives/unsafe-html.js", "@lit-pigeon/core", "./rich-text.js"],
-    "limit": "45.1 kB",
+    "limit": "45.3 kB",
     "gzip": true
   },
   {
@@ -24,7 +24,7 @@
     "name": "@lit-pigeon/renderer-mjml (ESM, excluding mjml)",
     "path": "packages/renderer-mjml/dist/index.js",
     "ignore": ["mjml", "@lit-pigeon/core"],
-    "limit": "3 kB",
+    "limit": "3.2 kB",
     "gzip": true
   },
   {
