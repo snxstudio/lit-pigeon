@@ -48,8 +48,9 @@ import {
   cloneRowWithNewIds,
   createDocStep,
   generateId,
+  SYSTEM_LINK_TYPES,
 } from '@lit-pigeon/core';
-import type { HistoryState, TransactionSnapshot, BrandKit, BrandKitStorage, BrandLogo, ImageBlock, FontDefinition } from '@lit-pigeon/core';
+import type { HistoryState, TransactionSnapshot, BrandKit, BrandKitStorage, BrandLogo, ImageBlock, FontDefinition, LinkType } from '@lit-pigeon/core';
 
 import './components/toolbar/pigeon-toolbar.js';
 import './components/palette/pigeon-palette.js';
@@ -459,6 +460,7 @@ export class PigeonEditor extends LitElement {
           .assetStorage=${this.assetStorage ?? this.config.assetStorage}
           .brandKit=${this._activeBrandKit}
           .fontConfig=${this.config.fontConfig ?? []}
+          .linkTypes=${this._linkTypes()}
           @property-change=${this._handlePropertyChange}
           @row-property-change=${this._handleRowPropertyChange}
           @row-layout-change=${this._handleRowLayoutChange}
@@ -490,7 +492,7 @@ export class PigeonEditor extends LitElement {
           ></pigeon-template-picker>`
         : ''}
 
-      <pigeon-rich-text-bubble></pigeon-rich-text-bubble>
+      <pigeon-rich-text-bubble .linkTypes=${this._linkTypes()}></pigeon-rich-text-bubble>
     `;
   }
 
@@ -510,6 +512,10 @@ export class PigeonEditor extends LitElement {
     if (this.config.rowLibrary) return this.config.rowLibrary;
     if (!this._defaultRowLibrary) this._defaultRowLibrary = new InMemoryRowLibraryStorage();
     return this._defaultRowLibrary;
+  }
+
+  private _linkTypes(): LinkType[] {
+    return [...SYSTEM_LINK_TYPES, ...(this.config.linkTypes ?? [])];
   }
 
   /**
