@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import type { Template, TemplateCategory, TemplateStorage } from '@lit-pigeon/core';
+import { t } from '../../i18n/index.js';
 
 const CATEGORIES: { v: TemplateCategory; l: string }[] = [
   { v: 'welcome', l: 'Welcome' },
@@ -171,33 +172,33 @@ export class PigeonTemplatePicker extends LitElement {
       <div class="overlay" @click=${this._close}></div>
       <div class="modal">
         <div class="header">
-          <h3>Templates</h3>
-          <button class="close-btn" title="Close" @click=${this._close}>&times;</button>
+          <h3>${t('template.heading')}</h3>
+          <button class="close-btn" title=${t('template.close')} @click=${this._close}>&times;</button>
         </div>
         <div class="body">
           <div>
-            <h4 class="section-title">Choose a template</h4>
+            <h4 class="section-title">${t('template.section.choose')}</h4>
             ${this._templates.length === 0
-              ? html`<div class="empty">No templates available yet.</div>`
-              : html`<div class="grid">${this._templates.map((t) => this._renderCard(t))}</div>`}
+              ? html`<div class="empty">${t('template.empty')}</div>`
+              : html`<div class="grid">${this._templates.map((tmpl) => this._renderCard(tmpl))}</div>`}
           </div>
 
           <form class="save-form" @submit=${this._onSubmit}>
-            <h4 class="section-title">Save current as template</h4>
+            <h4 class="section-title">${t('template.section.save')}</h4>
             <div class="save-row">
               <div class="field">
-                <label for="template-name">Name</label>
+                <label for="template-name">${t('template.field.name')}</label>
                 <input
                   id="template-name"
                   name="template-name"
                   type="text"
-                  placeholder="My template"
+                  placeholder=${t('template.field.name-placeholder')}
                   .value=${this._name}
                   @input=${(e: Event) => (this._name = (e.target as HTMLInputElement).value)}
                 />
               </div>
               <div class="field">
-                <label for="template-category">Category</label>
+                <label for="template-category">${t('template.field.category')}</label>
                 <select
                   id="template-category"
                   name="template-category"
@@ -212,11 +213,11 @@ export class PigeonTemplatePicker extends LitElement {
               </div>
             </div>
             <div class="field">
-              <label for="template-description">Description (optional)</label>
+              <label for="template-description">${t('template.field.description')}</label>
               <textarea
                 id="template-description"
                 name="template-description"
-                placeholder="What is this template for?"
+                placeholder=${t('template.field.description-placeholder')}
                 .value=${this._description}
                 @input=${(e: Event) =>
                   (this._description = (e.target as HTMLTextAreaElement).value)}
@@ -224,8 +225,8 @@ export class PigeonTemplatePicker extends LitElement {
             </div>
             ${this._formError ? html`<div class="error">${this._formError}</div>` : ''}
             <div class="form-actions">
-              <button type="button" class="secondary" @click=${this._close}>Cancel</button>
-              <button type="submit">Save template</button>
+              <button type="button" class="secondary" @click=${this._close}>${t('template.cancel')}</button>
+              <button type="submit">${t('template.save')}</button>
             </div>
           </form>
         </div>
@@ -233,14 +234,14 @@ export class PigeonTemplatePicker extends LitElement {
     `;
   }
 
-  private _renderCard(t: Template) {
+  private _renderCard(tmpl: Template) {
     return html`
-      <button class="template-card" @click=${() => this._onPick(t)} title="Load ${t.name}">
-        ${t.thumbnail
-          ? html`<img class="thumb" src=${t.thumbnail} alt="" />`
-          : html`<div class="thumb-placeholder">${t.category ?? 'template'}</div>`}
-        <span class="name">${t.name}</span>
-        ${t.description ? html`<span class="description">${t.description}</span>` : ''}
+      <button class="template-card" @click=${() => this._onPick(tmpl)} title="Load ${tmpl.name}">
+        ${tmpl.thumbnail
+          ? html`<img class="thumb" src=${tmpl.thumbnail} alt="" />`
+          : html`<div class="thumb-placeholder">${tmpl.category ?? 'template'}</div>`}
+        <span class="name">${tmpl.name}</span>
+        ${tmpl.description ? html`<span class="description">${tmpl.description}</span>` : ''}
       </button>
     `;
   }
@@ -264,7 +265,7 @@ export class PigeonTemplatePicker extends LitElement {
     e.preventDefault();
     const name = this._name.trim();
     if (!name) {
-      this._formError = 'Name is required';
+      this._formError = t('template.error.name-required');
       return;
     }
     this._formError = '';

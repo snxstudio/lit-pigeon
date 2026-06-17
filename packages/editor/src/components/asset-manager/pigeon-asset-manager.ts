@@ -5,6 +5,7 @@ import type {
   AssetManagerConfig,
   AssetStorage,
 } from '@lit-pigeon/core';
+import { t } from '../../i18n/index.js';
 
 type Tab = 'library' | 'upload';
 
@@ -439,10 +440,10 @@ export class PigeonAssetManager extends LitElement {
     const hasLibrary = !!this.storage;
     return html`
       <div class="overlay" @click=${this._close}></div>
-      <div class="modal" role="dialog" aria-label="Select asset">
+      <div class="modal" role="dialog" aria-label=${t('asset.title')}>
         <div class="header">
-          <h3>${hasLibrary ? 'Select asset' : 'Select image'}</h3>
-          <button class="close-btn" @click=${this._close} aria-label="Close">&times;</button>
+          <h3>${hasLibrary ? t('asset.title') : t('asset.title-upload')}</h3>
+          <button class="close-btn" @click=${this._close} aria-label=${t('asset.close')}>&times;</button>
         </div>
         ${hasLibrary ? this._renderTabs() : nothing}
         <div class="body">
@@ -464,7 +465,7 @@ export class PigeonAssetManager extends LitElement {
           aria-selected=${active === 'library'}
           @click=${() => (this._tab = 'library')}
         >
-          Library
+          ${t('asset.tab.library')}
         </button>
         <button
           class="tab ${active === 'upload' ? 'active' : ''}"
@@ -472,7 +473,7 @@ export class PigeonAssetManager extends LitElement {
           aria-selected=${active === 'upload'}
           @click=${() => (this._tab = 'upload')}
         >
-          Upload
+          ${t('asset.tab.upload')}
         </button>
       </div>
     `;
@@ -486,21 +487,21 @@ export class PigeonAssetManager extends LitElement {
           .value=${this._folder}
           @change=${this._onFolderChange}
         >
-          <option value=${ALL_FOLDERS}>All folders</option>
+          <option value=${ALL_FOLDERS}>${t('asset.folder.all')}</option>
           ${this._folders.map(
             (f) => html`<option value=${f} ?selected=${this._folder === f}>${f}</option>`,
           )}
         </select>
         <input
           type="search"
-          placeholder="Search assets"
+          placeholder=${t('asset.search')}
           .value=${this._search}
-          aria-label="Search assets"
+          aria-label=${t('asset.search')}
           @input=${this._onSearchInput}
         />
       </div>
       ${this._availableTags.length > 0
-        ? html`<div class="tag-row" role="group" aria-label="Filter by tag">
+        ? html`<div class="tag-row" role="group" aria-label=${t('asset.tag-filter-label')}>
             ${this._availableTags.map(
               (tag) => html`<button
                 class="tag-chip ${this._selectedTags.includes(tag) ? 'active' : ''}"
@@ -514,12 +515,12 @@ export class PigeonAssetManager extends LitElement {
         ? html`<div class="error">${this._libraryError}</div>`
         : nothing}
       ${this._libraryLoading
-        ? html`<div class="library-spinner">Loading…</div>`
+        ? html`<div class="library-spinner">${t('asset.loading')}</div>`
         : this._assets.length === 0
           ? html`<div class="empty-library">
               ${this._search || this._selectedTags.length > 0 || this._folder !== ALL_FOLDERS
-                ? 'No assets match your filters.'
-                : 'No saved assets yet. Upload one to get started.'}
+                ? t('asset.empty.filtered')
+                : t('asset.empty.no-assets')}
             </div>`
           : html`<div class="asset-grid">
               ${this._assets.map((asset) => this._renderAssetCard(asset))}
@@ -553,8 +554,8 @@ export class PigeonAssetManager extends LitElement {
           <polyline points="17 8 12 3 7 8"/>
           <line x1="12" y1="3" x2="12" y2="15"/>
         </svg>
-        <p>Drag & drop an image here</p>
-        <small>or click to browse</small>
+        <p>${t('asset.drop-zone.label')}</p>
+        <small>${t('asset.drop-zone.hint')}</small>
       </div>
       <input
         type="file"
@@ -571,18 +572,18 @@ export class PigeonAssetManager extends LitElement {
 
       ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
 
-      <div class="separator">or enter URL</div>
+      <div class="separator">${t('asset.url.separator')}</div>
 
       <div class="url-input-group">
         <input
           type="url"
-          placeholder="https://example.com/image.jpg"
+          placeholder=${t('asset.url.placeholder')}
           .value=${this._urlInput}
           @input=${(e: Event) =>
             (this._urlInput = (e.target as HTMLInputElement).value)}
           @keydown=${(e: KeyboardEvent) => e.key === 'Enter' && this._useUrl()}
         />
-        <button @click=${this._useUrl}>Use URL</button>
+        <button @click=${this._useUrl}>${t('asset.url.use')}</button>
       </div>
     `;
   }
@@ -630,11 +631,11 @@ export class PigeonAssetManager extends LitElement {
   private get _availableTags(): string[] {
     const tagSet = new Set<string>();
     for (const a of this._assets) {
-      for (const t of a.tags ?? []) tagSet.add(t);
+      for (const tag of a.tags ?? []) tagSet.add(tag);
     }
     // Selected tags should always render even if the filter collapsed the
     // result set so the user can still deselect them.
-    for (const t of this._selectedTags) tagSet.add(t);
+    for (const tag of this._selectedTags) tagSet.add(tag);
     return Array.from(tagSet).sort();
   }
 
