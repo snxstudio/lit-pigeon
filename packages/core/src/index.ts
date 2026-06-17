@@ -143,3 +143,7 @@ export type { LibraryEntry, RowLibraryStorage } from './types/row-library.js';
 export { InMemoryRowLibraryStorage } from './row-library/in-memory-storage.js';
 export type { InMemoryRowLibraryStorageOptions } from './row-library/in-memory-storage.js';
 export { cloneRowWithNewIds } from './row-library/clone.js';
+
+// Link Types
+export type { LinkType } from './types/link-type.js';
+export { SYSTEM_LINK_TYPES } from './link-types/system-link-types.js';
