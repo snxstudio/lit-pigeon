@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import type { LinkType } from '@lit-pigeon/core';
+import { t } from '../../../i18n/index.js';
 
 /**
  * `<pigeon-link-type-picker>` — a compact dropdown of "special link" types
@@ -32,9 +33,9 @@ export class PigeonLinkTypePicker extends LitElement {
   render() {
     if (this.linkTypes.length === 0) return html``;
     return html`
-      <select aria-label="Insert a special link" @change=${this._onChange}>
-        <option value="">+ Special link</option>
-        ${this.linkTypes.map((t) => html`<option value=${t.id}>${t.label}</option>`)}
+      <select aria-label=${t('control.linkType.ariaLabel')} @change=${this._onChange}>
+        <option value="">${t('control.linkType.placeholder')}</option>
+        ${this.linkTypes.map((lt) => html`<option value=${lt.id}>${lt.label}</option>`)}
       </select>
     `;
   }
@@ -44,12 +45,12 @@ export class PigeonLinkTypePicker extends LitElement {
     const id = sel.value;
     sel.value = ''; // reset so the same type can be picked again
     if (!id) return;
-    const type = this.linkTypes.find((t) => t.id === id);
+    const type = this.linkTypes.find((lt) => lt.id === id);
     if (!type) return;
 
     let href: string | undefined;
     if (type.prompt) {
-      const value = window.prompt(type.prompt === 'email' ? 'Email address' : 'Phone number');
+      const value = window.prompt(type.prompt === 'email' ? t('control.linkType.emailPrompt') : t('control.linkType.telPrompt'));
       if (!value || !value.trim()) return;
       href = (type.prompt === 'email' ? 'mailto:' : 'tel:') + value.trim();
     } else if (type.href) {

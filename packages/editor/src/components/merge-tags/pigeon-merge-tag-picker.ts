@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import type { MergeTag } from '@lit-pigeon/core';
+import { t } from '../../i18n/index.js';
 
 @customElement('pigeon-merge-tag-picker')
 export class PigeonMergeTagPicker extends LitElement {
@@ -120,14 +121,14 @@ export class PigeonMergeTagPicker extends LitElement {
         <div class="search-box">
           <input
             type="text"
-            placeholder="Search tags..."
+            placeholder=${t('control.mergeTag.searchPlaceholder')}
             .value=${this._search}
             @input=${(e: Event) => this._search = (e.target as HTMLInputElement).value}
           />
         </div>
         <div class="tag-list">
           ${filteredTags.length === 0
-            ? html`<div class="empty">No matching tags</div>`
+            ? html`<div class="empty">${t('control.mergeTag.noMatches')}</div>`
             : Array.from(grouped.entries()).map(([category, tags]) => html`
                 ${category ? html`<div class="category-header">${category}</div>` : ''}
                 ${tags.map(tag => html`

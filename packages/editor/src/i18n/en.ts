@@ -223,4 +223,46 @@ export const EN_MESSAGES: Record<string, string> = {
   'panel.row.backgroundImageUrl': 'Background Image URL',
   'panel.row.fullWidth': 'Full Width',
   'panel.row.displayCondition': 'Display condition',
+
+  // controls — color picker
+  'control.color.label': 'Color',
+
+  // controls — font picker
+  'control.fontPicker.label': 'Font Family',
+
+  // controls — link type picker
+  'control.linkType.ariaLabel': 'Insert a special link',
+  'control.linkType.placeholder': '+ Special link',
+  'control.linkType.emailPrompt': 'Email address',
+  'control.linkType.telPrompt': 'Phone number',
+
+  // controls — spacing input
+  'control.spacing.top': 'Top',
+  'control.spacing.right': 'Right',
+  'control.spacing.bottom': 'Bottom',
+  'control.spacing.left': 'Left',
+  'control.spacing.topTitle': 'Top (px)',
+  'control.spacing.rightTitle': 'Right (px)',
+  'control.spacing.bottomTitle': 'Bottom (px)',
+  'control.spacing.leftTitle': 'Left (px)',
+
+  // controls — alignment picker
+  'control.alignment.left': 'Align left',
+  'control.alignment.center': 'Align center',
+  'control.alignment.right': 'Align right',
+
+  // controls — merge tag picker
+  'control.mergeTag.searchPlaceholder': 'Search tags...',
+  'control.mergeTag.noMatches': 'No matching tags',
+
+  // rich text bubble toolbar
+  'richtext.bold': 'Bold (Cmd+B)',
+  'richtext.italic': 'Italic (Cmd+I)',
+  'richtext.underline': 'Underline (Cmd+U)',
+  'richtext.strike': 'Strike',
+  'richtext.code': 'Code',
+  'richtext.link': 'Link',
+  'richtext.apply': 'Apply',
+  'richtext.removeLink': 'Remove link',
+  'richtext.urlPlaceholder': 'https://…',
 };

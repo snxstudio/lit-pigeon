@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import { t } from '../../../i18n/index.js';
 
 @customElement('pigeon-alignment-picker')
 export class PigeonAlignmentPicker extends LitElement {
@@ -79,10 +80,10 @@ export class PigeonAlignmentPicker extends LitElement {
       <div class="buttons" role="group" aria-labelledby="align-label">
         <button
           class="${this.value === 'left' ? 'active' : ''}"
-          aria-label="Align left"
+          aria-label=${t('control.alignment.left')}
           aria-pressed=${this.value === 'left'}
           @click=${() => this._select('left')}
-          title="Align left"
+          title=${t('control.alignment.left')}
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="3" y1="6" x2="21" y2="6"/>
@@ -92,10 +93,10 @@ export class PigeonAlignmentPicker extends LitElement {
         </button>
         <button
           class="${this.value === 'center' ? 'active' : ''}"
-          aria-label="Align center"
+          aria-label=${t('control.alignment.center')}
           aria-pressed=${this.value === 'center'}
           @click=${() => this._select('center')}
-          title="Align center"
+          title=${t('control.alignment.center')}
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="3" y1="6" x2="21" y2="6"/>
@@ -105,10 +106,10 @@ export class PigeonAlignmentPicker extends LitElement {
         </button>
         <button
           class="${this.value === 'right' ? 'active' : ''}"
-          aria-label="Align right"
+          aria-label=${t('control.alignment.right')}
           aria-pressed=${this.value === 'right'}
           @click=${() => this._select('right')}
-          title="Align right"
+          title=${t('control.alignment.right')}
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="3" y1="6" x2="21" y2="6"/>

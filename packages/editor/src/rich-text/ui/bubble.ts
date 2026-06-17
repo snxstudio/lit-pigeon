@@ -4,6 +4,7 @@ import type { Editor } from '@tiptap/core';
 import { richTextController } from '../controller.js';
 import '../../components/properties/controls/pigeon-link-type-picker.js';
 import type { LinkType } from '@lit-pigeon/core';
+import { t } from '../../i18n/index.js';
 
 /**
  * Floating formatting toolbar shown above the current text selection.
@@ -190,13 +191,13 @@ export class PigeonRichTextBubble extends LitElement {
     const style = `top: ${this._top}px; left: ${this._left}px;`;
     return html`
       <div class="bar" style=${style} @mousedown=${this._preventBlur}>
-        <button title="Bold (Cmd+B)" ?data-active=${this._activeBold} @click=${() => this._toggle('toggleBold')}>B</button>
-        <button title="Italic (Cmd+I)" ?data-active=${this._activeItalic} @click=${() => this._toggle('toggleItalic')}><em>I</em></button>
-        <button title="Underline (Cmd+U)" ?data-active=${this._activeUnderline} @click=${() => this._toggle('toggleUnderline')}><u>U</u></button>
-        <button title="Strike" ?data-active=${this._activeStrike} @click=${() => this._toggle('toggleStrike')}><s>S</s></button>
-        <button title="Code" ?data-active=${this._activeCode} @click=${() => this._toggle('toggleCode')}>&lt;&gt;</button>
+        <button title=${t('richtext.bold')} ?data-active=${this._activeBold} @click=${() => this._toggle('toggleBold')}>B</button>
+        <button title=${t('richtext.italic')} ?data-active=${this._activeItalic} @click=${() => this._toggle('toggleItalic')}><em>I</em></button>
+        <button title=${t('richtext.underline')} ?data-active=${this._activeUnderline} @click=${() => this._toggle('toggleUnderline')}><u>U</u></button>
+        <button title=${t('richtext.strike')} ?data-active=${this._activeStrike} @click=${() => this._toggle('toggleStrike')}><s>S</s></button>
+        <button title=${t('richtext.code')} ?data-active=${this._activeCode} @click=${() => this._toggle('toggleCode')}>&lt;&gt;</button>
         <span class="divider"></span>
-        <button title="Link" ?data-active=${this._activeLink} @click=${this._toggleLinkPopover}>↗</button>
+        <button title=${t('richtext.link')} ?data-active=${this._activeLink} @click=${this._toggleLinkPopover}>↗</button>
         ${this._linkPopoverOpen ? this._renderLinkPopover() : ''}
       </div>
     `;
@@ -211,15 +212,15 @@ export class PigeonRichTextBubble extends LitElement {
       >
         <input
           type="url"
-          placeholder="https://…"
+          placeholder=${t('richtext.urlPlaceholder')}
           .value=${this._linkValue}
           @mousedown=${() => richTextController.holdFocus()}
           @blur=${() => richTextController.releaseFocus()}
           @input=${(e: Event) => this._linkValue = (e.target as HTMLInputElement).value}
           @keydown=${(e: KeyboardEvent) => e.key === 'Enter' && this._applyLink()}
         />
-        <button class="primary" @click=${this._applyLink}>Apply</button>
-        ${this._activeLink ? html`<button @click=${this._removeLink} title="Remove link">×</button>` : ''}
+        <button class="primary" @click=${this._applyLink}>${t('richtext.apply')}</button>
+        ${this._activeLink ? html`<button @click=${this._removeLink} title=${t('richtext.removeLink')}>×</button>` : ''}
         <pigeon-link-type-picker
           .linkTypes=${this.linkTypes}
           @link-type-select=${this._onLinkTypeSelect}
