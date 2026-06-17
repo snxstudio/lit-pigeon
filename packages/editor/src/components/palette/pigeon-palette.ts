@@ -1,7 +1,7 @@
 import { LitElement, html, css, type PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { getAllBlockDefinitions } from '@lit-pigeon/core';
-import type { BrandKit, BlockDefinition, PigeonDocument, Selection } from '@lit-pigeon/core';
+import type { BrandKit, BlockDefinition, PigeonDocument, Selection, RowLibraryStorage } from '@lit-pigeon/core';
 import './pigeon-palette-item.js';
 import '../layers/pigeon-layers.js';
 
@@ -19,6 +19,12 @@ function loadBrandTab(): Promise<unknown> {
   return _brandTabPromise;
 }
 
+let _savedTabPromise: Promise<unknown> | null = null;
+function loadSavedTab(): Promise<unknown> {
+  if (!_savedTabPromise) _savedTabPromise = import('./pigeon-saved-tab.js');
+  return _savedTabPromise;
+}
+
 interface RowLayout {
   label: string;
   columns: number;
@@ -32,7 +38,7 @@ const ROW_LAYOUTS: RowLayout[] = [
   { label: '4 Columns', columns: 4, icon: '[||||]' },
 ];
 
-type PaletteTab = 'content' | 'layers' | 'brand';
+type PaletteTab = 'content' | 'layers' | 'brand' | 'saved';
 
 @customElement('pigeon-palette')
 export class PigeonPalette extends LitElement {
@@ -45,6 +51,9 @@ export class PigeonPalette extends LitElement {
   @property({ attribute: false })
   brandKit: BrandKit | null = null;
 
+  @property({ attribute: false })
+  rowLibrary: RowLibraryStorage | null = null;
+
   @state()
   private _blockDefs: BlockDefinition[] = [];
 
@@ -53,6 +62,9 @@ export class PigeonPalette extends LitElement {
 
   @state()
   private _brandTabLoaded = false;
+
+  @state()
+  private _savedTabLoaded = false;
 
   static styles = css`
     :host {
@@ -177,6 +189,15 @@ export class PigeonPalette extends LitElement {
               @click=${this._handleBrandTabClick}
             >Brand</button>`
           : ''}
+        <button
+          part="palette-tab"
+          role="tab"
+          id="pigeon-tab-saved"
+          aria-selected=${this._activeTab === 'saved'}
+          aria-controls="pigeon-tabpanel"
+          class="tab ${this._activeTab === 'saved' ? 'active' : ''}"
+          @click=${this._handleSavedTabClick}
+        >Saved</button>
       </div>
       <div
         class="tab-content"
@@ -186,13 +207,17 @@ export class PigeonPalette extends LitElement {
           ? 'pigeon-tab-content'
           : this._activeTab === 'layers'
             ? 'pigeon-tab-layers'
-            : 'pigeon-tab-brand'}
+            : this._activeTab === 'brand'
+              ? 'pigeon-tab-brand'
+              : 'pigeon-tab-saved'}
       >
         ${this._activeTab === 'content'
           ? this._renderContentTab()
           : this._activeTab === 'layers'
             ? this._renderLayersTab()
-            : this._renderBrandTab()}
+            : this._activeTab === 'brand'
+              ? this._renderBrandTab()
+              : this._renderSavedTab()}
       </div>
     `;
   }
@@ -249,6 +274,19 @@ export class PigeonPalette extends LitElement {
   private _renderBrandTab() {
     if (!this._brandTabLoaded) return html``;
     return html`<pigeon-brand-tab .brandKit=${this.brandKit}></pigeon-brand-tab>`;
+  }
+
+  private _handleSavedTabClick = async () => {
+    this._activeTab = 'saved';
+    if (!this._savedTabLoaded) {
+      await loadSavedTab();
+      this._savedTabLoaded = true;
+    }
+  };
+
+  private _renderSavedTab() {
+    if (!this._savedTabLoaded) return html``;
+    return html`<pigeon-saved-tab .storage=${this.rowLibrary}></pigeon-saved-tab>`;
   }
 }
 
