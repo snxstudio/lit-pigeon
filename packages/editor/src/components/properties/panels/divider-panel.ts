@@ -2,6 +2,7 @@ import { LitElement, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import type { BrandColor, DividerBlock, Spacing } from '@lit-pigeon/core';
 import { panelStyles } from './panel-styles.js';
+import { t } from '../../../i18n/index.js';
 import '../controls/color-picker.js';
 import '../controls/slider-input.js';
 import '../controls/spacing-input.js';
@@ -27,26 +28,26 @@ export class PigeonDividerPanel extends LitElement {
     const v = this.block.values;
 
     return html`
-      <h3>Divider Properties</h3>
+      <h3>${t('panel.divider.title')}</h3>
 
       <div class="field">
-        <label>Style</label>
+        <label>${t('panel.divider.style')}</label>
         <select @change=${this._onStyleChange}>
-          <option value="solid" ?selected=${v.borderStyle === 'solid'}>Solid</option>
-          <option value="dashed" ?selected=${v.borderStyle === 'dashed'}>Dashed</option>
-          <option value="dotted" ?selected=${v.borderStyle === 'dotted'}>Dotted</option>
+          <option value="solid" ?selected=${v.borderStyle === 'solid'}>${t('panel.divider.styleSolid')}</option>
+          <option value="dashed" ?selected=${v.borderStyle === 'dashed'}>${t('panel.divider.styleDashed')}</option>
+          <option value="dotted" ?selected=${v.borderStyle === 'dotted'}>${t('panel.divider.styleDotted')}</option>
         </select>
       </div>
 
       <pigeon-color-picker
-        label="Color"
+        label=${t('panel.divider.color')}
         .value=${v.borderColor}
         .swatches=${this.swatches}
         @color-change=${this._onColorChange}
       ></pigeon-color-picker>
 
       <pigeon-slider-input
-        label="Width"
+        label=${t('panel.divider.width')}
         .value=${v.borderWidth}
         min=${1}
         max=${10}
@@ -56,7 +57,7 @@ export class PigeonDividerPanel extends LitElement {
       ></pigeon-slider-input>
 
       <div class="field">
-        <label>Line Width</label>
+        <label>${t('panel.divider.lineWidth')}</label>
         <input
           type="text"
           .value=${v.width}
@@ -66,7 +67,7 @@ export class PigeonDividerPanel extends LitElement {
       </div>
 
       <pigeon-spacing-input
-        label="Padding"
+        label=${t('panel.common.padding')}
         .value=${v.padding}
         @spacing-change=${this._onPaddingChange}
       ></pigeon-spacing-input>

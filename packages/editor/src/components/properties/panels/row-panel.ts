@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import type { RowNode, Spacing } from '@lit-pigeon/core';
 import { panelStyles } from './panel-styles.js';
+import { t } from '../../../i18n/index.js';
 import '../controls/color-picker.js';
 import '../controls/spacing-input.js';
 
@@ -82,12 +83,14 @@ export class PigeonRowPanel extends LitElement {
     `,
   ];
 
-  private _layouts = [
-    { label: '1 Column', ratios: [12] },
-    { label: '2 Equal', ratios: [6, 6] },
-    { label: '3 Equal', ratios: [4, 4, 4] },
-    { label: '4 Equal', ratios: [3, 3, 3, 3] },
-  ];
+  private get _layouts() {
+    return [
+      { label: t('panel.row.layout1col'), ratios: [12] },
+      { label: t('panel.row.layout2col'), ratios: [6, 6] },
+      { label: t('panel.row.layout3col'), ratios: [4, 4, 4] },
+      { label: t('panel.row.layout4col'), ratios: [3, 3, 3, 3] },
+    ];
+  }
 
   render() {
     if (!this.row) return html``;
@@ -95,9 +98,9 @@ export class PigeonRowPanel extends LitElement {
     const currentRatiosStr = this.row.columnRatios.join(',');
 
     return html`
-      <h3>Row Properties</h3>
+      <h3>${t('panel.row.title')}</h3>
 
-      <span class="section-label">Column Layout</span>
+      <span class="section-label">${t('panel.row.columnLayout')}</span>
       <div class="layout-presets">
         ${this._layouts.map(layout => {
           const active = layout.ratios.join(',') === currentRatiosStr;
@@ -114,13 +117,13 @@ export class PigeonRowPanel extends LitElement {
       </div>
 
       <pigeon-color-picker
-        label="Background Color"
+        label=${t('panel.common.backgroundColor')}
         .value=${a.backgroundColor ?? '#ffffff'}
         @color-change=${this._onBgColorChange}
       ></pigeon-color-picker>
 
       <div class="field">
-        <label>Background Image URL</label>
+        <label>${t('panel.row.backgroundImageUrl')}</label>
         <input
           type="url"
           .value=${a.backgroundImage ?? ''}
@@ -130,7 +133,7 @@ export class PigeonRowPanel extends LitElement {
       </div>
 
       <div class="toggle-row">
-        <span class="toggle-label">Full Width</span>
+        <span class="toggle-label">${t('panel.row.fullWidth')}</span>
         <label class="toggle">
           <input
             type="checkbox"
@@ -142,13 +145,13 @@ export class PigeonRowPanel extends LitElement {
       </div>
 
       <pigeon-spacing-input
-        label="Padding"
+        label=${t('panel.common.padding')}
         .value=${a.padding}
         @spacing-change=${this._onPaddingChange}
       ></pigeon-spacing-input>
 
       <div class="field">
-        <label for="row-condition">Display condition</label>
+        <label for="row-condition">${t('panel.row.displayCondition')}</label>
         <input
           id="row-condition"
           type="text"

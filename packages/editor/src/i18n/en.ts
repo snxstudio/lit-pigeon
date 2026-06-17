@@ -166,4 +166,61 @@ export const EN_MESSAGES: Record<string, string> = {
   'panel.hero.verticalAlignTop': 'Top',
   'panel.hero.verticalAlignMiddle': 'Middle',
   'panel.hero.verticalAlignBottom': 'Bottom',
+
+  // property panels — navbar
+  'panel.navbar.title': 'Navbar Properties',
+  'panel.navbar.links': 'Links',
+  'panel.navbar.linkLabel': 'Link',
+  'panel.navbar.removeLink': 'Remove',
+  'panel.navbar.linkText': 'Text',
+  'panel.navbar.url': 'URL',
+  'panel.navbar.addLink': '+ Add Link',
+  'panel.navbar.hamburger': 'Hamburger (mobile)',
+  'panel.navbar.hamburgerShow': 'Show',
+  'panel.navbar.hamburgerHide': 'Hide',
+  'panel.navbar.linkColor': 'Link Color',
+  'panel.navbar.linkFontSize': 'Link Font Size',
+  'panel.navbar.linkPadding': 'Link Padding',
+
+  // property panels — divider
+  'panel.divider.title': 'Divider Properties',
+  'panel.divider.style': 'Style',
+  'panel.divider.styleSolid': 'Solid',
+  'panel.divider.styleDashed': 'Dashed',
+  'panel.divider.styleDotted': 'Dotted',
+  'panel.divider.color': 'Color',
+  'panel.divider.width': 'Width',
+  'panel.divider.lineWidth': 'Line Width',
+
+  // property panels — spacer
+  'panel.spacer.title': 'Spacer Properties',
+  'panel.spacer.height': 'Height',
+
+  // property panels — social
+  'panel.social.title': 'Social Properties',
+  'panel.social.icons': 'Icons',
+  'panel.social.iconLabel': 'Icon',
+  'panel.social.removeIcon': 'Remove',
+  'panel.social.network': 'Network',
+  'panel.social.url': 'URL',
+  'panel.social.iconUrl': 'Icon URL',
+  'panel.social.altText': 'Label (alt text)',
+  'panel.social.addIcon': '+ Add Icon',
+  'panel.social.iconSize': 'Icon Size',
+  'panel.social.spacing': 'Spacing',
+
+  // property panels — html
+  'panel.html.title': 'HTML Properties',
+  'panel.html.rawHtml': 'Raw HTML',
+
+  // property panels — row
+  'panel.row.title': 'Row Properties',
+  'panel.row.columnLayout': 'Column Layout',
+  'panel.row.layout1col': '1 Column',
+  'panel.row.layout2col': '2 Equal',
+  'panel.row.layout3col': '3 Equal',
+  'panel.row.layout4col': '4 Equal',
+  'panel.row.backgroundImageUrl': 'Background Image URL',
+  'panel.row.fullWidth': 'Full Width',
+  'panel.row.displayCondition': 'Display condition',
 };

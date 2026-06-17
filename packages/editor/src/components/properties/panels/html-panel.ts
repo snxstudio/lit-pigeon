@@ -3,6 +3,7 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
 import type { HtmlBlock, Spacing, MergeTag } from '@lit-pigeon/core';
 import { panelStyles } from './panel-styles.js';
+import { t } from '../../../i18n/index.js';
 import '../controls/spacing-input.js';
 import '../../merge-tags/pigeon-merge-tag-picker.js';
 
@@ -79,14 +80,14 @@ export class PigeonHtmlPanel extends LitElement {
     const hasTags = this.mergeTags.length > 0;
 
     return html`
-      <h3>HTML Properties</h3>
+      <h3>${t('panel.html.title')}</h3>
 
       <div class="field">
         <div class="label-row">
-          <label>Raw HTML</label>
+          <label>${t('panel.html.rawHtml')}</label>
           ${hasTags ? html`
-            <button class="tag-btn" ${ref(this._triggerRef)} @click=${this._togglePicker} title="Insert merge tag">
-              { } Tag
+            <button class="tag-btn" ${ref(this._triggerRef)} @click=${this._togglePicker} title=${t('panel.common.insertMergeTag')}>
+              ${t('panel.common.tagBtn')}
             </button>
           ` : ''}
         </div>
@@ -98,7 +99,7 @@ export class PigeonHtmlPanel extends LitElement {
       </div>
 
       <pigeon-spacing-input
-        label="Padding"
+        label=${t('panel.common.padding')}
         .value=${v.padding}
         @spacing-change=${this._onPaddingChange}
       ></pigeon-spacing-input>
