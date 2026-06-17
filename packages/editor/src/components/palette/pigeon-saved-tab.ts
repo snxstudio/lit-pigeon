@@ -56,7 +56,9 @@ export class PigeonSavedTab extends LitElement {
           : this._entries.map(
               (e) => html`<div
                 class="row" data-entry-id=${e.id} draggable="true"
+                role="button" tabindex="0" aria-label=${`Insert ${e.name}`}
                 @dragstart=${(ev: DragEvent) => this._onDragStart(ev, e)}
+                @keydown=${(ev: KeyboardEvent) => this._onKeyDown(ev, e)}
               >
                 <span class="name">${e.name}</span>
                 <button class="delete" type="button" title="Delete" aria-label=${`Delete ${e.name}`}
@@ -65,6 +67,14 @@ export class PigeonSavedTab extends LitElement {
             )}
       </div>
     `;
+  }
+
+  private _onKeyDown(ev: KeyboardEvent, entry: LibraryEntry) {
+    if (ev.key !== 'Enter' && ev.key !== ' ') return;
+    ev.preventDefault();
+    this.dispatchEvent(new CustomEvent('library-insert', {
+      detail: { node: entry.node }, bubbles: true, composed: true,
+    }));
   }
 
   private _onDragStart(ev: DragEvent, entry: LibraryEntry) {

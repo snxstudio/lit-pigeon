@@ -42,4 +42,15 @@ describe('pigeon-saved-tab', () => {
     const el = await mount(new InMemoryRowLibraryStorage());
     expect(el.shadowRoot!.querySelector('.empty')).toBeTruthy();
   });
+
+  it('emits library-insert on Enter for keyboard users', async () => {
+    const store = new InMemoryRowLibraryStorage({ seed: [entry('hero')] });
+    const el = await mount(store);
+    const events: CustomEvent[] = [];
+    el.addEventListener('library-insert', (e) => events.push(e as CustomEvent));
+    const chip = el.shadowRoot!.querySelector('[data-entry-id="hero"]') as HTMLElement;
+    chip.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    expect(events.length).toBe(1);
+    expect(events[0].detail.node).toBeTruthy();
+  });
 });
