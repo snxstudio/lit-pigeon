@@ -52,4 +52,25 @@ describe('sanitizeHTML', () => {
   it('strips unknown tags like <iframe> but keeps their text', () => {
     expect(sanitizeHTML('<p><iframe src="x">hi</iframe></p>')).toBe('<p>hi</p>');
   });
+
+  it('keeps tel: hrefs', () => {
+    const out = sanitizeHTML('<p><a href="tel:+15551234567">call</a></p>');
+    expect(out).toContain('href="tel:+15551234567"');
+  });
+
+  it('keeps {{…}} template hrefs (system/custom links)', () => {
+    const out = sanitizeHTML('<p><a href="{{unsubscribe_url}}">unsub</a></p>');
+    expect(out).toContain('href="{{unsubscribe_url}}"');
+  });
+
+  it('still drops javascript: hrefs', () => {
+    const out = sanitizeHTML('<p><a href="javascript:alert(1)">x</a></p>');
+    expect(out).not.toContain('javascript');
+    expect(out).not.toContain('<a');
+  });
+
+  it('still drops data: hrefs', () => {
+    const out = sanitizeHTML('<p><a href="data:text/html,evil">x</a></p>');
+    expect(out).not.toContain('<a');
+  });
 });

@@ -9,7 +9,7 @@ export function buildLinkExtension() {
   return Link.configure({
     openOnClick: false,
     autolink: true,
-    protocols: ['http', 'https', 'mailto'],
+    protocols: ['http', 'https', 'mailto', 'tel'],
     HTMLAttributes: {
       target: '_blank',
       rel: 'noopener',
