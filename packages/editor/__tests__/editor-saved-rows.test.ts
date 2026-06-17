@@ -25,8 +25,10 @@ async function mount(config: Partial<EditorConfig>) {
   await el.updateComplete;
   return el;
 }
-function fire(el: PigeonEditor, type: string, detail: unknown) {
-  el.dispatchEvent(new CustomEvent(type, { detail, bubbles: true, composed: true }));
+
+function fireFrom(el: PigeonEditor, sel: 'pigeon-canvas' | 'pigeon-palette', type: string, detail: unknown) {
+  const child = el.shadowRoot!.querySelector(sel)!;
+  child.dispatchEvent(new CustomEvent(type, { detail, bubbles: true, composed: true }));
 }
 
 describe('pigeon-editor saved rows', () => {
@@ -39,7 +41,7 @@ describe('pigeon-editor saved rows', () => {
     const el = await mount({ doc: docWithRow(), rowLibrary: storage });
     const firstRow = el.getDocument().body.rows[0];
 
-    fire(el, 'row-save', { rowId: firstRow.id });
+    fireFrom(el, 'pigeon-canvas', 'row-save', { rowId: firstRow.id });
     await new Promise((r) => setTimeout(r, 0));
 
     expect(saveSpy).toHaveBeenCalledTimes(1);
@@ -54,7 +56,7 @@ describe('pigeon-editor saved rows', () => {
     const storage = new InMemoryRowLibraryStorage();
     const saveSpy = vi.spyOn(storage, 'save');
     const el = await mount({ doc: docWithRow(), rowLibrary: storage });
-    fire(el, 'row-save', { rowId: el.getDocument().body.rows[0].id });
+    fireFrom(el, 'pigeon-canvas', 'row-save', { rowId: el.getDocument().body.rows[0].id });
     await new Promise((r) => setTimeout(r, 0));
     expect(saveSpy).not.toHaveBeenCalled();
   });
@@ -63,7 +65,7 @@ describe('pigeon-editor saved rows', () => {
     const el = await mount({ doc: docWithRow() });
     const node: RowNode = createRow([createColumn([createBlock('text')])]);
     const before = el.getDocument().body.rows.length;
-    fire(el, 'row-insert-saved', { index: before, node });
+    fireFrom(el, 'pigeon-canvas', 'row-insert-saved', { index: before, node });
     const rows = el.getDocument().body.rows;
     expect(rows.length).toBe(before + 1);
     const inserted = rows[rows.length - 1];
@@ -75,7 +77,7 @@ describe('pigeon-editor saved rows', () => {
     const el = await mount({ doc: docWithRow() });
     const node: RowNode = createRow([createColumn([createBlock('text')])]);
     const before = el.getDocument().body.rows.length;
-    fire(el, 'library-insert', { node });
+    fireFrom(el, 'pigeon-palette', 'library-insert', { node });
     const rows = el.getDocument().body.rows;
     expect(rows.length).toBe(before + 1);
     expect(rows[rows.length - 1].id).not.toBe(node.id);
@@ -85,8 +87,17 @@ describe('pigeon-editor saved rows', () => {
     const storage = new InMemoryRowLibraryStorage({ seed: [{ id: 'hero', name: 'Hero', kind: 'row', node: createRow([createColumn([createBlock('text')])]), createdAt: '', updatedAt: '' }] });
     const delSpy = vi.spyOn(storage, 'delete');
     const el = await mount({ doc: docWithRow(), rowLibrary: storage });
-    fire(el, 'library-delete', { id: 'hero' });
+    fireFrom(el, 'pigeon-palette', 'library-delete', { id: 'hero' });
     await new Promise((r) => setTimeout(r, 0));
     expect(delSpy).toHaveBeenCalledWith('hero');
+    expect(delSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('inserts exactly one row on a single row-insert-saved (no double-fire)', async () => {
+    const el = await mount({ doc: docWithRow() });
+    const node = createRow([createColumn([createBlock('text')])]);
+    const before = el.getDocument().body.rows.length;
+    fireFrom(el, 'pigeon-canvas', 'row-insert-saved', { index: before, node });
+    expect(el.getDocument().body.rows.length).toBe(before + 1); // not +2
   });
 });

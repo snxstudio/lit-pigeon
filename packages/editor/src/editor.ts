@@ -261,10 +261,6 @@ export class PigeonEditor extends LitElement {
     this.addEventListener('brand-color-apply', this._handleBrandColorApply as EventListener);
     this.addEventListener('brand-font-apply', this._handleBrandFontApply as EventListener);
     this.addEventListener('brand-logo-insert', this._handleBrandLogoInsert as EventListener);
-    this.addEventListener('row-save', this._handleRowSave as unknown as EventListener);
-    this.addEventListener('row-insert-saved', this._handleRowInsertSaved as unknown as EventListener);
-    this.addEventListener('library-delete', this._handleLibraryDelete as unknown as EventListener);
-    this.addEventListener('library-insert', this._handleLibraryInsert as unknown as EventListener);
   }
 
   disconnectedCallback() {
@@ -274,10 +270,6 @@ export class PigeonEditor extends LitElement {
     this.removeEventListener('brand-color-apply', this._handleBrandColorApply as EventListener);
     this.removeEventListener('brand-font-apply', this._handleBrandFontApply as EventListener);
     this.removeEventListener('brand-logo-insert', this._handleBrandLogoInsert as EventListener);
-    this.removeEventListener('row-save', this._handleRowSave as unknown as EventListener);
-    this.removeEventListener('row-insert-saved', this._handleRowInsertSaved as unknown as EventListener);
-    this.removeEventListener('library-delete', this._handleLibraryDelete as unknown as EventListener);
-    this.removeEventListener('library-insert', this._handleLibraryInsert as unknown as EventListener);
   }
 
   updated(changed: Map<string, unknown>) {
