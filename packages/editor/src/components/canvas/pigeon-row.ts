@@ -234,6 +234,15 @@ export class PigeonRow extends LitElement {
           </button>
           <button
             class="action-btn"
+            title="Save to library"
+            @click=${this._onSave}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+            </svg>
+          </button>
+          <button
+            class="action-btn"
             title="Duplicate"
             @click=${this._onDuplicate}
           >
@@ -298,6 +307,15 @@ export class PigeonRow extends LitElement {
   private _onDuplicate(e: Event) {
     e.stopPropagation();
     this.dispatchEvent(new CustomEvent('row-duplicate', {
+      detail: { rowId: this.row.id },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  private _onSave(e: Event) {
+    e.stopPropagation();
+    this.dispatchEvent(new CustomEvent('row-save', {
       detail: { rowId: this.row.id },
       bubbles: true,
       composed: true,
