@@ -101,4 +101,69 @@ export const EN_MESSAGES: Record<string, string> = {
   'asset.url.separator': 'or enter URL',
   'asset.url.placeholder': 'https://example.com/image.jpg',
   'asset.url.use': 'Use URL',
+
+  // property panels — shared (common) labels
+  'panel.common.backgroundColor': 'Background Color',
+  'panel.common.padding': 'Padding',
+  'panel.common.outerPadding': 'Outer Padding',
+  'panel.common.innerPadding': 'Inner Padding',
+  'panel.common.alignment': 'Alignment',
+  'panel.common.fontSize': 'Font Size',
+  'panel.common.borderRadius': 'Border Radius',
+  'panel.common.linkUrl': 'Link URL',
+  'panel.common.urlPlaceholder': 'https://example.com',
+  'panel.common.contentHtml': 'Content (HTML)',
+  'panel.common.insertMergeTag': 'Insert merge tag',
+  'panel.common.tagBtn': '{ } Tag',
+  'panel.common.uploadImage': 'Upload Image',
+  'panel.common.left': 'Left',
+  'panel.common.center': 'Center',
+
+  // property panels — body
+  'panel.body.title': 'Email Body',
+  'panel.body.contentWidth': 'Content Width',
+  'panel.body.fontFamily': 'Font Family',
+  'panel.body.contentAlignment': 'Content Alignment',
+  'panel.body.emailName': 'Email Name',
+  'panel.body.previewText': 'Preview Text',
+  'panel.body.previewTextPlaceholder': 'Email preview text...',
+
+  // property panels — text
+  'panel.text.title': 'Text Properties',
+  'panel.text.textAlign': 'Text Align',
+  'panel.text.lineHeight': 'Line Height',
+
+  // property panels — button
+  'panel.button.title': 'Button Properties',
+  'panel.button.buttonText': 'Button Text',
+  'panel.button.textColor': 'Text Color',
+  'panel.button.fontWeight': 'Font Weight',
+  'panel.button.fontWeight.normal': 'Normal (400)',
+  'panel.button.fontWeight.medium': 'Medium (500)',
+  'panel.button.fontWeight.semibold': 'Semibold (600)',
+  'panel.button.fontWeight.bold': 'Bold (700)',
+  'panel.button.fullWidth': 'Full Width',
+
+  // property panels — image
+  'panel.image.title': 'Image Properties',
+  'panel.image.imageUrl': 'Image URL',
+  'panel.image.urlPlaceholder': 'https://example.com/image.jpg',
+  'panel.image.altText': 'Alt Text',
+  'panel.image.altPlaceholder': 'Image description',
+  'panel.image.width': 'Width (0 = auto)',
+
+  // property panels — hero
+  'panel.hero.title': 'Hero Properties',
+  'panel.hero.backgroundUrl': 'Background URL',
+  'panel.hero.backgroundUrlPlaceholder': 'https://example.com/hero.jpg',
+  'panel.hero.backgroundPosition': 'Background Position',
+  'panel.hero.mode': 'Mode',
+  'panel.hero.modeFluidHeight': 'Fluid Height',
+  'panel.hero.modeFixedHeight': 'Fixed Height',
+  'panel.hero.height': 'Height',
+  'panel.hero.width': 'Width',
+  'panel.hero.verticalAlign': 'Vertical Align',
+  'panel.hero.verticalAlignTop': 'Top',
+  'panel.hero.verticalAlignMiddle': 'Middle',
+  'panel.hero.verticalAlignBottom': 'Bottom',
 };

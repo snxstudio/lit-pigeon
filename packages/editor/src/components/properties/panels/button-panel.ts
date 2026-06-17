@@ -7,6 +7,7 @@ import '../controls/spacing-input.js';
 import '../controls/slider-input.js';
 import '../controls/color-picker.js';
 import '../controls/pigeon-link-type-picker.js';
+import { t } from '../../../i18n/index.js';
 
 @customElement('pigeon-button-panel')
 export class PigeonButtonPanel extends LitElement {
@@ -32,10 +33,10 @@ export class PigeonButtonPanel extends LitElement {
     const v = this.block.values;
 
     return html`
-      <h3>Button Properties</h3>
+      <h3>${t('panel.button.title')}</h3>
 
       <div class="field">
-        <label>Button Text</label>
+        <label>${t('panel.button.buttonText')}</label>
         <input
           type="text"
           .value=${this._contentToText(v.content)}
@@ -44,11 +45,11 @@ export class PigeonButtonPanel extends LitElement {
       </div>
 
       <div class="field">
-        <label>Link URL</label>
+        <label>${t('panel.common.linkUrl')}</label>
         <input
           type="url"
           .value=${v.href}
-          placeholder="https://example.com"
+          placeholder=${t('panel.common.urlPlaceholder')}
           @change=${this._onHrefChange}
         />
       </div>
@@ -59,21 +60,21 @@ export class PigeonButtonPanel extends LitElement {
       ></pigeon-link-type-picker>
 
       <pigeon-color-picker
-        label="Background Color"
+        label=${t('panel.common.backgroundColor')}
         .value=${v.backgroundColor}
         .swatches=${this.swatches}
         @color-change=${this._onBgColorChange}
       ></pigeon-color-picker>
 
       <pigeon-color-picker
-        label="Text Color"
+        label=${t('panel.button.textColor')}
         .value=${v.textColor}
         .swatches=${this.swatches}
         @color-change=${this._onTextColorChange}
       ></pigeon-color-picker>
 
       <pigeon-slider-input
-        label="Border Radius"
+        label=${t('panel.common.borderRadius')}
         .value=${v.borderRadius}
         min=${0}
         max=${50}
@@ -82,7 +83,7 @@ export class PigeonButtonPanel extends LitElement {
       ></pigeon-slider-input>
 
       <pigeon-slider-input
-        label="Font Size"
+        label=${t('panel.common.fontSize')}
         .value=${v.fontSize}
         min=${10}
         max=${36}
@@ -91,23 +92,23 @@ export class PigeonButtonPanel extends LitElement {
       ></pigeon-slider-input>
 
       <div class="field">
-        <label>Font Weight</label>
+        <label>${t('panel.button.fontWeight')}</label>
         <select .value=${v.fontWeight} @change=${this._onFontWeightChange}>
-          <option value="400">Normal (400)</option>
-          <option value="500">Medium (500)</option>
-          <option value="600">Semibold (600)</option>
-          <option value="700">Bold (700)</option>
+          <option value="400">${t('panel.button.fontWeight.normal')}</option>
+          <option value="500">${t('panel.button.fontWeight.medium')}</option>
+          <option value="600">${t('panel.button.fontWeight.semibold')}</option>
+          <option value="700">${t('panel.button.fontWeight.bold')}</option>
         </select>
       </div>
 
       <pigeon-alignment-picker
-        label="Alignment"
+        label=${t('panel.common.alignment')}
         .value=${v.alignment}
         @alignment-change=${this._onAlignChange}
       ></pigeon-alignment-picker>
 
       <div class="toggle-row">
-        <span class="toggle-label">Full Width</span>
+        <span class="toggle-label">${t('panel.button.fullWidth')}</span>
         <label class="toggle">
           <input
             type="checkbox"
@@ -119,13 +120,13 @@ export class PigeonButtonPanel extends LitElement {
       </div>
 
       <pigeon-spacing-input
-        label="Outer Padding"
+        label=${t('panel.common.outerPadding')}
         .value=${v.padding}
         @spacing-change=${this._onPaddingChange}
       ></pigeon-spacing-input>
 
       <pigeon-spacing-input
-        label="Inner Padding"
+        label=${t('panel.common.innerPadding')}
         .value=${v.innerPadding}
         @spacing-change=${this._onInnerPaddingChange}
       ></pigeon-spacing-input>

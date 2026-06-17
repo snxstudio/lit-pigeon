@@ -8,6 +8,7 @@ import '../controls/spacing-input.js';
 import '../controls/slider-input.js';
 import '../../merge-tags/pigeon-merge-tag-picker.js';
 import { richTextController } from '../../../rich-text/controller.js';
+import { t } from '../../../i18n/index.js';
 
 @customElement('pigeon-text-panel')
 export class PigeonTextPanel extends LitElement {
@@ -82,14 +83,14 @@ export class PigeonTextPanel extends LitElement {
     const hasTags = this.mergeTags.length > 0;
 
     return html`
-      <h3>Text Properties</h3>
+      <h3>${t('panel.text.title')}</h3>
 
       <div class="field">
         <div class="label-row">
-          <label>Content (HTML)</label>
+          <label>${t('panel.common.contentHtml')}</label>
           ${hasTags ? html`
-            <button class="tag-btn" ${ref(this._triggerRef)} @click=${this._togglePicker} title="Insert merge tag">
-              { } Tag
+            <button class="tag-btn" ${ref(this._triggerRef)} @click=${this._togglePicker} title=${t('panel.common.insertMergeTag')}>
+              ${t('panel.common.tagBtn')}
             </button>
           ` : ''}
         </div>
@@ -101,13 +102,13 @@ export class PigeonTextPanel extends LitElement {
       </div>
 
       <pigeon-alignment-picker
-        label="Text Align"
+        label=${t('panel.text.textAlign')}
         .value=${v.textAlign}
         @alignment-change=${this._onAlignChange}
       ></pigeon-alignment-picker>
 
       <div class="field">
-        <label>Line Height</label>
+        <label>${t('panel.text.lineHeight')}</label>
         <select .value=${v.lineHeight} @change=${this._onLineHeightChange}>
           <option value="1">1.0</option>
           <option value="1.25">1.25</option>
@@ -118,7 +119,7 @@ export class PigeonTextPanel extends LitElement {
       </div>
 
       <pigeon-spacing-input
-        label="Padding"
+        label=${t('panel.common.padding')}
         .value=${v.padding}
         @spacing-change=${this._onPaddingChange}
       ></pigeon-spacing-input>
