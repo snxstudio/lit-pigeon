@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { t } from '../../i18n/index.js';
 
 @customElement('pigeon-toolbar')
 export class PigeonToolbar extends LitElement {
@@ -163,8 +164,8 @@ export class PigeonToolbar extends LitElement {
       <button
         class="icon-btn"
         part="toolbar-button toolbar-button-undo"
-        title="Undo"
-        aria-label="Undo"
+        title=${t('toolbar.undo')}
+        aria-label=${t('toolbar.undo')}
         ?disabled=${!this.canUndo}
         @click=${this._onUndo}
       >
@@ -177,8 +178,8 @@ export class PigeonToolbar extends LitElement {
       <button
         class="icon-btn"
         part="toolbar-button toolbar-button-redo"
-        title="Redo"
-        aria-label="Redo"
+        title=${t('toolbar.redo')}
+        aria-label=${t('toolbar.redo')}
         ?disabled=${!this.canRedo}
         @click=${this._onRedo}
       >
@@ -191,13 +192,13 @@ export class PigeonToolbar extends LitElement {
       <div class="separator"></div>
 
       <!-- Device toggle -->
-      <div class="device-group" role="group" aria-label="Preview device">
+      <div class="device-group" role="group" aria-label=${t('toolbar.preview-device')}>
 
         <button
           part="toolbar-device toolbar-device-desktop"
           class="${this.device === 'desktop' ? 'active' : ''}"
-          title="Desktop view"
-          aria-label="Desktop view"
+          title=${t('toolbar.desktop-view')}
+          aria-label=${t('toolbar.desktop-view')}
           aria-pressed=${this.device === 'desktop'}
           @click=${() => this._onDeviceChange('desktop')}
         >
@@ -210,8 +211,8 @@ export class PigeonToolbar extends LitElement {
         <button
           part="toolbar-device toolbar-device-tablet"
           class="${this.device === 'tablet' ? 'active' : ''}"
-          title="Tablet view (768px)"
-          aria-label="Tablet view"
+          title=${t('toolbar.tablet-view-title')}
+          aria-label=${t('toolbar.tablet-view')}
           aria-pressed=${this.device === 'tablet'}
           @click=${() => this._onDeviceChange('tablet')}
         >
@@ -223,8 +224,8 @@ export class PigeonToolbar extends LitElement {
         <button
           part="toolbar-device toolbar-device-mobile"
           class="${this.device === 'mobile' ? 'active' : ''}"
-          title="Mobile view (375px)"
-          aria-label="Mobile view"
+          title=${t('toolbar.mobile-view-title')}
+          aria-label=${t('toolbar.mobile-view')}
           aria-pressed=${this.device === 'mobile'}
           @click=${() => this._onDeviceChange('mobile')}
         >
@@ -241,8 +242,8 @@ export class PigeonToolbar extends LitElement {
       <button
         class="icon-btn"
         part="toolbar-button toolbar-button-fullscreen"
-        title="${this.fullscreen ? 'Exit fullscreen' : 'Fullscreen'}"
-        aria-label="${this.fullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}"
+        title=${this.fullscreen ? t('toolbar.exit-fullscreen') : t('toolbar.fullscreen')}
+        aria-label=${this.fullscreen ? t('toolbar.exit-fullscreen') : t('toolbar.enter-fullscreen')}
         aria-pressed=${this.fullscreen}
         @click=${this._onFullscreen}
       >
@@ -267,7 +268,7 @@ export class PigeonToolbar extends LitElement {
       <button
         data-action="templates"
         part="toolbar-button toolbar-button-templates"
-        title="Templates"
+        title=${t('toolbar.templates')}
         @click=${this._onTemplates}
       >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -276,7 +277,7 @@ export class PigeonToolbar extends LitElement {
           <rect x="3" y="14" width="7" height="7" rx="1"/>
           <rect x="14" y="14" width="7" height="7" rx="1"/>
         </svg>
-        Templates
+        ${t('toolbar.templates')}
       </button>
 
       <button part="toolbar-button toolbar-button-preview" @click=${this._onPreview}>
@@ -284,7 +285,7 @@ export class PigeonToolbar extends LitElement {
           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
           <circle cx="12" cy="12" r="3"/>
         </svg>
-        Preview
+        ${t('toolbar.preview')}
       </button>
 
       <div class="export-wrapper">
@@ -300,16 +301,16 @@ export class PigeonToolbar extends LitElement {
             <polyline points="7 10 12 15 17 10"/>
             <line x1="12" y1="15" x2="12" y2="3"/>
           </svg>
-          Export
+          ${t('toolbar.export')}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;">
             <polyline points="6 9 12 15 18 9"/>
           </svg>
         </button>
         ${this._exportMenuOpen ? html`
-          <div class="export-menu" role="menu" aria-label="Export format">
-            <button role="menuitem" @click=${this._onExportHtml}>Export HTML</button>
-            <button role="menuitem" @click=${this._onExportMjml}>Export MJML</button>
-            <button role="menuitem" @click=${this._onExportJson}>Export JSON</button>
+          <div class="export-menu" role="menu" aria-label=${t('toolbar.export-format')}>
+            <button role="menuitem" @click=${this._onExportHtml}>${t('toolbar.export-html')}</button>
+            <button role="menuitem" @click=${this._onExportMjml}>${t('toolbar.export-mjml')}</button>
+            <button role="menuitem" @click=${this._onExportJson}>${t('toolbar.export-json')}</button>
           </div>
         ` : ''}
       </div>

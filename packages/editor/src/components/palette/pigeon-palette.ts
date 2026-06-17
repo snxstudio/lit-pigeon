@@ -2,6 +2,7 @@ import { LitElement, html, css, type PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { getAllBlockDefinitions } from '@lit-pigeon/core';
 import type { BrandKit, BlockDefinition, PigeonDocument, Selection, RowLibraryStorage } from '@lit-pigeon/core';
+import { t } from '../../i18n/index.js';
 import './pigeon-palette-item.js';
 import '../layers/pigeon-layers.js';
 
@@ -26,16 +27,16 @@ function loadSavedTab(): Promise<unknown> {
 }
 
 interface RowLayout {
-  label: string;
+  labelKey: string;
   columns: number;
   icon: string;
 }
 
 const ROW_LAYOUTS: RowLayout[] = [
-  { label: '1 Column', columns: 1, icon: '[=]' },
-  { label: '2 Columns', columns: 2, icon: '[||]' },
-  { label: '3 Columns', columns: 3, icon: '[|||]' },
-  { label: '4 Columns', columns: 4, icon: '[||||]' },
+  { labelKey: 'palette.layout.1-col', columns: 1, icon: '[=]' },
+  { labelKey: 'palette.layout.2-col', columns: 2, icon: '[||]' },
+  { labelKey: 'palette.layout.3-col', columns: 3, icon: '[|||]' },
+  { labelKey: 'palette.layout.4-col', columns: 4, icon: '[||||]' },
 ];
 
 type PaletteTab = 'content' | 'layers' | 'brand' | 'saved';
@@ -159,7 +160,7 @@ export class PigeonPalette extends LitElement {
 
   render() {
     return html`
-      <div class="tabs" role="tablist" aria-label="Palette">
+      <div class="tabs" role="tablist" aria-label=${t('palette.label')}>
         <button
           part="palette-tab"
           role="tab"
@@ -168,7 +169,7 @@ export class PigeonPalette extends LitElement {
           aria-controls="pigeon-tabpanel"
           class="tab ${this._activeTab === 'content' ? 'active' : ''}"
           @click=${() => (this._activeTab = 'content')}
-        >Content</button>
+        >${t('palette.tab.content')}</button>
         <button
           part="palette-tab"
           role="tab"
@@ -177,7 +178,7 @@ export class PigeonPalette extends LitElement {
           aria-controls="pigeon-tabpanel"
           class="tab ${this._activeTab === 'layers' ? 'active' : ''}"
           @click=${() => (this._activeTab = 'layers')}
-        >Layers</button>
+        >${t('palette.tab.layers')}</button>
         ${this.brandKit
           ? html`<button
               part="palette-tab"
@@ -187,7 +188,7 @@ export class PigeonPalette extends LitElement {
               aria-controls="pigeon-tabpanel"
               class="tab ${this._activeTab === 'brand' ? 'active' : ''}"
               @click=${this._handleBrandTabClick}
-            >Brand</button>`
+            >${t('palette.tab.brand')}</button>`
           : ''}
         <button
           part="palette-tab"
@@ -197,7 +198,7 @@ export class PigeonPalette extends LitElement {
           aria-controls="pigeon-tabpanel"
           class="tab ${this._activeTab === 'saved' ? 'active' : ''}"
           @click=${this._handleSavedTabClick}
-        >Saved</button>
+        >${t('palette.tab.saved')}</button>
       </div>
       <div
         class="tab-content"
@@ -225,7 +226,7 @@ export class PigeonPalette extends LitElement {
   private _renderContentTab() {
     return html`
       <div class="section">
-        <div class="section-header">Content</div>
+        <div class="section-header">${t('palette.layout.section-content')}</div>
         <div class="items">
           ${this._blockDefs.map(def => html`
             <pigeon-palette-item part="palette-item"
@@ -239,11 +240,11 @@ export class PigeonPalette extends LitElement {
       </div>
 
       <div class="section">
-        <div class="section-header">Layout</div>
+        <div class="section-header">${t('palette.layout.section-layout')}</div>
         <div class="items">
           ${ROW_LAYOUTS.map(layout => html`
             <pigeon-palette-item part="palette-item"
-              label="${layout.label}"
+              label="${t(layout.labelKey)}"
               icon="${layout.icon}"
               drag-type="palette-row"
               column-count="${layout.columns}"
