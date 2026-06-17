@@ -27,5 +27,7 @@ describe('pigeon-row save action', () => {
     btn.click();
     expect(events).toHaveLength(1);
     expect(events[0].detail).toEqual({ rowId: row.id });
+    expect(events[0].bubbles).toBe(true);
+    expect(events[0].composed).toBe(true);
   });
 });
