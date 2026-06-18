@@ -26,6 +26,6 @@ Lit Pigeon is aimed at developers who need to add email-template editing to thei
 Unlike proprietary editors (e.g. Unlayer) it is MIT-licensed and self-hosted. Unlike code-only tools (MJML, React Email) it provides a visual drag & drop editor. Unlike framework-bound editors it ships as framework-agnostic web components.
 
 ## Links
-- Live demo / playground: https://wearesnx.studio/lit-pigeon/playground
-- Home: https://wearesnx.studio/lit-pigeon/
+- Live demo / playground: https://lit-pigeon.wearesnx.studio/playground
+- Home: https://lit-pigeon.wearesnx.studio/
 - Source code: https://github.com/snxstudio/lit-pigeon
