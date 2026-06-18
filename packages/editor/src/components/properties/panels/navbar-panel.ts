@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import type { NavBarBlock, Spacing } from '@lit-pigeon/core';
+import type { BrandColor, NavBarBlock, Spacing } from '@lit-pigeon/core';
 import { panelStyles } from './panel-styles.js';
 import '../controls/alignment-picker.js';
 import '../controls/spacing-input.js';
@@ -17,6 +17,9 @@ export class PigeonNavBarPanel extends LitElement {
 
   @property({ type: String })
   columnId = '';
+
+  @property({ attribute: false })
+  swatches: BrandColor[] = [];
 
   static styles = [
     panelStyles,
@@ -131,6 +134,7 @@ export class PigeonNavBarPanel extends LitElement {
       <pigeon-color-picker
         label="Link Color"
         .value=${v.linkColor}
+        .swatches=${this.swatches}
         @color-change=${this._onLinkColorChange}
       ></pigeon-color-picker>
 

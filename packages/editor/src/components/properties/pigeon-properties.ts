@@ -8,6 +8,9 @@ import type {
   MergeTag,
   AssetManagerConfig,
   AssetStorage,
+  BrandKit,
+  BrandColor,
+  BrandFont,
 } from '@lit-pigeon/core';
 import { getBlockDefinition } from '@lit-pigeon/core';
 import './panels/text-panel.js';
@@ -39,6 +42,17 @@ export class PigeonProperties extends LitElement {
 
   @property({ attribute: false })
   assetStorage?: AssetStorage;
+
+  @property({ attribute: false })
+  brandKit: BrandKit | null = null;
+
+  private get _swatches(): BrandColor[] {
+    return this.brandKit?.colors ?? [];
+  }
+
+  private get _brandFonts(): BrandFont[] {
+    return this.brandKit?.fonts ?? [];
+  }
 
   static styles = css`
     :host {
@@ -131,7 +145,12 @@ export class PigeonProperties extends LitElement {
     if (!this.selection || this.selection.type === 'body') {
       return html`
         <div class="panel-wrapper" part="panel">
-          <pigeon-body-panel .doc=${this.doc} .mergeTags=${this.mergeTags}></pigeon-body-panel>
+          <pigeon-body-panel
+            .doc=${this.doc}
+            .mergeTags=${this.mergeTags}
+            .swatches=${this._swatches}
+            .brandFonts=${this._brandFonts}
+          ></pigeon-body-panel>
         </div>
       `;
     }
@@ -244,7 +263,7 @@ export class PigeonProperties extends LitElement {
           .assetStorage=${this.assetStorage}
         ></pigeon-image-panel>`;
       case 'button':
-        return html`<pigeon-button-panel .block=${block} .rowId=${rowId} .columnId=${columnId}></pigeon-button-panel>`;
+        return html`<pigeon-button-panel .block=${block} .rowId=${rowId} .columnId=${columnId} .swatches=${this._swatches}></pigeon-button-panel>`;
       case 'hero':
         return html`<pigeon-hero-panel
           .block=${block}
@@ -252,11 +271,12 @@ export class PigeonProperties extends LitElement {
           .columnId=${columnId}
           .assetManagerConfig=${this.assetManagerConfig}
           .assetStorage=${this.assetStorage}
+          .swatches=${this._swatches}
         ></pigeon-hero-panel>`;
       case 'navbar':
-        return html`<pigeon-navbar-panel .block=${block} .rowId=${rowId} .columnId=${columnId}></pigeon-navbar-panel>`;
+        return html`<pigeon-navbar-panel .block=${block} .rowId=${rowId} .columnId=${columnId} .swatches=${this._swatches}></pigeon-navbar-panel>`;
       case 'divider':
-        return html`<pigeon-divider-panel .block=${block} .rowId=${rowId} .columnId=${columnId}></pigeon-divider-panel>`;
+        return html`<pigeon-divider-panel .block=${block} .rowId=${rowId} .columnId=${columnId} .swatches=${this._swatches}></pigeon-divider-panel>`;
       case 'spacer':
         return html`<pigeon-spacer-panel .block=${block} .rowId=${rowId} .columnId=${columnId}></pigeon-spacer-panel>`;
       case 'social':

@@ -1,6 +1,6 @@
 import { LitElement, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import type { DividerBlock, Spacing } from '@lit-pigeon/core';
+import type { BrandColor, DividerBlock, Spacing } from '@lit-pigeon/core';
 import { panelStyles } from './panel-styles.js';
 import '../controls/color-picker.js';
 import '../controls/slider-input.js';
@@ -16,6 +16,9 @@ export class PigeonDividerPanel extends LitElement {
 
   @property({ type: String })
   columnId = '';
+
+  @property({ attribute: false })
+  swatches: BrandColor[] = [];
 
   static styles = panelStyles;
 
@@ -38,6 +41,7 @@ export class PigeonDividerPanel extends LitElement {
       <pigeon-color-picker
         label="Color"
         .value=${v.borderColor}
+        .swatches=${this.swatches}
         @color-change=${this._onColorChange}
       ></pigeon-color-picker>
 

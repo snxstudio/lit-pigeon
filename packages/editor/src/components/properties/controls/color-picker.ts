@@ -1,5 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import { styleMap } from 'lit/directives/style-map.js';
+import type { BrandColor } from '@lit-pigeon/core';
 
 @customElement('pigeon-color-picker')
 export class PigeonColorPicker extends LitElement {
@@ -8,6 +10,10 @@ export class PigeonColorPicker extends LitElement {
 
   @property({ type: String })
   value = '#000000';
+
+  /** Optional brand-kit swatches rendered as quick-pick buttons. */
+  @property({ attribute: false })
+  swatches: BrandColor[] = [];
 
   static styles = css`
     :host {
@@ -77,25 +83,62 @@ export class PigeonColorPicker extends LitElement {
       border-color: var(--pigeon-ring);
       box-shadow: var(--pigeon-ring-shadow);
     }
+
+    .swatches {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 6px;
+    }
+
+    .swatch {
+      width: 18px;
+      height: 18px;
+      border-radius: var(--pigeon-radius-sm, 4px);
+      border: 1px solid var(--pigeon-input, #cbd5e1);
+      padding: 0;
+      cursor: pointer;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .swatch:hover {
+      border-color: var(--pigeon-ring);
+    }
+
+    .swatch:focus-visible {
+      outline: none;
+      box-shadow: var(--pigeon-ring-shadow);
+    }
   `;
 
   render() {
     return html`
       <label>${this.label}</label>
       <div class="color-row">
-        <input
-          type="color"
-          .value=${this.value}
-          @input=${this._onColorInput}
-        />
-        <input
-          type="text"
-          .value=${this.value}
-          @change=${this._onTextChange}
-          maxlength="7"
-        />
+        <input type="color" .value=${this.value} @input=${this._onColorInput} />
+        <input type="text" .value=${this.value} @change=${this._onTextChange} maxlength="7" />
       </div>
+      ${this.swatches.length
+        ? html`<div class="swatches">
+            ${/* BrandColor.value is trusted brand-kit config */
+            this.swatches.map(
+              (s) => html`<button
+                class="swatch"
+                type="button"
+                title=${`${s.name} (${s.value})`}
+                aria-label=${s.name}
+                style=${styleMap({ background: s.value })}
+                @click=${() => this._applySwatch(s.value)}
+              ></button>`,
+            )}
+          </div>`
+        : ''}
     `;
+  }
+
+  private _applySwatch(value: string) {
+    this.value = value;
+    this._emitChange();
   }
 
   private _onColorInput(e: Event) {

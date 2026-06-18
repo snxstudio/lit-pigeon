@@ -44,7 +44,7 @@ import {
   createDocStep,
   generateId,
 } from '@lit-pigeon/core';
-import type { HistoryState, TransactionSnapshot } from '@lit-pigeon/core';
+import type { HistoryState, TransactionSnapshot, BrandKit, BrandKitStorage, BrandLogo, ImageBlock } from '@lit-pigeon/core';
 
 import './components/toolbar/pigeon-toolbar.js';
 import './components/palette/pigeon-palette.js';
@@ -203,6 +203,9 @@ export class PigeonEditor extends LitElement {
   /** In-memory clipboard for Cmd/Ctrl+C / Cmd/Ctrl+V on blocks. */
   private _clipboard: ContentBlock | null = null;
 
+  @state() private _activeBrandKit: BrandKit | null = null;
+  private _brandKitStorage: BrandKitStorage | null = null;
+
   /* ------------------------------------------------------------------ */
   /*  Styles                                                             */
   /* ------------------------------------------------------------------ */
@@ -243,13 +246,22 @@ export class PigeonEditor extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     this._initState();
+    this._resolveBrandKit();
     this._applyTheme();
     document.addEventListener('keydown', this._handleKeyDown);
+    this.addEventListener('brand-kit-edit', this._handleBrandKitEdit as unknown as EventListener);
+    this.addEventListener('brand-color-apply', this._handleBrandColorApply as EventListener);
+    this.addEventListener('brand-font-apply', this._handleBrandFontApply as EventListener);
+    this.addEventListener('brand-logo-insert', this._handleBrandLogoInsert as EventListener);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     document.removeEventListener('keydown', this._handleKeyDown);
+    this.removeEventListener('brand-kit-edit', this._handleBrandKitEdit as unknown as EventListener);
+    this.removeEventListener('brand-color-apply', this._handleBrandColorApply as EventListener);
+    this.removeEventListener('brand-font-apply', this._handleBrandFontApply as EventListener);
+    this.removeEventListener('brand-logo-insert', this._handleBrandLogoInsert as EventListener);
   }
 
   updated(changed: Map<string, unknown>) {
@@ -268,6 +280,9 @@ export class PigeonEditor extends LitElement {
     }
     if (changed.has('theme') || changed.has('themeOverrides')) {
       this._applyTheme();
+    }
+    if (changed.has('config')) {
+      this._resolveBrandKit();
     }
   }
 
@@ -390,6 +405,7 @@ export class PigeonEditor extends LitElement {
           exportparts="palette-tab, palette-item"
           .doc=${doc}
           .selection=${sel}
+          .brandKit=${this._activeBrandKit}
           @row-select=${this._handleRowSelect}
           @block-select=${this._handleBlockSelect}
           @palette-item-activate=${this._handlePaletteActivate}
@@ -428,6 +444,7 @@ export class PigeonEditor extends LitElement {
           .mergeTags=${this.config.mergeTags?.tags ?? []}
           .assetManagerConfig=${this.config.assetManager ?? {}}
           .assetStorage=${this.assetStorage ?? this.config.assetStorage}
+          .brandKit=${this._activeBrandKit}
           @property-change=${this._handlePropertyChange}
           @row-property-change=${this._handleRowPropertyChange}
           @row-layout-change=${this._handleRowLayoutChange}
@@ -473,6 +490,124 @@ export class PigeonEditor extends LitElement {
     }
     return this._defaultTemplateStorage;
   }
+
+  /**
+   * Resolve `config.brandKit` into a single active kit. A plain `BrandKit` is
+   * used directly; a `BrandKitStorage` (duck-typed by a `list` method) is
+   * async-loaded and the first kit becomes active.
+   */
+  private async _resolveBrandKit() {
+    const bk = this.config.brandKit;
+    if (!bk) {
+      this._brandKitStorage = null;
+      this._activeBrandKit = null;
+      return;
+    }
+    if (typeof (bk as BrandKitStorage).list === 'function') {
+      this._brandKitStorage = bk as BrandKitStorage;
+      try {
+        const kits = await this._brandKitStorage.list();
+        this._activeBrandKit = kits[0] ?? null;
+      } catch (error) {
+        this._activeBrandKit = null;
+        this._emitBrandKitError(error, 'list');
+      }
+    } else {
+      this._brandKitStorage = null;
+      this._activeBrandKit = bk as BrandKit;
+    }
+  }
+
+  private _emitBrandKitError(error: unknown, operation: 'list' | 'save') {
+    this.dispatchEvent(
+      new CustomEvent('brand-kit-error', {
+        detail: { error, operation },
+        bubbles: true,
+        composed: true,
+      }),
+    );
+  }
+
+  private _handleBrandKitEdit = async (e: CustomEvent<{ kit: BrandKit }>) => {
+    e.stopPropagation();
+    const kit = e.detail.kit;
+    this._activeBrandKit = kit; // optimistic in-memory update
+    // Emit the public change first so hosts see the new state even if save fails.
+    this.dispatchEvent(
+      new CustomEvent('brand-kit-change', {
+        detail: { brandKit: kit },
+        bubbles: true,
+        composed: true,
+      }),
+    );
+    if (this._brandKitStorage) {
+      try {
+        await this._brandKitStorage.save(kit);
+      } catch (error) {
+        this._emitBrandKitError(error, 'save');
+      }
+    }
+  };
+
+  /** Apply a single body attribute through an undoable transaction. */
+  private _applyBodyAttribute(attribute: string, value: unknown) {
+    const tr = this._state.createTransaction();
+    const attrs = this._state.doc.body.attributes as Record<string, unknown>;
+    const oldValue = attrs[attribute];
+    const step = createDocStep(
+      'updateBodyAttribute',
+      `body.attributes.${attribute}`,
+      (doc: PigeonDocument) => { (doc.body.attributes as Record<string, unknown>)[attribute] = value; },
+      (doc: PigeonDocument) => { (doc.body.attributes as Record<string, unknown>)[attribute] = oldValue; },
+    );
+    tr.addStep(step);
+    this._dispatch(tr);
+  }
+
+  private _handleBrandColorApply = (e: CustomEvent<{ value: string }>) => {
+    e.stopPropagation();
+    const value = e.detail.value;
+    const sel = this._state.selection;
+    if (sel?.type === 'block' && sel.rowId && sel.columnId && sel.blockId) {
+      const block = this._findBlock(sel.rowId, sel.columnId, sel.blockId);
+      if (block?.type === 'button') {
+        updateBlock(sel.rowId, sel.columnId, sel.blockId, { backgroundColor: value })(this._state, this._dispatch);
+      }
+      // text/other blocks: no block-level colour → no-op (hint shown by the UI).
+      return;
+    }
+    // body or no selection → body background.
+    this._applyBodyAttribute('backgroundColor', value);
+  };
+
+  private _handleBrandFontApply = (e: CustomEvent<{ family: string }>) => {
+    e.stopPropagation();
+    this._applyBodyAttribute('fontFamily', e.detail.family);
+  };
+
+  private _handleBrandLogoInsert = (e: CustomEvent<{ logo: BrandLogo }>) => {
+    e.stopPropagation();
+    const { logo } = e.detail;
+    const block = createBlock('image') as ImageBlock;
+    block.values.src = logo.src;
+    block.values.alt = logo.name;
+    if (logo.width) block.values.width = logo.width;
+
+    const sel = this._state.selection;
+    if (sel?.rowId && sel?.columnId) {
+      insertBlock(sel.rowId, sel.columnId, block)(this._state, this._dispatch);
+      return;
+    }
+    const rows = this._state.doc.body.rows;
+    if (rows.length > 0) {
+      const lastRow = rows[rows.length - 1];
+      const col = lastRow.columns[0];
+      insertBlock(lastRow.id, col.id, block, col.blocks.length)(this._state, this._dispatch);
+    } else {
+      const col = createColumn([block]);
+      insertRow(createRow([col]), 0)(this._state, this._dispatch);
+    }
+  };
 
   private async _handleTemplatesOpen() {
     if (!this._templatePickerLoaded) {

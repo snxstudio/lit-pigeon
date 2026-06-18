@@ -1,6 +1,6 @@
 import { LitElement, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import type { ButtonBlock, Spacing } from '@lit-pigeon/core';
+import type { BrandColor, ButtonBlock, Spacing } from '@lit-pigeon/core';
 import { panelStyles } from './panel-styles.js';
 import '../controls/alignment-picker.js';
 import '../controls/spacing-input.js';
@@ -17,6 +17,9 @@ export class PigeonButtonPanel extends LitElement {
 
   @property({ type: String })
   columnId = '';
+
+  @property({ attribute: false })
+  swatches: BrandColor[] = [];
 
   static styles = panelStyles;
 
@@ -49,12 +52,14 @@ export class PigeonButtonPanel extends LitElement {
       <pigeon-color-picker
         label="Background Color"
         .value=${v.backgroundColor}
+        .swatches=${this.swatches}
         @color-change=${this._onBgColorChange}
       ></pigeon-color-picker>
 
       <pigeon-color-picker
         label="Text Color"
         .value=${v.textColor}
+        .swatches=${this.swatches}
         @color-change=${this._onTextColorChange}
       ></pigeon-color-picker>
 
