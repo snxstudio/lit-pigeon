@@ -13,6 +13,9 @@ import {
   type TemplateCategory,
   type TemplateStorage,
   type AssetStorage,
+  type RowLibraryStorage,
+  type LibraryEntry,
+  type RowNode,
   createHistoryPlugin,
   createDefaultDocument,
   createBlock,
@@ -41,6 +44,8 @@ import {
   canRedo as coreCanRedo,
   HISTORY_PLUGIN_NAME,
   InMemoryTemplateStorage,
+  InMemoryRowLibraryStorage,
+  cloneRowWithNewIds,
   createDocStep,
   generateId,
 } from '@lit-pigeon/core';
@@ -199,6 +204,9 @@ export class PigeonEditor extends LitElement {
 
   /** Lazily-initialised default template storage. */
   private _defaultTemplateStorage?: TemplateStorage;
+
+  /** Lazily-initialised default row library storage. */
+  private _defaultRowLibrary?: RowLibraryStorage;
 
   /** In-memory clipboard for Cmd/Ctrl+C / Cmd/Ctrl+V on blocks. */
   private _clipboard: ContentBlock | null = null;
@@ -406,9 +414,12 @@ export class PigeonEditor extends LitElement {
           .doc=${doc}
           .selection=${sel}
           .brandKit=${this._activeBrandKit}
+          .rowLibrary=${this._resolveRowLibrary()}
           @row-select=${this._handleRowSelect}
           @block-select=${this._handleBlockSelect}
           @palette-item-activate=${this._handlePaletteActivate}
+          @library-delete=${this._handleLibraryDelete}
+          @library-insert=${this._handleLibraryInsert}
         ></pigeon-palette>
 
         <pigeon-canvas
@@ -427,7 +438,9 @@ export class PigeonEditor extends LitElement {
           @row-move=${this._handleRowMove}
           @row-duplicate=${this._handleRowDuplicate}
           @row-delete=${this._handleRowDelete}
+          @row-save=${this._handleRowSave}
           @row-drop=${this._handleRowDrop}
+          @row-insert-saved=${this._handleRowInsertSaved}
           @block-drop=${this._handleBlockDrop}
           @block-drop-new-row=${this._handleBlockDropNewRow}
           @block-enter-edit=${this._handleBlockEnterEdit}
@@ -491,6 +504,12 @@ export class PigeonEditor extends LitElement {
       this._defaultTemplateStorage = new InMemoryTemplateStorage();
     }
     return this._defaultTemplateStorage;
+  }
+
+  private _resolveRowLibrary(): RowLibraryStorage {
+    if (this.config.rowLibrary) return this.config.rowLibrary;
+    if (!this._defaultRowLibrary) this._defaultRowLibrary = new InMemoryRowLibraryStorage();
+    return this._defaultRowLibrary;
   }
 
   /**
@@ -673,7 +692,7 @@ export class PigeonEditor extends LitElement {
   /* ------------------------------------------------------------------ */
 
   private _initState() {
-    const doc = this.document ?? createDefaultDocument();
+    const doc = this.document ?? this.config.doc ?? createDefaultDocument();
     const plugins = this.config.plugins ?? [];
     // Ensure history plugin is always present
     const hasHistory = plugins.some(p => p.name === HISTORY_PLUGIN_NAME);
@@ -880,6 +899,62 @@ export class PigeonEditor extends LitElement {
   private _handleRowDelete(e: CustomEvent<{ rowId: string }>) {
     const cmd = deleteRow(e.detail.rowId);
     cmd(this._state, this._dispatch);
+  }
+
+  private _handleRowSave = async (e: CustomEvent<{ rowId: string }>) => {
+    const row = this._state.doc.body.rows.find((r) => r.id === e.detail.rowId);
+    if (!row) return;
+    const name = window.prompt('Name this saved row');
+    if (!name || !name.trim()) return;
+    const now = new Date().toISOString();
+    const entry: LibraryEntry = {
+      id: slugify(name),
+      name: name.trim(),
+      kind: 'row',
+      node: structuredClone(row),
+      createdAt: now,
+      updatedAt: now,
+    };
+    try {
+      await this._resolveRowLibrary().save(entry);
+      await this._refreshSavedTab();
+    } catch (error) {
+      this._emitRowLibraryError(error, 'save');
+    }
+  };
+
+  private _handleRowInsertSaved = (e: CustomEvent<{ index: number; node: RowNode }>) => {
+    const clone = cloneRowWithNewIds(e.detail.node);
+    insertRow(clone, e.detail.index)(this._state, this._dispatch);
+  };
+
+  private _handleLibraryInsert = (e: CustomEvent<{ node: RowNode }>) => {
+    const clone = cloneRowWithNewIds(e.detail.node);
+    insertRow(clone, this._state.doc.body.rows.length)(this._state, this._dispatch);
+  };
+
+  private _handleLibraryDelete = async (e: CustomEvent<{ id: string }>) => {
+    try {
+      await this._resolveRowLibrary().delete(e.detail.id);
+      await this._refreshSavedTab();
+    } catch (error) {
+      this._emitRowLibraryError(error, 'delete');
+    }
+  };
+
+  private async _refreshSavedTab() {
+    const palette = this.renderRoot.querySelector('pigeon-palette');
+    const tab = palette?.renderRoot?.querySelector('pigeon-saved-tab') as
+      | (HTMLElement & { refresh: () => Promise<void> })
+      | null
+      | undefined;
+    if (tab) await tab.refresh();
+  }
+
+  private _emitRowLibraryError(error: unknown, operation: 'save' | 'delete') {
+    this.dispatchEvent(new CustomEvent('row-library-error', {
+      detail: { error, operation }, bubbles: true, composed: true,
+    }));
   }
 
   /* ------------------------------------------------------------------ */

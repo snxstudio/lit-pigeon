@@ -310,6 +310,7 @@ export class PigeonCanvas extends LitElement {
     if (
       dragData.type === 'palette-row' ||
       dragData.type === 'existing-row' ||
+      dragData.type === 'library-row' ||
       this.doc.body.rows.length === 0
     ) {
       const rowElements = Array.from(
@@ -349,6 +350,13 @@ export class PigeonCanvas extends LitElement {
           index,
           columnCount: dragData.columnCount ?? 1,
         },
+        bubbles: true,
+        composed: true,
+      }));
+    } else if (dragData.type === 'library-row' && dragData.node) {
+      const index = this._rowDropIndex >= 0 ? this._rowDropIndex : this.doc.body.rows.length;
+      this.dispatchEvent(new CustomEvent('row-insert-saved', {
+        detail: { index, node: dragData.node },
         bubbles: true,
         composed: true,
       }));

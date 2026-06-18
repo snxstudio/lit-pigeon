@@ -3,7 +3,9 @@
  * Stores drag state globally so any component can query it.
  */
 
-export type DragItemType = 'palette-block' | 'palette-row' | 'existing-block' | 'existing-row';
+import type { RowNode } from '@lit-pigeon/core';
+
+export type DragItemType = 'palette-block' | 'palette-row' | 'existing-block' | 'existing-row' | 'library-row';
 
 export interface DragData {
   type: DragItemType;
@@ -15,6 +17,8 @@ export interface DragData {
   blockId?: string;
   rowId?: string;
   columnId?: string;
+  /** Saved row node for library-row drags. */
+  node?: RowNode;
 }
 
 let _currentDrag: DragData | null = null;
