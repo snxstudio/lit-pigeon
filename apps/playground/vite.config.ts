@@ -2,7 +2,11 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 
 export default defineConfig({
-  base: '/lit-pigeon/',
+  // The site is served at the root of the `lit-pigeon.wearesnx.studio` custom
+  // domain (see apps/playground/public/CNAME), so assets must resolve from `/`.
+  // A `/lit-pigeon/` base only suits the bare github.io project URL and 404s
+  // every asset on the custom domain — leaving the JS-mounted editor blank.
+  base: '/',
   resolve: {
     alias: {
       '@lit-pigeon/core': resolve(__dirname, '../../packages/core/src/index.ts'),
