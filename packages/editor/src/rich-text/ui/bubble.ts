@@ -2,6 +2,8 @@ import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import type { Editor } from '@tiptap/core';
 import { richTextController } from '../controller.js';
+import '../../components/properties/controls/pigeon-link-type-picker.js';
+import type { LinkType } from '@lit-pigeon/core';
 
 /**
  * Floating formatting toolbar shown above the current text selection.
@@ -14,6 +16,9 @@ import { richTextController } from '../controller.js';
 export class PigeonRichTextBubble extends LitElement {
   @property({ attribute: false })
   editor: Editor | null = null;
+
+  @property({ attribute: false })
+  linkTypes: LinkType[] = [];
 
   @state() private _visible = false;
   @state() private _top = 0;
@@ -215,6 +220,10 @@ export class PigeonRichTextBubble extends LitElement {
         />
         <button class="primary" @click=${this._applyLink}>Apply</button>
         ${this._activeLink ? html`<button @click=${this._removeLink} title="Remove link">×</button>` : ''}
+        <pigeon-link-type-picker
+          .linkTypes=${this.linkTypes}
+          @link-type-select=${this._onLinkTypeSelect}
+        ></pigeon-link-type-picker>
       </div>
     `;
   }
@@ -275,10 +284,15 @@ export class PigeonRichTextBubble extends LitElement {
     }
     // Defence in depth: the link extension already blocks unsafe schemes,
     // but reject the input here so the user gets immediate feedback.
-    if (!/^(https?:|mailto:|#|\/)/i.test(href)) return;
+    if (!/^(https?:|mailto:|tel:|#|\/|\{\{)/i.test(href)) return;
     ed.chain().focus().extendMarkRange('link').setLink({ href }).run();
     this._linkPopoverOpen = false;
     this._sync();
+  }
+
+  private _onLinkTypeSelect(e: CustomEvent<{ href: string }>) {
+    this._linkValue = e.detail.href;
+    this._applyLink();
   }
 
   private _removeLink() {

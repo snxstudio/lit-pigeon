@@ -11,6 +11,7 @@ import type {
   BrandKit,
   BrandColor,
   FontDefinition,
+  LinkType,
 } from '@lit-pigeon/core';
 import { getBlockDefinition } from '@lit-pigeon/core';
 import './panels/text-panel.js';
@@ -48,6 +49,9 @@ export class PigeonProperties extends LitElement {
 
   @property({ attribute: false })
   fontConfig: FontDefinition[] = [];
+
+  @property({ attribute: false })
+  linkTypes: LinkType[] = [];
 
   private get _swatches(): BrandColor[] {
     return this.brandKit?.colors ?? [];
@@ -268,7 +272,7 @@ export class PigeonProperties extends LitElement {
           .assetStorage=${this.assetStorage}
         ></pigeon-image-panel>`;
       case 'button':
-        return html`<pigeon-button-panel .block=${block} .rowId=${rowId} .columnId=${columnId} .swatches=${this._swatches}></pigeon-button-panel>`;
+        return html`<pigeon-button-panel .block=${block} .rowId=${rowId} .columnId=${columnId} .swatches=${this._swatches} .linkTypes=${this.linkTypes}></pigeon-button-panel>`;
       case 'hero':
         return html`<pigeon-hero-panel
           .block=${block}

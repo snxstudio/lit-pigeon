@@ -3,6 +3,7 @@ import type { AssetStorage } from './asset.js';
 import type { BrandKit, BrandKitStorage } from './brand-kit.js';
 import type { FontDefinition } from './font.js';
 import type { RowLibraryStorage } from './row-library.js';
+import type { LinkType } from './link-type.js';
 
 export interface Selection {
   type: 'block' | 'row' | 'column' | 'body';
@@ -76,6 +77,12 @@ export interface EditorConfig {
    * in-session. A filesystem implementation ships in `@lit-pigeon/mcp-server`.
    */
   rowLibrary?: RowLibraryStorage;
+  /**
+   * Optional host-registered link types (label + href template) shown in the
+   * link editor and button panel alongside the built-in system links
+   * (`SYSTEM_LINK_TYPES`). The host/SSR resolves any `{{…}}` templates at send.
+   */
+  linkTypes?: LinkType[];
 }
 
 export interface Step {

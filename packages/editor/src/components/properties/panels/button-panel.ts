@@ -1,11 +1,12 @@
 import { LitElement, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import type { BrandColor, ButtonBlock, Spacing } from '@lit-pigeon/core';
+import type { BrandColor, ButtonBlock, LinkType, Spacing } from '@lit-pigeon/core';
 import { panelStyles } from './panel-styles.js';
 import '../controls/alignment-picker.js';
 import '../controls/spacing-input.js';
 import '../controls/slider-input.js';
 import '../controls/color-picker.js';
+import '../controls/pigeon-link-type-picker.js';
 
 @customElement('pigeon-button-panel')
 export class PigeonButtonPanel extends LitElement {
@@ -20,6 +21,9 @@ export class PigeonButtonPanel extends LitElement {
 
   @property({ attribute: false })
   swatches: BrandColor[] = [];
+
+  @property({ attribute: false })
+  linkTypes: LinkType[] = [];
 
   static styles = panelStyles;
 
@@ -48,6 +52,11 @@ export class PigeonButtonPanel extends LitElement {
           @change=${this._onHrefChange}
         />
       </div>
+
+      <pigeon-link-type-picker
+        .linkTypes=${this.linkTypes}
+        @link-type-select=${this._onLinkTypeSelect}
+      ></pigeon-link-type-picker>
 
       <pigeon-color-picker
         label="Background Color"
@@ -161,6 +170,10 @@ export class PigeonButtonPanel extends LitElement {
 
   private _onHrefChange(e: Event) {
     this._emit({ href: (e.target as HTMLInputElement).value });
+  }
+
+  private _onLinkTypeSelect(e: CustomEvent<{ href: string }>) {
+    this._emit({ href: e.detail.href });
   }
 
   private _onBgColorChange(e: CustomEvent<{ value: string }>) {

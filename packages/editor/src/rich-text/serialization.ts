@@ -33,7 +33,7 @@ const MERGE_TAG_IDENTIFIER = /^[A-Za-z_][A-Za-z0-9_]*$/;
 
 const ALLOWED_STYLE_PROPS = new Set(['color', 'font-family', 'font-size']);
 
-const SAFE_HREF_PROTOCOLS = ['http:', 'https:', 'mailto:'];
+const SAFE_HREF_PROTOCOLS = ['http:', 'https:', 'mailto:', 'tel:'];
 
 const VOID_ELEMENTS = new Set(['br']);
 
@@ -116,6 +116,9 @@ function serializeAttrs(el: Element, tag: string): string | null {
 function isSafeHref(href: string): boolean {
   const trimmed = href.trim();
   if (trimmed.startsWith('#') || trimmed.startsWith('/')) return true;
+  // Merge-tag-style template hrefs (e.g. "{{unsubscribe_url}}") are emitted by
+  // special/custom link types and resolved by the host at send time.
+  if (/^\{\{[\w.]+\}\}$/.test(trimmed)) return true;
   try {
     const url = new URL(trimmed, 'http://_relative_');
     return SAFE_HREF_PROTOCOLS.includes(url.protocol);
