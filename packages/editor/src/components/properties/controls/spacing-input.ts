@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import type { Spacing } from '@lit-pigeon/core';
+import { t } from '../../../i18n/index.js';
 
 @customElement('pigeon-spacing-input')
 export class PigeonSpacingInput extends LitElement {
@@ -105,39 +106,39 @@ export class PigeonSpacingInput extends LitElement {
           .value=${String(this.value.top)}
           min="0"
           @change=${(e: Event) => this._onChange('top', e)}
-          title="Top (px)"
-          aria-label="Top"
+          title=${t('control.spacing.topTitle')}
+          aria-label=${t('control.spacing.top')}
         />
         <input
           type="number"
           .value=${String(this.value.right)}
           min="0"
           @change=${(e: Event) => this._onChange('right', e)}
-          title="Right (px)"
-          aria-label="Right"
+          title=${t('control.spacing.rightTitle')}
+          aria-label=${t('control.spacing.right')}
         />
         <input
           type="number"
           .value=${String(this.value.bottom)}
           min="0"
           @change=${(e: Event) => this._onChange('bottom', e)}
-          title="Bottom (px)"
-          aria-label="Bottom"
+          title=${t('control.spacing.bottomTitle')}
+          aria-label=${t('control.spacing.bottom')}
         />
         <input
           type="number"
           .value=${String(this.value.left)}
           min="0"
           @change=${(e: Event) => this._onChange('left', e)}
-          title="Left (px)"
-          aria-label="Left"
+          title=${t('control.spacing.leftTitle')}
+          aria-label=${t('control.spacing.left')}
         />
       </div>
       <div class="sides" aria-hidden="true">
-        <span class="side">Top</span>
-        <span class="side">Right</span>
-        <span class="side">Bottom</span>
-        <span class="side">Left</span>
+        <span class="side">${t('control.spacing.top')}</span>
+        <span class="side">${t('control.spacing.right')}</span>
+        <span class="side">${t('control.spacing.bottom')}</span>
+        <span class="side">${t('control.spacing.left')}</span>
       </div>
     `;
   }

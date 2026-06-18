@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { generateId } from '@lit-pigeon/core';
 import type { BrandKit, BrandColor, BrandFont, BrandLogo } from '@lit-pigeon/core';
+import { t } from '../../i18n/index.js';
 
 /**
  * `<pigeon-brand-tab>` — the Brand palette tab. Renders the active kit's
@@ -71,10 +72,10 @@ export class PigeonBrandTab extends LitElement {
     return html`
       <div class="section">
         <div class="section-head">
-          <h4>Colors</h4>
-          <button class="add add-color" type="button" @click=${this._addColor}>+ Add</button>
+          <h4>${t('palette.brand.colors')}</h4>
+          <button class="add add-color" type="button" @click=${this._addColor}>${t('palette.brand.add')}</button>
         </div>
-        ${kit.colors.length === 0 ? html`<div class="empty">No colors yet</div>` : ''}
+        ${kit.colors.length === 0 ? html`<div class="empty">${t('palette.brand.no-colors')}</div>` : ''}
         ${kit.colors.map(
           (c) => html`<div class="row" data-color-id=${c.id}>
             <button
@@ -82,14 +83,14 @@ export class PigeonBrandTab extends LitElement {
               style=${`background:${c.value}`} @click=${() => this._applyColor(c)}
             ></button>
             <input
-              class="name-input" aria-label="Color name" .value=${c.name}
+              class="name-input" aria-label=${t('palette.brand.color-name-label')} .value=${c.name}
               @change=${(e: Event) => this._renameColor(c, (e.target as HTMLInputElement).value)}
             />
             <input
-              type="color" aria-label="Color value" .value=${c.value}
+              type="color" aria-label=${t('palette.brand.color-value-label')} .value=${c.value}
               @input=${(e: Event) => this._recolor(c, (e.target as HTMLInputElement).value)}
             />
-            <button class="delete" type="button" title="Delete" aria-label=${`Delete ${c.name}`} @click=${() => this._deleteColor(c)}>×</button>
+            <button class="delete" type="button" title=${t('palette.brand.delete-title')} aria-label=${`Delete ${c.name}`} @click=${() => this._deleteColor(c)}>×</button>
           </div>`,
         )}
       </div>
@@ -100,16 +101,16 @@ export class PigeonBrandTab extends LitElement {
     return html`
       <div class="section">
         <div class="section-head">
-          <h4>Fonts</h4>
-          <button class="add add-font" type="button" @click=${this._addFont}>+ Add</button>
+          <h4>${t('palette.brand.fonts')}</h4>
+          <button class="add add-font" type="button" @click=${this._addFont}>${t('palette.brand.add')}</button>
         </div>
-        ${kit.fonts.length === 0 ? html`<div class="empty">No fonts yet</div>` : ''}
+        ${kit.fonts.length === 0 ? html`<div class="empty">${t('palette.brand.no-fonts')}</div>` : ''}
         ${kit.fonts.map(
           (f) => html`<div class="row" data-font-id=${f.id}>
             <button class="apply" type="button" title=${`Apply ${f.name}`} aria-label=${`Apply font ${f.name}`} @click=${() => this._applyFont(f)}>
               ${f.name}
             </button>
-            <button class="delete" type="button" title="Delete" aria-label=${`Delete ${f.name}`} @click=${() => this._deleteFont(f)}>×</button>
+            <button class="delete" type="button" title=${t('palette.brand.delete-title')} aria-label=${`Delete ${f.name}`} @click=${() => this._deleteFont(f)}>×</button>
           </div>`,
         )}
       </div>
@@ -120,17 +121,17 @@ export class PigeonBrandTab extends LitElement {
     return html`
       <div class="section">
         <div class="section-head">
-          <h4>Logos</h4>
-          <button class="add add-logo" type="button" @click=${this._addLogo}>+ Add</button>
+          <h4>${t('palette.brand.logos')}</h4>
+          <button class="add add-logo" type="button" @click=${this._addLogo}>${t('palette.brand.add')}</button>
         </div>
-        ${kit.logos.length === 0 ? html`<div class="empty">No logos yet</div>` : ''}
+        ${kit.logos.length === 0 ? html`<div class="empty">${t('palette.brand.no-logos')}</div>` : ''}
         ${kit.logos.map(
           (l) => html`<div class="row" data-logo-id=${l.id}>
             <img class="logo-thumb" src=${l.src} alt=${l.name} />
-            <button class="apply" type="button" title="Insert logo" aria-label=${`Insert logo ${l.name}`} @click=${() => this._insertLogo(l)}>
+            <button class="apply" type="button" title=${t('palette.brand.insert-logo-title')} aria-label=${`Insert logo ${l.name}`} @click=${() => this._insertLogo(l)}>
               ${l.name}
             </button>
-            <button class="delete" type="button" title="Delete" aria-label=${`Delete ${l.name}`} @click=${() => this._deleteLogo(l)}>×</button>
+            <button class="delete" type="button" title=${t('palette.brand.delete-title')} aria-label=${`Delete ${l.name}`} @click=${() => this._deleteLogo(l)}>×</button>
           </div>`,
         )}
       </div>

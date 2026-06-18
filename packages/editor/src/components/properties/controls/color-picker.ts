@@ -2,11 +2,12 @@ import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import type { BrandColor } from '@lit-pigeon/core';
+import { t } from '../../../i18n/index.js';
 
 @customElement('pigeon-color-picker')
 export class PigeonColorPicker extends LitElement {
   @property({ type: String })
-  label = 'Color';
+  label = t('control.color.label');
 
   @property({ type: String })
   value = '#000000';

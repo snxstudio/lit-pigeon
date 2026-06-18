@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import type { SocialBlock, SocialIcon, Spacing } from '@lit-pigeon/core';
 import { panelStyles } from './panel-styles.js';
+import { t } from '../../../i18n/index.js';
 import '../controls/alignment-picker.js';
 import '../controls/slider-input.js';
 import '../controls/spacing-input.js';
@@ -93,17 +94,17 @@ export class PigeonSocialPanel extends LitElement {
     const v = this.block.values;
 
     return html`
-      <h3>Social Properties</h3>
+      <h3>${t('panel.social.title')}</h3>
 
-      <h4>Icons</h4>
+      <h4>${t('panel.social.icons')}</h4>
       ${v.icons.map((icon, index) => html`
         <div class="icon-item">
           <div class="icon-header">
-            <label>Icon ${index + 1}</label>
-            <button class="remove-btn" @click=${() => this._removeIcon(index)}>Remove</button>
+            <label>${t('panel.social.iconLabel')} ${index + 1}</label>
+            <button class="remove-btn" @click=${() => this._removeIcon(index)}>${t('panel.social.removeIcon')}</button>
           </div>
           <div class="field">
-            <label>Network</label>
+            <label>${t('panel.social.network')}</label>
             <select @change=${(e: Event) => this._onIconTypeChange(index, e)}>
               ${ICON_TYPES.map(type => html`
                 <option value=${type} ?selected=${icon.type === type}>${type}</option>
@@ -111,7 +112,7 @@ export class PigeonSocialPanel extends LitElement {
             </select>
           </div>
           <div class="field">
-            <label>URL</label>
+            <label>${t('panel.social.url')}</label>
             <input
               type="url"
               .value=${icon.href}
@@ -121,7 +122,7 @@ export class PigeonSocialPanel extends LitElement {
           </div>
           ${icon.type === 'custom' ? html`
             <div class="field">
-              <label>Icon URL</label>
+              <label>${t('panel.social.iconUrl')}</label>
               <input
                 type="url"
                 .value=${icon.iconUrl ?? ''}
@@ -131,7 +132,7 @@ export class PigeonSocialPanel extends LitElement {
             </div>
           ` : ''}
           <div class="field">
-            <label>Label (alt text)</label>
+            <label>${t('panel.social.altText')}</label>
             <input
               type="text"
               .value=${icon.label ?? ''}
@@ -141,10 +142,10 @@ export class PigeonSocialPanel extends LitElement {
         </div>
       `)}
 
-      <button class="add-btn" @click=${this._addIcon}>+ Add Icon</button>
+      <button class="add-btn" @click=${this._addIcon}>${t('panel.social.addIcon')}</button>
 
       <pigeon-slider-input
-        label="Icon Size"
+        label=${t('panel.social.iconSize')}
         .value=${v.iconSize}
         min=${16}
         max=${64}
@@ -154,7 +155,7 @@ export class PigeonSocialPanel extends LitElement {
       ></pigeon-slider-input>
 
       <pigeon-slider-input
-        label="Spacing"
+        label=${t('panel.social.spacing')}
         .value=${v.spacing}
         min=${0}
         max=${48}
@@ -164,13 +165,13 @@ export class PigeonSocialPanel extends LitElement {
       ></pigeon-slider-input>
 
       <pigeon-alignment-picker
-        label="Alignment"
+        label=${t('panel.common.alignment')}
         .value=${v.alignment}
         @alignment-change=${this._onAlignChange}
       ></pigeon-alignment-picker>
 
       <pigeon-spacing-input
-        label="Padding"
+        label=${t('panel.common.padding')}
         .value=${v.padding}
         @spacing-change=${this._onPaddingChange}
       ></pigeon-spacing-input>

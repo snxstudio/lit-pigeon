@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { writeDragTransfer } from '../../dnd/drag-manager.js';
 import type { LibraryEntry, RowLibraryStorage } from '@lit-pigeon/core';
+import { t } from '../../i18n/index.js';
 
 /**
  * `<pigeon-saved-tab>` — the Saved palette tab body. Lists saved rows from the
@@ -52,7 +53,7 @@ export class PigeonSavedTab extends LitElement {
     return html`
       <div class="section">
         ${this._entries.length === 0
-          ? html`<div class="empty">No saved rows yet. Use the bookmark action on a row to save it here.</div>`
+          ? html`<div class="empty">${t('palette.saved.empty')}</div>`
           : this._entries.map(
               (e) => html`<div
                 class="row" data-entry-id=${e.id} draggable="true"
@@ -61,7 +62,7 @@ export class PigeonSavedTab extends LitElement {
                 @keydown=${(ev: KeyboardEvent) => this._onKeyDown(ev, e)}
               >
                 <span class="name">${e.name}</span>
-                <button class="delete" type="button" title="Delete" aria-label=${`Delete ${e.name}`}
+                <button class="delete" type="button" title=${t('palette.saved.delete-title')} aria-label=${`Delete ${e.name}`}
                   @click=${() => this._onDelete(e)}>×</button>
               </div>`,
             )}

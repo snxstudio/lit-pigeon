@@ -13,6 +13,7 @@ import '../controls/spacing-input.js';
 import '../controls/slider-input.js';
 import '../controls/color-picker.js';
 import '../../asset-manager/pigeon-asset-manager.js';
+import { t } from '../../../i18n/index.js';
 
 @customElement('pigeon-hero-panel')
 export class PigeonHeroPanel extends LitElement {
@@ -44,20 +45,20 @@ export class PigeonHeroPanel extends LitElement {
     const v = this.block.values;
 
     return html`
-      <h3>Hero Properties</h3>
+      <h3>${t('panel.hero.title')}</h3>
 
       <div class="field">
-        <label>Background URL</label>
+        <label>${t('panel.hero.backgroundUrl')}</label>
         <input
           type="url"
           .value=${v.backgroundUrl}
-          placeholder="https://example.com/hero.jpg"
+          placeholder=${t('panel.hero.backgroundUrlPlaceholder')}
           @change=${this._onBackgroundUrlChange}
         />
         <button
           style="margin-top:4px;height:28px;padding:0 12px;border:1px solid var(--pigeon-border,#e2e8f0);border-radius:4px;background:var(--pigeon-surface,#f8fafc);cursor:pointer;font-family:var(--pigeon-font);font-size:12px;font-weight:500;"
           @click=${() => this._assetManagerOpen = true}
-        >Upload Image</button>
+        >${t('panel.common.uploadImage')}</button>
       </div>
 
       <pigeon-asset-manager
@@ -68,7 +69,7 @@ export class PigeonHeroPanel extends LitElement {
       ></pigeon-asset-manager>
 
       <div class="field">
-        <label>Background Position</label>
+        <label>${t('panel.hero.backgroundPosition')}</label>
         <select @change=${this._onBackgroundPositionChange}>
           ${(['center center', 'top center', 'bottom center', 'left center', 'right center'] as const).map(
             pos => html`<option value=${pos} ?selected=${v.backgroundPosition === pos}>${pos}</option>`
@@ -77,15 +78,15 @@ export class PigeonHeroPanel extends LitElement {
       </div>
 
       <div class="field">
-        <label>Mode</label>
+        <label>${t('panel.hero.mode')}</label>
         <select @change=${this._onModeChange}>
-          <option value="fluid-height" ?selected=${v.mode === 'fluid-height'}>Fluid Height</option>
-          <option value="fixed-height" ?selected=${v.mode === 'fixed-height'}>Fixed Height</option>
+          <option value="fluid-height" ?selected=${v.mode === 'fluid-height'}>${t('panel.hero.modeFluidHeight')}</option>
+          <option value="fixed-height" ?selected=${v.mode === 'fixed-height'}>${t('panel.hero.modeFixedHeight')}</option>
         </select>
       </div>
 
       <pigeon-slider-input
-        label="Height"
+        label=${t('panel.hero.height')}
         .value=${v.height}
         min=${100}
         max=${800}
@@ -95,7 +96,7 @@ export class PigeonHeroPanel extends LitElement {
       ></pigeon-slider-input>
 
       <pigeon-slider-input
-        label="Width"
+        label=${t('panel.hero.width')}
         .value=${v.width}
         min=${200}
         max=${800}
@@ -105,23 +106,23 @@ export class PigeonHeroPanel extends LitElement {
       ></pigeon-slider-input>
 
       <div class="field">
-        <label>Vertical Align</label>
+        <label>${t('panel.hero.verticalAlign')}</label>
         <select @change=${this._onVerticalAlignChange}>
-          <option value="top" ?selected=${v.verticalAlign === 'top'}>Top</option>
-          <option value="middle" ?selected=${v.verticalAlign === 'middle'}>Middle</option>
-          <option value="bottom" ?selected=${v.verticalAlign === 'bottom'}>Bottom</option>
+          <option value="top" ?selected=${v.verticalAlign === 'top'}>${t('panel.hero.verticalAlignTop')}</option>
+          <option value="middle" ?selected=${v.verticalAlign === 'middle'}>${t('panel.hero.verticalAlignMiddle')}</option>
+          <option value="bottom" ?selected=${v.verticalAlign === 'bottom'}>${t('panel.hero.verticalAlignBottom')}</option>
         </select>
       </div>
 
       <pigeon-color-picker
-        label="Background Color"
+        label=${t('panel.common.backgroundColor')}
         .value=${v.backgroundColor}
         .swatches=${this.swatches}
         @color-change=${this._onBgColorChange}
       ></pigeon-color-picker>
 
       <div class="field">
-        <label>Content (HTML)</label>
+        <label>${t('panel.common.contentHtml')}</label>
         <textarea
           .value=${v.content}
           @change=${this._onContentChange}
@@ -129,13 +130,13 @@ export class PigeonHeroPanel extends LitElement {
       </div>
 
       <pigeon-spacing-input
-        label="Padding"
+        label=${t('panel.common.padding')}
         .value=${v.padding}
         @spacing-change=${this._onPaddingChange}
       ></pigeon-spacing-input>
 
       <pigeon-spacing-input
-        label="Inner Padding"
+        label=${t('panel.common.innerPadding')}
         .value=${v.innerPadding}
         @spacing-change=${this._onInnerPaddingChange}
       ></pigeon-spacing-input>

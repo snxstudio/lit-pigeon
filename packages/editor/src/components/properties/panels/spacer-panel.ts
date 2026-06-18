@@ -2,6 +2,7 @@ import { LitElement, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import type { SpacerBlock } from '@lit-pigeon/core';
 import { panelStyles } from './panel-styles.js';
+import { t } from '../../../i18n/index.js';
 import '../controls/slider-input.js';
 
 @customElement('pigeon-spacer-panel')
@@ -22,10 +23,10 @@ export class PigeonSpacerPanel extends LitElement {
     const v = this.block.values;
 
     return html`
-      <h3>Spacer Properties</h3>
+      <h3>${t('panel.spacer.title')}</h3>
 
       <pigeon-slider-input
-        label="Height"
+        label=${t('panel.spacer.height')}
         .value=${v.height}
         min=${4}
         max=${200}

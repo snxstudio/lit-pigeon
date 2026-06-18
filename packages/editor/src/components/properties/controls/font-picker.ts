@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import type { FontDefinition } from '@lit-pigeon/core';
+import { t } from '../../../i18n/index.js';
 
 export interface FontOption {
   label: string;
@@ -26,7 +27,7 @@ export const DEFAULT_FONT_OPTIONS: FontOption[] = [
 @customElement('pigeon-font-picker')
 export class PigeonFontPicker extends LitElement {
   @property({ type: String })
-  label = 'Font Family';
+  label = t('control.fontPicker.label');
 
   @property({ type: String })
   value = '';

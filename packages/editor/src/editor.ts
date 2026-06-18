@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { themeStyles } from './themes/tokens.js';
+import { configureI18n, resolveDir } from './i18n/index.js';
 import {
   EditorState,
   type PigeonDocument,
@@ -254,7 +255,9 @@ export class PigeonEditor extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
+    configureI18n(this.config.locale, this.config.messages);
     this._initState();
+    this._applyDir();
     this._resolveBrandKit();
     this._applyTheme();
     document.addEventListener('keydown', this._handleKeyDown);
@@ -291,8 +294,20 @@ export class PigeonEditor extends LitElement {
       this._applyTheme();
     }
     if (changed.has('config')) {
+      configureI18n(this.config.locale, this.config.messages);
+      this._applyDir();
       this._resolveBrandKit();
     }
+  }
+
+  /**
+   * Set the host `dir` attribute based on `config.locale` and `config.dir`.
+   * The host `dir` attribute drives the layout direction automatically for RTL locales.
+   * The `.editor-body` flex layout will flip under `dir="rtl"` via the browser's built-in
+   * bidirectional layout support.
+   */
+  private _applyDir() {
+    this.setAttribute('dir', resolveDir(this.config.locale, this.config.dir));
   }
 
   /**

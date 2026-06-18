@@ -83,6 +83,12 @@ export interface EditorConfig {
    * (`SYSTEM_LINK_TYPES`). The host/SSR resolves any `{{…}}` templates at send.
    */
   linkTypes?: LinkType[];
+  /** Active locale code (e.g. 'fr', 'ar'). Defaults to 'en'. */
+  locale?: string;
+  /** Host-supplied per-locale catalogs, merged over the built-in `en` baseline. */
+  messages?: Record<string, Record<string, string>>;
+  /** Explicit text direction. When unset, derived from `locale`. */
+  dir?: 'ltr' | 'rtl';
 }
 
 export interface Step {

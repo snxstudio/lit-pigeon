@@ -7,6 +7,7 @@ import '../controls/color-picker.js';
 import '../controls/font-picker.js';
 import '../controls/slider-input.js';
 import '../../merge-tags/pigeon-merge-tag-picker.js';
+import { t } from '../../../i18n/index.js';
 
 @customElement('pigeon-body-panel')
 export class PigeonBodyPanel extends LitElement {
@@ -109,10 +110,10 @@ export class PigeonBodyPanel extends LitElement {
     const a = this.doc.body.attributes;
 
     return html`
-      <h3>Email Body</h3>
+      <h3>${t('panel.body.title')}</h3>
 
       <pigeon-slider-input
-        label="Content Width"
+        label=${t('panel.body.contentWidth')}
         .value=${a.width}
         min=${320}
         max=${960}
@@ -121,35 +122,35 @@ export class PigeonBodyPanel extends LitElement {
       ></pigeon-slider-input>
 
       <pigeon-color-picker
-        label="Background Color"
+        label=${t('panel.common.backgroundColor')}
         .value=${a.backgroundColor}
         .swatches=${this.swatches}
         @color-change=${this._onBgColorChange}
       ></pigeon-color-picker>
 
       <pigeon-font-picker
-        label="Font Family"
+        label=${t('panel.body.fontFamily')}
         .value=${a.fontFamily}
         .brandFonts=${this.brandFonts}
         @font-change=${this._onFontFamilyChange}
       ></pigeon-font-picker>
 
       <div class="field">
-        <label>Content Alignment</label>
+        <label>${t('panel.body.contentAlignment')}</label>
         <div class="alignment-buttons">
           <button
             class="${a.contentAlignment === 'left' ? 'active' : ''}"
             @click=${() => this._onAlignChange('left')}
-          >Left</button>
+          >${t('panel.common.left')}</button>
           <button
             class="${a.contentAlignment === 'center' ? 'active' : ''}"
             @click=${() => this._onAlignChange('center')}
-          >Center</button>
+          >${t('panel.common.center')}</button>
         </div>
       </div>
 
       <div class="field">
-        <label>Email Name</label>
+        <label>${t('panel.body.emailName')}</label>
         <input
           type="text"
           .value=${this.doc.metadata.name}
@@ -159,10 +160,10 @@ export class PigeonBodyPanel extends LitElement {
 
       <div class="field">
         <div class="label-row">
-          <label>Preview Text</label>
+          <label>${t('panel.body.previewText')}</label>
           ${this.mergeTags.length > 0 ? html`
-            <button class="tag-btn" ${ref(this._triggerRef)} @click=${this._togglePicker} title="Insert merge tag">
-              { } Tag
+            <button class="tag-btn" ${ref(this._triggerRef)} @click=${this._togglePicker} title=${t('panel.common.insertMergeTag')}>
+              ${t('panel.common.tagBtn')}
             </button>
           ` : ''}
         </div>
@@ -170,7 +171,7 @@ export class PigeonBodyPanel extends LitElement {
           type="text"
           ${ref(this._previewInputRef)}
           .value=${this.doc.metadata.previewText ?? ''}
-          placeholder="Email preview text..."
+          placeholder=${t('panel.body.previewTextPlaceholder')}
           @change=${this._onPreviewTextChange}
         />
       </div>

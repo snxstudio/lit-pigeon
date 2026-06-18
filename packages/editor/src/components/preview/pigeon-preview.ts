@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import type { PigeonDocument, Renderer, FontDefinition } from '@lit-pigeon/core';
+import { t } from '../../i18n/index.js';
 
 type ViewMode = 'preview' | 'html' | 'mjml' | 'json';
 
@@ -303,24 +304,24 @@ export class PigeonPreview extends LitElement {
         tabindex="-1"
       >
         <div class="header">
-          <h3 id="pigeon-preview-title">Preview</h3>
-          <div class="tabs" role="tablist" aria-label="Preview format">
-            <button role="tab" aria-selected=${this._viewMode === 'preview'} class="tab ${this._viewMode === 'preview' ? 'active' : ''}" @click=${() => this._setView('preview')}>Preview</button>
-            <button role="tab" aria-selected=${this._viewMode === 'html'} class="tab ${this._viewMode === 'html' ? 'active' : ''}" @click=${() => this._setView('html')}>HTML</button>
-            <button role="tab" aria-selected=${this._viewMode === 'mjml'} class="tab ${this._viewMode === 'mjml' ? 'active' : ''}" @click=${() => this._setView('mjml')}>MJML</button>
-            <button role="tab" aria-selected=${this._viewMode === 'json'} class="tab ${this._viewMode === 'json' ? 'active' : ''}" @click=${() => this._setView('json')}>JSON</button>
+          <h3 id="pigeon-preview-title">${t('preview.heading')}</h3>
+          <div class="tabs" role="tablist" aria-label=${t('preview.tab-group-label')}>
+            <button role="tab" aria-selected=${this._viewMode === 'preview'} class="tab ${this._viewMode === 'preview' ? 'active' : ''}" @click=${() => this._setView('preview')}>${t('preview.tab.preview')}</button>
+            <button role="tab" aria-selected=${this._viewMode === 'html'} class="tab ${this._viewMode === 'html' ? 'active' : ''}" @click=${() => this._setView('html')}>${t('preview.tab.html')}</button>
+            <button role="tab" aria-selected=${this._viewMode === 'mjml'} class="tab ${this._viewMode === 'mjml' ? 'active' : ''}" @click=${() => this._setView('mjml')}>${t('preview.tab.mjml')}</button>
+            <button role="tab" aria-selected=${this._viewMode === 'json'} class="tab ${this._viewMode === 'json' ? 'active' : ''}" @click=${() => this._setView('json')}>${t('preview.tab.json')}</button>
           </div>
           <div class="spacer"></div>
           ${this._viewMode === 'preview' ? html`
-            <div class="device-toggle" role="group" aria-label="Preview device">
-              <button class="${this._device === 'desktop' ? 'active' : ''}" aria-label="Desktop preview" aria-pressed=${this._device === 'desktop'} @click=${() => this._device = 'desktop'} title="Desktop">&#128187;</button>
-              <button class="${this._device === 'mobile' ? 'active' : ''}" aria-label="Mobile preview" aria-pressed=${this._device === 'mobile'} @click=${() => this._device = 'mobile'} title="Mobile">&#128241;</button>
+            <div class="device-toggle" role="group" aria-label=${t('toolbar.preview-device')}>
+              <button class="${this._device === 'desktop' ? 'active' : ''}" aria-label=${t('preview.device.desktop')} aria-pressed=${this._device === 'desktop'} @click=${() => this._device = 'desktop'} title="Desktop">&#128187;</button>
+              <button class="${this._device === 'mobile' ? 'active' : ''}" aria-label=${t('preview.device.mobile')} aria-pressed=${this._device === 'mobile'} @click=${() => this._device = 'mobile'} title="Mobile">&#128241;</button>
             </div>
           ` : ''}
-          <button class="close-btn" aria-label="Close preview" @click=${this._close}>&times;</button>
+          <button class="close-btn" aria-label=${t('preview.close')} @click=${this._close}>&times;</button>
         </div>
         <div class="content">
-          ${this._loading ? html`<div class="loading">Rendering...</div>` : this._renderContent()}
+          ${this._loading ? html`<div class="loading">${t('preview.loading')}</div>` : this._renderContent()}
         </div>
       </div>
     `;

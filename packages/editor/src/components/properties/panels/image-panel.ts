@@ -11,6 +11,7 @@ import '../controls/alignment-picker.js';
 import '../controls/spacing-input.js';
 import '../controls/slider-input.js';
 import '../../asset-manager/pigeon-asset-manager.js';
+import { t } from '../../../i18n/index.js';
 
 @customElement('pigeon-image-panel')
 export class PigeonImagePanel extends LitElement {
@@ -49,18 +50,18 @@ export class PigeonImagePanel extends LitElement {
     const uploadEnabled = this.assetManagerConfig?.enabled !== false;
 
     return html`
-      <h3>Image Properties</h3>
+      <h3>${t('panel.image.title')}</h3>
 
       <div class="field">
-        <label>Image URL</label>
+        <label>${t('panel.image.imageUrl')}</label>
         <input
           type="url"
           .value=${v.src}
-          placeholder="https://example.com/image.jpg"
+          placeholder=${t('panel.image.urlPlaceholder')}
           @change=${this._onSrcChange}
         />
         ${uploadEnabled
-          ? html`<button class="btn-secondary upload-btn" @click=${this._openAssetManager}>Upload Image</button>`
+          ? html`<button class="btn-secondary upload-btn" @click=${this._openAssetManager}>${t('panel.common.uploadImage')}</button>`
           : ''}
       </div>
 
@@ -74,17 +75,17 @@ export class PigeonImagePanel extends LitElement {
         : ''}
 
       <div class="field">
-        <label>Alt Text</label>
+        <label>${t('panel.image.altText')}</label>
         <input
           type="text"
           .value=${v.alt}
-          placeholder="Image description"
+          placeholder=${t('panel.image.altPlaceholder')}
           @change=${this._onAltChange}
         />
       </div>
 
       <pigeon-slider-input
-        label="Width (0 = auto)"
+        label=${t('panel.image.width')}
         .value=${widthVal as number}
         min=${0}
         max=${800}
@@ -94,13 +95,13 @@ export class PigeonImagePanel extends LitElement {
       ></pigeon-slider-input>
 
       <pigeon-alignment-picker
-        label="Alignment"
+        label=${t('panel.common.alignment')}
         .value=${v.alignment}
         @alignment-change=${this._onAlignChange}
       ></pigeon-alignment-picker>
 
       <pigeon-slider-input
-        label="Border Radius"
+        label=${t('panel.common.borderRadius')}
         .value=${v.borderRadius ?? 0}
         min=${0}
         max=${100}
@@ -109,17 +110,17 @@ export class PigeonImagePanel extends LitElement {
       ></pigeon-slider-input>
 
       <div class="field">
-        <label>Link URL</label>
+        <label>${t('panel.common.linkUrl')}</label>
         <input
           type="url"
           .value=${v.href ?? ''}
-          placeholder="https://example.com"
+          placeholder=${t('panel.common.urlPlaceholder')}
           @change=${this._onHrefChange}
         />
       </div>
 
       <pigeon-spacing-input
-        label="Padding"
+        label=${t('panel.common.padding')}
         .value=${v.padding}
         @spacing-change=${this._onPaddingChange}
       ></pigeon-spacing-input>

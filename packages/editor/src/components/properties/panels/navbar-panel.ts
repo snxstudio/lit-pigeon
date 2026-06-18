@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import type { BrandColor, NavBarBlock, Spacing } from '@lit-pigeon/core';
 import { panelStyles } from './panel-styles.js';
+import { t } from '../../../i18n/index.js';
 import '../controls/alignment-picker.js';
 import '../controls/spacing-input.js';
 import '../controls/slider-input.js';
@@ -87,17 +88,17 @@ export class PigeonNavBarPanel extends LitElement {
     const v = this.block.values;
 
     return html`
-      <h3>Navbar Properties</h3>
+      <h3>${t('panel.navbar.title')}</h3>
 
-      <h4>Links</h4>
+      <h4>${t('panel.navbar.links')}</h4>
       ${v.links.map((link, index) => html`
         <div class="link-item">
           <div class="link-header">
-            <label>Link ${index + 1}</label>
-            <button class="remove-btn" @click=${() => this._removeLink(index)}>Remove</button>
+            <label>${t('panel.navbar.linkLabel')} ${index + 1}</label>
+            <button class="remove-btn" @click=${() => this._removeLink(index)}>${t('panel.navbar.removeLink')}</button>
           </div>
           <div class="field">
-            <label>Text</label>
+            <label>${t('panel.navbar.linkText')}</label>
             <input
               type="text"
               .value=${link.text}
@@ -105,7 +106,7 @@ export class PigeonNavBarPanel extends LitElement {
             />
           </div>
           <div class="field">
-            <label>URL</label>
+            <label>${t('panel.navbar.url')}</label>
             <input
               type="url"
               .value=${link.href}
@@ -115,31 +116,31 @@ export class PigeonNavBarPanel extends LitElement {
         </div>
       `)}
 
-      <button class="add-btn" @click=${this._addLink}>+ Add Link</button>
+      <button class="add-btn" @click=${this._addLink}>${t('panel.navbar.addLink')}</button>
 
       <pigeon-alignment-picker
-        label="Alignment"
+        label=${t('panel.common.alignment')}
         .value=${v.alignment}
         @alignment-change=${this._onAlignChange}
       ></pigeon-alignment-picker>
 
       <div class="field">
-        <label>Hamburger (mobile)</label>
+        <label>${t('panel.navbar.hamburger')}</label>
         <select @change=${this._onHamburgerChange}>
-          <option value="hamburger" ?selected=${v.hamburger === 'hamburger'}>Show</option>
-          <option value="none" ?selected=${v.hamburger === 'none'}>Hide</option>
+          <option value="hamburger" ?selected=${v.hamburger === 'hamburger'}>${t('panel.navbar.hamburgerShow')}</option>
+          <option value="none" ?selected=${v.hamburger === 'none'}>${t('panel.navbar.hamburgerHide')}</option>
         </select>
       </div>
 
       <pigeon-color-picker
-        label="Link Color"
+        label=${t('panel.navbar.linkColor')}
         .value=${v.linkColor}
         .swatches=${this.swatches}
         @color-change=${this._onLinkColorChange}
       ></pigeon-color-picker>
 
       <pigeon-slider-input
-        label="Link Font Size"
+        label=${t('panel.navbar.linkFontSize')}
         .value=${v.linkFontSize}
         min=${10}
         max=${32}
@@ -149,7 +150,7 @@ export class PigeonNavBarPanel extends LitElement {
       ></pigeon-slider-input>
 
       <div class="field">
-        <label>Link Padding</label>
+        <label>${t('panel.navbar.linkPadding')}</label>
         <input
           type="text"
           .value=${v.linkPadding}
@@ -159,7 +160,7 @@ export class PigeonNavBarPanel extends LitElement {
       </div>
 
       <pigeon-spacing-input
-        label="Padding"
+        label=${t('panel.common.padding')}
         .value=${v.padding}
         @spacing-change=${this._onPaddingChange}
       ></pigeon-spacing-input>
