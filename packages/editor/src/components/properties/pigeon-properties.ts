@@ -10,7 +10,7 @@ import type {
   AssetStorage,
   BrandKit,
   BrandColor,
-  BrandFont,
+  FontDefinition,
 } from '@lit-pigeon/core';
 import { getBlockDefinition } from '@lit-pigeon/core';
 import './panels/text-panel.js';
@@ -46,12 +46,17 @@ export class PigeonProperties extends LitElement {
   @property({ attribute: false })
   brandKit: BrandKit | null = null;
 
+  @property({ attribute: false })
+  fontConfig: FontDefinition[] = [];
+
   private get _swatches(): BrandColor[] {
     return this.brandKit?.colors ?? [];
   }
 
-  private get _brandFonts(): BrandFont[] {
-    return this.brandKit?.fonts ?? [];
+  private get _brandFonts(): FontDefinition[] {
+    const merged: FontDefinition[] = [...this.fontConfig, ...(this.brandKit?.fonts ?? [])];
+    const seen = new Set<string>();
+    return merged.filter((f) => (seen.has(f.family) ? false : (seen.add(f.family), true)));
   }
 
   static styles = css`

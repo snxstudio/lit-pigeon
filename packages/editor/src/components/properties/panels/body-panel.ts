@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
-import type { PigeonDocument, MergeTag, BrandColor, BrandFont } from '@lit-pigeon/core';
+import type { PigeonDocument, MergeTag, BrandColor, FontDefinition } from '@lit-pigeon/core';
 import { panelStyles } from './panel-styles.js';
 import '../controls/color-picker.js';
 import '../controls/font-picker.js';
@@ -20,7 +20,7 @@ export class PigeonBodyPanel extends LitElement {
   swatches: BrandColor[] = [];
 
   @property({ attribute: false })
-  brandFonts: BrandFont[] = [];
+  brandFonts: FontDefinition[] = [];
 
   @state() private _pickerOpen = false;
   @state() private _pickerX = 0;

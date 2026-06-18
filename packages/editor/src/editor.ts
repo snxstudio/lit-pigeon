@@ -44,7 +44,7 @@ import {
   createDocStep,
   generateId,
 } from '@lit-pigeon/core';
-import type { HistoryState, TransactionSnapshot, BrandKit, BrandKitStorage, BrandLogo, ImageBlock } from '@lit-pigeon/core';
+import type { HistoryState, TransactionSnapshot, BrandKit, BrandKitStorage, BrandLogo, ImageBlock, FontDefinition } from '@lit-pigeon/core';
 
 import './components/toolbar/pigeon-toolbar.js';
 import './components/palette/pigeon-palette.js';
@@ -162,7 +162,7 @@ export class PigeonEditor extends LitElement {
 
   /** Optional function to convert document to MJML. */
   @property({ type: Object })
-  documentToMjml?: (doc: PigeonDocument) => string;
+  documentToMjml?: (doc: PigeonDocument, options?: { fonts?: FontDefinition[] }) => string;
 
   /**
    * Optional template storage backend. When unset, the editor falls back to
@@ -344,7 +344,7 @@ export class PigeonEditor extends LitElement {
   /** Export the document as MJML. Requires documentToMjml to be set. */
   exportMjml(): string | null {
     if (this.documentToMjml) {
-      return this.documentToMjml(this._state.doc);
+      return this.documentToMjml(this._state.doc, { fonts: this._renderFonts() });
     }
     return null;
   }
@@ -352,7 +352,7 @@ export class PigeonEditor extends LitElement {
   /** Export the document as HTML. Requires renderer to be set. */
   async exportHtml(): Promise<string | null> {
     if (this.renderer) {
-      const result = await this.renderer.render(this._state.doc);
+      const result = await this.renderer.render(this._state.doc, { fonts: this._renderFonts() });
       return result.html;
     }
     return null;
@@ -445,6 +445,7 @@ export class PigeonEditor extends LitElement {
           .assetManagerConfig=${this.config.assetManager ?? {}}
           .assetStorage=${this.assetStorage ?? this.config.assetStorage}
           .brandKit=${this._activeBrandKit}
+          .fontConfig=${this.config.fontConfig ?? []}
           @property-change=${this._handlePropertyChange}
           @row-property-change=${this._handleRowPropertyChange}
           @row-layout-change=${this._handleRowLayoutChange}
@@ -459,6 +460,7 @@ export class PigeonEditor extends LitElement {
         .doc=${doc}
         .renderer=${this.renderer}
         .documentToMjml=${this.documentToMjml}
+        .fonts=${this._renderFonts()}
         @click=${(e: Event) => {
           if ((e.target as HTMLElement).classList?.contains('overlay')) {
             this._previewOpen = false;
@@ -516,6 +518,14 @@ export class PigeonEditor extends LitElement {
       this._brandKitStorage = null;
       this._activeBrandKit = bk as BrandKit;
     }
+  }
+
+  /** Fonts to load in preview/export: host fontConfig + brand fonts that carry a URL, deduped by family. */
+  private _renderFonts(): FontDefinition[] {
+    const brandWithUrl = (this._activeBrandKit?.fonts ?? []).filter((f) => f.url);
+    const merged: FontDefinition[] = [...(this.config.fontConfig ?? []), ...brandWithUrl];
+    const seen = new Set<string>();
+    return merged.filter((f) => (seen.has(f.family) ? false : (seen.add(f.family), true)));
   }
 
   private _emitBrandKitError(error: unknown, operation: 'list' | 'save') {
@@ -751,7 +761,7 @@ export class PigeonEditor extends LitElement {
   }
 
   private _handleExportMjml() {
-    const mjml = this.documentToMjml ? this.documentToMjml(this._state.doc) : null;
+    const mjml = this.documentToMjml ? this.documentToMjml(this._state.doc, { fonts: this._renderFonts() }) : null;
     this.dispatchEvent(new CustomEvent('pigeon:export-mjml', {
       detail: { document: this._state.doc, mjml },
       bubbles: true,

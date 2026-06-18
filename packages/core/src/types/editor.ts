@@ -1,6 +1,7 @@
 import type { PigeonDocument, ContentBlock, RowNode, ColumnNode } from './document.js';
 import type { AssetStorage } from './asset.js';
 import type { BrandKit, BrandKitStorage } from './brand-kit.js';
+import type { FontDefinition } from './font.js';
 
 export interface Selection {
   type: 'block' | 'row' | 'column' | 'body';
@@ -61,6 +62,13 @@ export interface EditorConfig {
    * directly; a `BrandKitStorage` is resolved lazily on demand.
    */
   brandKit?: BrandKit | BrandKitStorage;
+  /**
+   * Optional host-registered fonts. They appear as options in the editor font
+   * picker and, when a `url` is set, are emitted by the renderer as `<mj-font>`
+   * so email clients load them. Family stacks should include email-safe
+   * fallbacks.
+   */
+  fontConfig?: FontDefinition[];
 }
 
 export interface Step {
@@ -175,6 +183,11 @@ export interface RenderOptions {
    * Set to false to opt out (useful for testing the bare renderer output).
    */
   outlookWorkarounds?: boolean;
+  /**
+   * Web fonts to emit as `<mj-font>` in the document head. Each font with a
+   * `url` produces one stylesheet link; URL-less fonts are ignored.
+   */
+  fonts?: FontDefinition[];
 }
 
 export interface RenderResult {

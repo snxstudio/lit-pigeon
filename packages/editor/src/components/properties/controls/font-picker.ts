@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import type { BrandFont } from '@lit-pigeon/core';
+import type { FontDefinition } from '@lit-pigeon/core';
 
 export interface FontOption {
   label: string;
@@ -31,9 +31,9 @@ export class PigeonFontPicker extends LitElement {
   @property({ type: String })
   value = '';
 
-  /** Brand fonts to append after the defaults (de-duplicated by family). */
+  /** Selectable fonts beyond the built-in defaults (brand-kit fonts and/or host fontConfig). De-duped by family. */
   @property({ attribute: false })
-  brandFonts: BrandFont[] = [];
+  brandFonts: FontDefinition[] = [];
 
   static styles = css`
     :host {
