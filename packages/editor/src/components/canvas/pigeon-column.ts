@@ -8,8 +8,8 @@ import type {
   Selection,
 } from '@lit-pigeon/core';
 import { getBlockDefinition } from '@lit-pigeon/core';
-import { getDragData, clearDragData } from '../../dnd/drag-manager.js';
-import { calculateBlockDropIndex } from '../../dnd/drop-zones.js';
+import { getDragData, clearDragData, writeDragTransfer } from '../../dnd/drag-manager.js';
+import { calculateBlockDropIndex, resolveReorderTarget } from '../../dnd/drop-zones.js';
 import './pigeon-drop-indicator.js';
 import '../blocks/text-block.js';
 import '../blocks/image-block.js';
@@ -40,6 +40,11 @@ export class PigeonColumn extends LitElement {
 
   @state()
   private _isDragOver = false;
+
+  /** Id of the block currently being dragged from this column, or null. Dims
+   *  the source block while a reorder drag is in flight. */
+  @state()
+  private _draggingBlockId: string | null = null;
 
   static styles = css`
     :host {
@@ -75,6 +80,55 @@ export class PigeonColumn extends LitElement {
     .column-content.drag-over .empty-hint {
       border-color: var(--pigeon-drop-color, #3b82f6);
       background: color-mix(in srgb, var(--pigeon-drop-color, #3b82f6) 8%, transparent);
+    }
+
+    .block-wrapper {
+      position: relative;
+      transition: opacity 0.15s ease;
+    }
+
+    .block-wrapper.dragging {
+      opacity: 0.4;
+    }
+
+    .block-drag-handle {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      padding: 0;
+      border: 1px solid var(--pigeon-border, #e2e8f0);
+      border-radius: var(--pigeon-radius-sm, 4px);
+      background: var(--pigeon-bg, #ffffff);
+      color: var(--pigeon-text-secondary, #64748b);
+      box-shadow: var(--pigeon-shadow-sm);
+      cursor: grab;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+
+    .block-wrapper:hover .block-drag-handle {
+      opacity: 1;
+    }
+
+    .block-drag-handle:active {
+      cursor: grabbing;
+    }
+
+    .block-drag-handle:focus-visible {
+      outline: none;
+      box-shadow: var(--pigeon-ring-shadow);
+      opacity: 1;
+    }
+
+    .block-drag-handle svg {
+      width: 12px;
+      height: 12px;
     }
 
     .custom-block {
@@ -135,7 +189,21 @@ export class PigeonColumn extends LitElement {
               <pigeon-drop-indicator
                 ?visible=${this._isDragOver && this._dropIndex === index}
               ></pigeon-drop-indicator>
-              ${this._renderBlock(block)}
+              <div class="block-wrapper ${this._draggingBlockId === block.id ? 'dragging' : ''}">
+                <button
+                  class="block-drag-handle"
+                  title="Drag to reorder"
+                  draggable="true"
+                  @dragstart=${(e: DragEvent) => this._onBlockDragStart(e, block.id)}
+                  @dragend=${this._onBlockDragEnd}
+                  @click=${(e: Event) => e.stopPropagation()}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M9 5v14M15 5v14" />
+                  </svg>
+                </button>
+                ${this._renderBlock(block)}
+              </div>
             `)}
         ${blocks.length > 0
           ? html`<pigeon-drop-indicator
@@ -239,7 +307,7 @@ export class PigeonColumn extends LitElement {
     e.stopPropagation();
 
     if (e.dataTransfer) {
-      e.dataTransfer.dropEffect = 'copy';
+      e.dataTransfer.dropEffect = dragData.type === 'existing-block' ? 'move' : 'copy';
     }
 
     this._isDragOver = true;
@@ -280,7 +348,25 @@ export class PigeonColumn extends LitElement {
     e.preventDefault();
     e.stopPropagation();
 
-    const index = this._dropIndex >= 0 ? this._dropIndex : this.column.blocks.length;
+    let index = this._dropIndex >= 0 ? this._dropIndex : this.column.blocks.length;
+
+    // Same-column reorder: moveBlock removes the source before inserting, so
+    // translate the visual drop index into the post-removal splice index and
+    // skip no-op drops (onto the source or its immediate gap). Cross-column
+    // and palette inserts use the raw visual index unchanged.
+    if (
+      dragData.type === 'existing-block' &&
+      dragData.rowId === this.rowId &&
+      dragData.columnId === this.column.id
+    ) {
+      const sourceIndex = this.column.blocks.findIndex((b) => b.id === dragData.blockId);
+      const target = resolveReorderTarget(sourceIndex, index);
+      if (target === null) {
+        this._resetDragState();
+        return;
+      }
+      index = target;
+    }
 
     this.dispatchEvent(new CustomEvent('block-drop', {
       detail: {
@@ -293,8 +379,32 @@ export class PigeonColumn extends LitElement {
       composed: true,
     }));
 
+    this._resetDragState();
+  }
+
+  private _resetDragState() {
     this._isDragOver = false;
     this._dropIndex = -1;
+    clearDragData();
+  }
+
+  private _onBlockDragStart(e: DragEvent, blockId: string) {
+    writeDragTransfer(e, {
+      type: 'existing-block',
+      blockId,
+      rowId: this.rowId,
+      columnId: this.column.id,
+    });
+    if (e.dataTransfer) {
+      const handle = e.currentTarget as HTMLElement;
+      const wrapper = handle.closest('.block-wrapper') as HTMLElement | null;
+      if (wrapper) e.dataTransfer.setDragImage(wrapper, 0, 0);
+    }
+    this._draggingBlockId = blockId;
+  }
+
+  private _onBlockDragEnd() {
+    this._draggingBlockId = null;
     clearDragData();
   }
 }
