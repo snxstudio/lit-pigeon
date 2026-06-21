@@ -1,5 +1,16 @@
 # @lit-pigeon/rest
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies [a44ddbb]
+- Updated dependencies [a44ddbb]
+- Updated dependencies [a44ddbb]
+  - @lit-pigeon/core@0.2.0
+  - @lit-pigeon/lint@0.1.3
+  - @lit-pigeon/ssr@0.1.3
+
 ## 0.1.2
 
 ### Patch Changes

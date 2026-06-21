@@ -1,5 +1,20 @@
 # @lit-pigeon/mcp-server
 
+## 0.2.0
+
+### Minor Changes
+
+- a44ddbb: Saved / reusable rows (user content library). Save a row to a personal library from the row toolbar and re-insert it from the new Saved palette tab by dragging it onto the canvas. `@lit-pigeon/core` gains the row-library types, an in-memory storage implementation, and a clone helper; `@lit-pigeon/mcp-server` gains a file-system-backed `FsRowLibraryStorage`.
+
+### Patch Changes
+
+- Updated dependencies [a44ddbb]
+- Updated dependencies [a44ddbb]
+- Updated dependencies [a44ddbb]
+  - @lit-pigeon/core@0.2.0
+  - @lit-pigeon/renderer-mjml@0.2.0
+  - @lit-pigeon/figma-import@0.1.3
+
 ## 0.1.2
 
 ### Patch Changes
