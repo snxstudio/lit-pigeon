@@ -467,6 +467,8 @@ A separate track that any AI tool — Cursor, Windsurf, custom agents, raw LLM p
 - [x] REST API adapter for headless usage (`@lit-pigeon/rest` — 1.58 kB gz; `createHandler` for express/fastify/connect, `createServer` for stand-alone, ships `lit-pigeon-rest` CLI)
 - [x] Figma-to-email import — `@lit-pigeon/figma-import` (see [AI Integration](#ai-integration-cross-cutting-shipped))
 - [x] Hero block detection in Figma importer (image + overlay-text heuristic, in `@lit-pigeon/figma-import/converters/hero.ts`)
+- [x] Standard block catalog — `@lit-pigeon/blocks` (video, countdown, accordion, table, carousel shipped as plugin `BlockDefinition`s)
+- [x] Pre-flight QA linter — `@lit-pigeon/lint` (alt-text, contrast, link, merge-tag, spam-score, image-weight, link-reachability; sync + async, also exposed as REST endpoints)
 - [ ] `import_figma_frame` live-sandbox smoke test in CI
 
 ### Known gaps (surfaced during plugin-API docs work)
@@ -495,6 +497,14 @@ lit-pigeon/
     parser-mjml/       # MJML -> JSON parser (import existing templates)
     react/             # React wrapper via @lit/react
     angular/           # Angular component wrapper
+    vue/               # Vue 3 component wrapper
+    svelte/            # Svelte 4/5 component wrapper
+    ssr/               # Server-side render/parse/validate (no DOM)
+    rest/              # Framework-agnostic REST adapter + CLI
+    mcp-server/        # Model Context Protocol server for AI clients
+    figma-import/      # Figma frame -> PigeonDocument importer
+    blocks/            # Optional standard block catalog (plugins)
+    lint/              # Pre-flight QA rules (alt-text, contrast, ...)
   apps/
     playground/        # Development playground app + landing page
   package.json         # Workspace root

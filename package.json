@@ -9,6 +9,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint packages/ apps/ --ext .ts,.tsx",
+    "typecheck": "pnpm -r --filter \"./packages/*\" exec tsc --noEmit",
     "format": "prettier --write \"packages/*/src/**/*.ts\" \"apps/*/src/**/*.ts\"",
     "changeset": "changeset",
     "version-packages": "changeset version",
