@@ -1,5 +1,18 @@
 # @lit-pigeon/react
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies [a44ddbb]
+- Updated dependencies [a44ddbb]
+- Updated dependencies [a44ddbb]
+- Updated dependencies [a44ddbb]
+- Updated dependencies [a44ddbb]
+- Updated dependencies [a44ddbb]
+  - @lit-pigeon/editor@0.2.0
+  - @lit-pigeon/core@0.2.0
+
 ## 0.1.2
 
 ### Patch Changes

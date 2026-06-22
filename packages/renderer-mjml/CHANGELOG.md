@@ -1,5 +1,18 @@
 # @lit-pigeon/renderer-mjml
 
+## 0.2.0
+
+### Minor Changes
+
+- a44ddbb: Custom font management. Register web fonts via `fontConfig`: the editor's font picker lists configured and brand fonts, the preview and export load them, and the MJML renderer emits `<mj-font>` for each registered font. `@lit-pigeon/core` adds the `FontDefinition` type and `fontConfig` / `RenderOptions.fonts`.
+
+### Patch Changes
+
+- Updated dependencies [a44ddbb]
+- Updated dependencies [a44ddbb]
+- Updated dependencies [a44ddbb]
+  - @lit-pigeon/core@0.2.0
+
 ## 0.1.2
 
 ### Patch Changes

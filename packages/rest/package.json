@@ -1,6 +1,6 @@
 {
   "name": "@lit-pigeon/rest",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Framework-agnostic Node REST adapter for Lit Pigeon — render, parse, and validate documents over HTTP.",
   "type": "module",
   "main": "./dist/index.js",
