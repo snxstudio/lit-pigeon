@@ -102,6 +102,17 @@ export const EN_MESSAGES: Record<string, string> = {
   'asset.url.placeholder': 'https://example.com/image.jpg',
   'asset.url.use': 'Use URL',
 
+  // asset manager — stock tab
+  'asset.tab.stock': 'Stock',
+  'asset.stock.search': 'Search free photos…',
+  'asset.stock.idle': 'Search Unsplash and Pexels for free photos.',
+  'asset.stock.empty': 'No photos found. Try another search.',
+  'asset.stock.load-more': 'Load more',
+  'asset.stock.photo-by': 'Photo by',
+  'asset.stock.on': 'on',
+  'asset.stock.error': 'Couldn’t load photos. Check the API key or try again.',
+  'asset.stock.rate-limited': 'Rate limit reached. Try again shortly.',
+
   // property panels — shared (common) labels
   'panel.common.backgroundColor': 'Background Color',
   'panel.common.padding': 'Padding',
