@@ -20,6 +20,19 @@ export interface PresignedUploadParams {
   fields?: Record<string, string>;
 }
 
+export interface StockConfig {
+  /** Unsplash Access Key (used client-side). Enables the Unsplash source. */
+  unsplash?: { accessKey: string };
+  /** Pexels API key (used client-side). Enables the Pexels source. */
+  pexels?: { apiKey: string };
+  /**
+   * utm_source label for Unsplash attribution links and the download-ping
+   * request. Unsplash guidelines require identifying your application.
+   * Defaults to "lit-pigeon" when unset; hosts should override.
+   */
+  appName?: string;
+}
+
 export interface AssetManagerConfig {
   enabled?: boolean;
   uploadUrl?: string;
@@ -30,6 +43,7 @@ export interface AssetManagerConfig {
   presignedUpload?: {
     getUploadParams: (file: File) => Promise<PresignedUploadParams>;
   };
+  stock?: StockConfig;
 }
 
 export interface MergeTag {
