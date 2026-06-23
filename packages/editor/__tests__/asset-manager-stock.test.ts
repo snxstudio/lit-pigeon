@@ -34,6 +34,9 @@ describe('asset-manager stock tab', () => {
   });
 
   it('lazy-loads the stock tab and funnels stock-select to asset-selected, then closes', async () => {
+    // Pre-import the chunk so loadStockTab()'s import() resolves from cache immediately.
+    await import('../src/components/asset-manager/pigeon-stock-tab.js');
+
     const el = await mount({ stock: { unsplash: { accessKey: 'u' } } });
     let selectedUrl: string | undefined;
     el.addEventListener('asset-selected', (e) => {
@@ -43,7 +46,8 @@ describe('asset-manager stock tab', () => {
     const stockTabBtn = Array.from(el.shadowRoot!.querySelectorAll('.tab'))
       .find((b) => b.textContent!.trim() === 'Stock') as HTMLElement;
     stockTabBtn.click();
-    await flush();              // resolve the dynamic import
+    await el.updateComplete;
+    await new Promise((r) => setTimeout(r, 0)); // allow post-await flag set to settle
     await el.updateComplete;
 
     const stockTab = el.shadowRoot!.querySelector('pigeon-stock-tab')!;

@@ -507,8 +507,8 @@ export class PigeonAssetManager extends LitElement {
   private _handleStockTabClick = async () => {
     this._tab = 'stock';
     if (!this._stockTabLoaded) {
-      this._stockTabLoaded = true;
       await loadStockTab();
+      this._stockTabLoaded = true;
     }
   };
 
