@@ -1,5 +1,12 @@
 # @lit-pigeon/renderer-mjml
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies [d2cbd91]
+  - @lit-pigeon/core@0.3.0
+
 ## 0.2.0
 
 ### Minor Changes
