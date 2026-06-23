@@ -1,6 +1,6 @@
 {
   "name": "@lit-pigeon/parser-mjml",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "MJML-to-PigeonDocument parser for Pigeon email editor",
   "type": "module",
   "main": "./dist/index.cjs",

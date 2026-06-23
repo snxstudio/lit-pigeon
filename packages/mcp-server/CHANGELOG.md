@@ -1,5 +1,14 @@
 # @lit-pigeon/mcp-server
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies [d2cbd91]
+  - @lit-pigeon/core@0.3.0
+  - @lit-pigeon/figma-import@0.1.4
+  - @lit-pigeon/renderer-mjml@0.2.1
+
 ## 0.2.0
 
 ### Minor Changes
