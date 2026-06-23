@@ -7,7 +7,13 @@ import type {
 } from '@lit-pigeon/core';
 import { t } from '../../i18n/index.js';
 
-type Tab = 'library' | 'upload';
+type Tab = 'library' | 'upload' | 'stock';
+
+let _stockTabPromise: Promise<unknown> | null = null;
+function loadStockTab(): Promise<unknown> {
+  if (!_stockTabPromise) _stockTabPromise = import('./pigeon-stock-tab.js');
+  return _stockTabPromise;
+}
 
 const SEARCH_DEBOUNCE_MS = 250;
 const ALL_FOLDERS = '__all__';
@@ -36,6 +42,9 @@ export class PigeonAssetManager extends LitElement {
    */
   @state()
   private _tab: Tab | null = null;
+
+  @state()
+  private _stockTabLoaded = false;
 
   @state()
   private _dragOver = false;
@@ -431,6 +440,11 @@ export class PigeonAssetManager extends LitElement {
     return this._tab ?? (this.storage ? 'library' : 'upload');
   }
 
+  private get _hasStock(): boolean {
+    const s = this.config.stock;
+    return !!(s?.unsplash?.accessKey || s?.pexels?.apiKey);
+  }
+
   /* ----------------------------------------------------------------- */
   /*  Render                                                           */
   /* ----------------------------------------------------------------- */
@@ -438,6 +452,7 @@ export class PigeonAssetManager extends LitElement {
   render() {
     if (this.config.enabled === false) return html``;
     const hasLibrary = !!this.storage;
+    const showTabs = hasLibrary || this._hasStock;
     return html`
       <div class="overlay" @click=${this._close}></div>
       <div class="modal" role="dialog" aria-label=${t('asset.title')}>
@@ -445,28 +460,30 @@ export class PigeonAssetManager extends LitElement {
           <h3>${hasLibrary ? t('asset.title') : t('asset.title-upload')}</h3>
           <button class="close-btn" @click=${this._close} aria-label=${t('asset.close')}>&times;</button>
         </div>
-        ${hasLibrary ? this._renderTabs() : nothing}
+        ${showTabs ? this._renderTabs(hasLibrary) : nothing}
         <div class="body">
-          ${hasLibrary && this._activeTab === 'library'
-            ? this._renderLibrary()
-            : this._renderUpload()}
+          ${this._activeTab === 'stock' && this._hasStock
+            ? this._renderStock()
+            : hasLibrary && this._activeTab === 'library'
+              ? this._renderLibrary()
+              : this._renderUpload()}
         </div>
       </div>
     `;
   }
 
-  private _renderTabs() {
+  private _renderTabs(hasLibrary: boolean) {
     const active = this._activeTab;
     return html`
       <div class="tabs" role="tablist">
-        <button
-          class="tab ${active === 'library' ? 'active' : ''}"
-          role="tab"
-          aria-selected=${active === 'library'}
-          @click=${() => (this._tab = 'library')}
-        >
-          ${t('asset.tab.library')}
-        </button>
+        ${hasLibrary
+          ? html`<button
+              class="tab ${active === 'library' ? 'active' : ''}"
+              role="tab"
+              aria-selected=${active === 'library'}
+              @click=${() => (this._tab = 'library')}
+            >${t('asset.tab.library')}</button>`
+          : nothing}
         <button
           class="tab ${active === 'upload' ? 'active' : ''}"
           role="tab"
@@ -475,8 +492,32 @@ export class PigeonAssetManager extends LitElement {
         >
           ${t('asset.tab.upload')}
         </button>
+        ${this._hasStock
+          ? html`<button
+              class="tab ${active === 'stock' ? 'active' : ''}"
+              role="tab"
+              aria-selected=${active === 'stock'}
+              @click=${this._handleStockTabClick}
+            >${t('asset.tab.stock')}</button>`
+          : nothing}
       </div>
     `;
+  }
+
+  private _handleStockTabClick = async () => {
+    this._tab = 'stock';
+    if (!this._stockTabLoaded) {
+      this._stockTabLoaded = true;
+      await loadStockTab();
+    }
+  };
+
+  private _renderStock() {
+    if (!this._stockTabLoaded) return html`<div class="library-spinner">${t('asset.loading')}</div>`;
+    return html`<pigeon-stock-tab
+      .config=${this.config.stock ?? {}}
+      @stock-select=${(e: CustomEvent<{ url: string }>) => this._selectAsset(e.detail.url)}
+    ></pigeon-stock-tab>`;
   }
 
   private _renderLibrary() {

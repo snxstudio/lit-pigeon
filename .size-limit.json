@@ -9,8 +9,8 @@
   {
     "name": "@lit-pigeon/editor (ESM, excluding lit)",
     "path": "packages/editor/dist/index.js",
-    "ignore": ["lit", "lit/decorators.js", "lit/directives/ref.js", "lit/directives/unsafe-html.js", "@lit-pigeon/core", "./rich-text.js", "./pigeon-brand-tab.js", "./pigeon-saved-tab.js"],
-    "limit": "48 kB",
+    "ignore": ["lit", "lit/decorators.js", "lit/directives/ref.js", "lit/directives/unsafe-html.js", "@lit-pigeon/core", "./rich-text.js", "./pigeon-brand-tab.js", "./pigeon-saved-tab.js", "./pigeon-stock-tab.js"],
+    "limit": "48.5 kB",
     "gzip": true
   },
   {
