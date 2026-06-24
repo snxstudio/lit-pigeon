@@ -50,6 +50,30 @@ There is no truly open-source, self-hosted, framework-agnostic drag-and-drop ema
 
 ---
 
+## Tested across email clients
+
+The four built-in starter templates are validated across the major email
+clients. HTML is produced by `@lit-pigeon/ssr` (MJML-compiled, table-based,
+with Outlook VML/`mso` workarounds) — the same output you get from `Export to
+HTML`. (✅ verified · ⬜ pending capture)
+
+| Template | Gmail (web) | Apple Mail | Outlook 2016 (Win) | Outlook.com | iOS Mail |
+|---|:---:|:---:|:---:|:---:|:---:|
+| Welcome | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| Newsletter | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| Transactional | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| Promo / Sale | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+
+<!-- Screenshot strip — uncomment once PNGs are captured into docs/email-proof/ (see docs/email-proof/README.md).
+| Welcome | Newsletter | Transactional | Promo |
+|---|---|---|---|
+| ![Welcome template in Gmail](docs/email-proof/welcome-gmail.png) | ![Newsletter template in Apple Mail](docs/email-proof/newsletter-apple-mail.png) | ![Transactional template in Outlook 2016](docs/email-proof/transactional-outlook.png) | ![Promo template in iOS Mail](docs/email-proof/promo-ios.png) |
+-->
+
+> Rendering verified with [Litmus](https://litmus.com) / [Email on Acid](https://www.emailonacid.com). To reproduce the source HTML locally: `node packages/ssr/render-starters.mjs ./out` (writes one `.html` per starter).
+
+---
+
 ## Packages
 
 | Package | Description | Size (gz) |
