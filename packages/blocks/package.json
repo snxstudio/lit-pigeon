@@ -30,7 +30,7 @@
   "devDependencies": {
     "@lit-pigeon/renderer-mjml": "workspace:^",
     "typescript": "^5.5.0",
-    "vitest": "^2.0.0"
+    "vitest": "^3.0.0"
   },
   "publishConfig": {
     "access": "public"
