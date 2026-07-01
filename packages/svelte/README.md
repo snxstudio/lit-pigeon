@@ -1,6 +1,6 @@
 # @lit-pigeon/svelte
 
-Svelte wrapper for the [Lit Pigeon](https://github.com/snxstudio/unnlayer)
+Svelte wrapper for the [Lit Pigeon](https://github.com/snxstudio/lit-pigeon)
 email editor. Renders the `<pigeon-editor>` custom element and bridges
 object-shaped props + DOM `CustomEvent`s into idiomatic Svelte props and
 events.

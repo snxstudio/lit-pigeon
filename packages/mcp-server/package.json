@@ -16,7 +16,9 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsc",
@@ -45,5 +47,21 @@
     "url": "https://github.com/snxstudio/lit-pigeon.git",
     "directory": "packages/mcp-server"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "homepage": "https://github.com/snxstudio/lit-pigeon/tree/main/packages/mcp-server#readme",
+  "bugs": "https://github.com/snxstudio/lit-pigeon/issues",
+  "author": "Lit Pigeon Contributors",
+  "keywords": [
+    "email",
+    "email-template",
+    "email-editor",
+    "mjml",
+    "html-email",
+    "lit",
+    "web-components",
+    "mcp",
+    "model-context-protocol",
+    "ai",
+    "llm"
+  ]
 }

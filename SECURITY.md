@@ -37,6 +37,37 @@ Issues that are out of scope:
 - Vulnerabilities that require attacker-controlled build environments
 - Issues only reproducible on unsupported Node.js versions (< 18)
 
+## Known advisories in dependencies
+
+We track Dependabot continuously. Current status, split by whether the code
+actually reaches a user who installs an `@lit-pigeon/*` package:
+
+**Shipped (runtime) dependencies**
+
+- `hono`, `ajv` — patched via pnpm `overrides` (hono ≥ 4.12.25, ajv ≥ 8.18.0).
+- `mjml` (`mj-include` directory traversal) — only fixed in an unreleased
+  `5.0.0-alpha` pre-release, so we cannot bump to a stable fix yet. Lit Pigeon
+  generates MJML from a structured document model — `mj-include` paths are not
+  attacker-controllable in normal use — so exposure is limited to callers who
+  compile fully **untrusted raw MJML** server-side. Do not feed untrusted raw
+  MJML to `@lit-pigeon/renderer-mjml` / `ssr` / `rest` until an upstream fix
+  ships. Tracked upstream.
+- `html-minifier`, `lodash` (transitive, via `mjml`) — no fixed release is
+  available upstream; both are reached only through the MJML compile path above
+  and are not exposed to user input directly. They resolve when `mjml` is
+  updated.
+
+**Dev-only dependencies (NOT in any published package's install tree)**
+
+- `vite`, `vitest`, `esbuild` — advisories affect the local dev server / test
+  runner only. Fixes require major-version migrations (Vite 6 / Vitest 3),
+  tracked as a follow-up.
+- `minimatch` (via the ESLint / typescript-eslint toolchain) — dev-time ReDoS;
+  clears with an ESLint 9 / typescript-eslint 8 upgrade, tracked as a follow-up.
+
+None of the dev-only items affect anyone who installs an `@lit-pigeon/*`
+package. We bump every item above as soon as a fixed release is available.
+
 ## Disclosure timeline
 
 We follow a coordinated disclosure model:
