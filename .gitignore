@@ -44,6 +44,9 @@ package-lock.json
 .cache/
 tmp/
 
+# Generated demo media (regenerate via packages/mcp-server/demo/generate.mjs + build-video.sh)
+packages/mcp-server/demo/out/
+
 # Local-only working notes
 WIP.md
 TASKS.md
