@@ -63,7 +63,6 @@ export class FsRowLibraryStorage implements RowLibraryStorage {
       try {
         out.push(JSON.parse(await fs.readFile(full, 'utf-8')) as LibraryEntry);
       } catch (err) {
-        // eslint-disable-next-line no-console
         console.error(`[FsRowLibraryStorage] Skipping unreadable file ${full}:`, (err as Error).message);
       }
     }

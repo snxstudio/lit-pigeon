@@ -9,11 +9,9 @@ const { server, ready } = createServer({ port, host, bearerToken });
 
 ready
   .then(({ host: boundHost, port: boundPort }) => {
-    // eslint-disable-next-line no-console
     console.error(`[lit-pigeon-rest] listening on http://${boundHost}:${boundPort}`);
   })
   .catch((err) => {
-    // eslint-disable-next-line no-console
     console.error('[lit-pigeon-rest] failed to start:', err);
     process.exit(1);
   });

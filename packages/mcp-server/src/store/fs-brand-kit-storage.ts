@@ -73,7 +73,6 @@ export class FsBrandKitStorage implements BrandKitStorage {
         const raw = await fs.readFile(path.join(this.dir, entry), 'utf-8');
         out.push(JSON.parse(raw) as BrandKit);
       } catch (err) {
-        // eslint-disable-next-line no-console
         console.error(
           `[FsBrandKitStorage] Skipping unreadable file ${entry}:`,
           (err as Error).message,
