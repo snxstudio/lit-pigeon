@@ -101,7 +101,7 @@ The pieces are reusable Lit elements; the limitation is wiring them into the can
 
 ## Walk-through: a "Quote" block
 
-A full example showing every piece. All code blocks compile against `@lit-pigeon/core` 0.1 and Lit 3.
+A full example showing every piece. All code blocks compile against `@lit-pigeon/core` 0.3 and Lit 3.
 
 ### Type and factory
 

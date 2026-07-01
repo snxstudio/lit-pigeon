@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Security vulnerability
-    url: https://github.com/snxstudio/unnlayer/security/policy
+    url: https://github.com/snxstudio/lit-pigeon/security/policy
     about: Please report security issues privately. See SECURITY.md for the disclosure process.
   - name: Question or discussion
-    url: https://github.com/snxstudio/unnlayer/discussions
+    url: https://github.com/snxstudio/lit-pigeon/discussions
     about: For usage questions, ideas, and general discussion — please use GitHub Discussions.

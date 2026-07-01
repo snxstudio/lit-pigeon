@@ -10,6 +10,7 @@
 </p>
 
 <p align="center">
+  <a href="https://lit-pigeon.wearesnx.studio/">Live Demo</a> &middot;
   <a href="#quick-start">Quick Start</a> &middot;
   <a href="#packages">Packages</a> &middot;
   <a href="#usage">Usage</a> &middot;
@@ -22,6 +23,10 @@
   <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-strict-3178C6.svg" alt="TypeScript" /></a>
   <a href="https://lit.dev"><img src="https://img.shields.io/badge/built%20with-Lit-324FFF.svg" alt="Built with Lit" /></a>
   <a href="https://pnpm.io"><img src="https://img.shields.io/badge/pnpm-workspace-F69220.svg" alt="pnpm" /></a>
+</p>
+
+<p align="center">
+  <a href="https://lit-pigeon.wearesnx.studio/"><strong>▶ Try the live demo</strong></a>
 </p>
 
 ---
@@ -52,10 +57,11 @@ There is no truly open-source, self-hosted, framework-agnostic drag-and-drop ema
 
 ## Tested across email clients
 
-The four built-in starter templates are validated across the major email
-clients. HTML is produced by `@lit-pigeon/ssr` (MJML-compiled, table-based,
-with Outlook VML/`mso` workarounds) — the same output you get from `Export to
-HTML`. (✅ verified · ⬜ pending capture)
+The four built-in starter templates compile to email-safe HTML via
+`@lit-pigeon/ssr` (MJML-compiled, table-based, with Outlook VML/`mso`
+workarounds) — the same output you get from `Export to HTML`. Client-by-client
+screenshot verification is in progress; the matrix below tracks capture status.
+(✅ verified · ⬜ pending capture)
 
 | Template | Gmail (web) | Apple Mail | Outlook 2016 (Win) | Outlook.com | iOS Mail |
 |---|:---:|:---:|:---:|:---:|:---:|
@@ -70,7 +76,7 @@ HTML`. (✅ verified · ⬜ pending capture)
 | ![Welcome template in Gmail](docs/email-proof/welcome-gmail.png) | ![Newsletter template in Apple Mail](docs/email-proof/newsletter-apple-mail.png) | ![Transactional template in Outlook 2016](docs/email-proof/transactional-outlook.png) | ![Promo template in iOS Mail](docs/email-proof/promo-ios.png) |
 -->
 
-> Rendering verified with [Litmus](https://litmus.com) / [Email on Acid](https://www.emailonacid.com). To reproduce the source HTML locally: `node packages/ssr/render-starters.mjs ./out` (writes one `.html` per starter).
+> Client screenshots are being captured with [Litmus](https://litmus.com) / [Email on Acid](https://www.emailonacid.com); this table will fill in as they land. To reproduce the source HTML locally today: `node packages/ssr/render-starters.mjs ./out` (writes one `.html` per starter).
 
 ---
 
@@ -424,7 +430,7 @@ PigeonDocument
 
 ## Roadmap
 
-### v0.1 -- Foundation (current)
+### v0.1 -- Foundation
 - [x] Core engine with document schema and validation
 - [x] Immutable EditorState + Transaction system
 - [x] Command system (insert, delete, move, update, duplicate blocks/rows, column add/remove/resize)
