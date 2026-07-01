@@ -72,7 +72,6 @@ export class FsAssetStorage implements AssetStorage {
         const raw = await fs.readFile(path.join(this.dir, entry), 'utf-8');
         out.push(JSON.parse(raw) as Asset);
       } catch (err) {
-        // eslint-disable-next-line no-console
         console.error(
           `[FsAssetStorage] Skipping unreadable file ${entry}:`,
           (err as Error).message,

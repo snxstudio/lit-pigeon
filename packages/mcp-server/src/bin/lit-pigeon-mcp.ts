@@ -24,7 +24,6 @@ async function main() {
 
 main().catch((err) => {
   // stderr because stdout is the MCP framed channel.
-  // eslint-disable-next-line no-console
   console.error('[lit-pigeon-mcp] fatal:', err);
   process.exit(1);
 });

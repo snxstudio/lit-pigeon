@@ -132,7 +132,6 @@ export class FsTemplateStorage implements TemplateStorage {
       } catch (err) {
         // Skip files we can't parse; surface a warning on stderr so users can
         // diagnose corruption without crashing the server.
-        // eslint-disable-next-line no-console
         console.error(
           `[FsTemplateStorage] Skipping unreadable template file ${full}:`,
           (err as Error).message,
