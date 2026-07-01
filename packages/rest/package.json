@@ -16,7 +16,9 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsc",
@@ -44,5 +46,20 @@
     "url": "https://github.com/snxstudio/lit-pigeon.git",
     "directory": "packages/rest"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "homepage": "https://github.com/snxstudio/lit-pigeon/tree/main/packages/rest#readme",
+  "bugs": "https://github.com/snxstudio/lit-pigeon/issues",
+  "author": "Lit Pigeon Contributors",
+  "keywords": [
+    "email",
+    "email-template",
+    "email-editor",
+    "mjml",
+    "html-email",
+    "lit",
+    "web-components",
+    "rest",
+    "api",
+    "headless"
+  ]
 }

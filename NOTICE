@@ -1,0 +1,24 @@
+Lit Pigeon
+Copyright (c) 2026 Lit Pigeon Contributors
+
+Licensed under the MIT License (see LICENSE).
+
+This product includes third-party open-source software:
+
+- Lit (BSD-3-Clause) — https://github.com/lit/lit
+  Web-component runtime for @lit-pigeon/editor.
+- MJML (MIT) — https://github.com/mjmlio/mjml
+  Compiles documents to email-safe HTML in @lit-pigeon/renderer-mjml.
+- TipTap / ProseMirror (MIT) — https://github.com/ueberdosis/tiptap
+  Inline rich-text editing in @lit-pigeon/editor.
+
+Stock image providers
+----------------------
+The editor's optional stock-image integration fetches images at runtime using
+an API key that YOU configure. Lit Pigeon does not bundle any provider content.
+When you enable these, you are responsible for following each provider's
+attribution and usage terms:
+
+- Unsplash — https://unsplash.com  (Unsplash API Terms: attribution and
+  download/UTM tracking requirements apply)
+- Pexels — https://www.pexels.com  (Pexels API Guidelines: attribution applies)

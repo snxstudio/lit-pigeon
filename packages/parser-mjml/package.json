@@ -14,7 +14,9 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "vite build",
@@ -41,5 +43,19 @@
     "url": "https://github.com/snxstudio/lit-pigeon.git",
     "directory": "packages/parser-mjml"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "homepage": "https://github.com/snxstudio/lit-pigeon/tree/main/packages/parser-mjml#readme",
+  "bugs": "https://github.com/snxstudio/lit-pigeon/issues",
+  "author": "Lit Pigeon Contributors",
+  "keywords": [
+    "email",
+    "email-template",
+    "email-editor",
+    "mjml",
+    "html-email",
+    "lit",
+    "web-components",
+    "parser",
+    "import"
+  ]
 }
