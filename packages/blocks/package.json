@@ -1,6 +1,6 @@
 {
   "name": "@lit-pigeon/blocks",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Optional standard block catalog for Lit Pigeon — video, countdown, accordion, table, carousel — shipped as plugin BlockDefinitions, not built-ins.",
   "type": "module",
   "main": "./dist/index.js",

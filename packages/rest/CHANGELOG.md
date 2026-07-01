@@ -1,5 +1,18 @@
 # @lit-pigeon/rest
 
+## 0.1.5
+
+### Patch Changes
+
+- 697fc07: Packaging hygiene: every package now ships a `LICENSE` file and a `README` in
+  its npm tarball (10 packages previously had no README on the registry), and
+  declares `homepage`, `bugs`, `author`, and `keywords`. No API changes. Also
+  corrects a stale repo link in the Svelte package README.
+- Updated dependencies [697fc07]
+  - @lit-pigeon/core@0.3.1
+  - @lit-pigeon/ssr@0.1.5
+  - @lit-pigeon/lint@0.1.5
+
 ## 0.1.4
 
 ### Patch Changes
