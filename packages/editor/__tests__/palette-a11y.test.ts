@@ -64,4 +64,38 @@ describe('palette item accessibility', () => {
     );
     expect(fired).toBe(true);
   });
+
+  it('dispatches palette-item-activate on click', async () => {
+    const el = await mountItem('palette-block', { blockType: 'image' });
+    const item = el.renderRoot.querySelector('.item') as HTMLElement;
+
+    let detail: { type: string; blockType: string } | null = null;
+    el.addEventListener('palette-item-activate', (e) => {
+      detail = (e as CustomEvent).detail;
+    });
+
+    item.click();
+
+    expect(detail).not.toBeNull();
+    expect(detail!.type).toBe('palette-block');
+    expect(detail!.blockType).toBe('image');
+  });
+
+  it('suppresses the click that follows a drag gesture', async () => {
+    const el = await mountItem('palette-block', { blockType: 'text' });
+    const item = el.renderRoot.querySelector('.item') as HTMLElement;
+
+    let fired = 0;
+    el.addEventListener('palette-item-activate', () => (fired += 1));
+
+    item.dispatchEvent(new DragEvent('dragstart', { bubbles: true, composed: true }));
+    item.dispatchEvent(new DragEvent('dragend', { bubbles: true, composed: true }));
+    item.click(); // same-gesture click, before the reset tick
+    expect(fired).toBe(0);
+
+    // After the reset tick a fresh click activates again.
+    await new Promise((r) => setTimeout(r, 0));
+    item.click();
+    expect(fired).toBe(1);
+  });
 });

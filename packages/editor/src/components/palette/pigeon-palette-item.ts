@@ -102,7 +102,8 @@ export class PigeonPaletteItem extends LitElement {
         role="button"
         tabindex="0"
         aria-label="${verb}: ${this.label}"
-        title="Drag onto the canvas, or press Enter to add"
+        title="Click to add, or drag onto the canvas"
+        @click=${this._onClick}
         @dragstart=${this._onDragStart}
         @dragend=${this._onDragEnd}
         @keydown=${this._onKeyDown}
@@ -113,11 +114,25 @@ export class PigeonPaletteItem extends LitElement {
     `;
   }
 
+  /** Suppresses the click that some browsers fire after a drag operation. */
+  private _didDrag = false;
+
+  private _onClick() {
+    if (this._didDrag) return;
+    this._activate();
+  }
+
   private _onKeyDown(e: KeyboardEvent) {
     if (e.key !== 'Enter' && e.key !== ' ') return;
     e.preventDefault();
-    // Keyboard equivalent of dragging this item onto the canvas: ask the
-    // editor to append the block/layout to the document.
+    this._activate();
+  }
+
+  /**
+   * Click/keyboard equivalent of dragging this item onto the canvas: ask the
+   * editor to append the block/layout to the document.
+   */
+  private _activate() {
     this.dispatchEvent(
       new CustomEvent('palette-item-activate', {
         detail: {
@@ -132,6 +147,7 @@ export class PigeonPaletteItem extends LitElement {
   }
 
   private _onDragStart(e: DragEvent) {
+    this._didDrag = true;
     writeDragTransfer(e, {
       type: this.dragType,
       blockType: this.blockType || undefined,
@@ -157,6 +173,11 @@ export class PigeonPaletteItem extends LitElement {
   }
 
   private _onDragEnd() {
+    // Reset after the tick so a click event fired for the same gesture is
+    // still suppressed.
+    setTimeout(() => {
+      this._didDrag = false;
+    }, 0);
     this.dispatchEvent(new CustomEvent('palette-drag-end', {
       bubbles: true,
       composed: true,

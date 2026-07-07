@@ -13,7 +13,8 @@
     "@lit-pigeon/blocks": "workspace:*",
     "@lit-pigeon/core": "workspace:*",
     "@lit-pigeon/editor": "workspace:*",
-    "@lit-pigeon/renderer-mjml": "workspace:*"
+    "@lit-pigeon/renderer-mjml": "workspace:*",
+    "mjml-browser": "^4.15.0"
   },
   "devDependencies": {
     "typescript": "^5.5.0",

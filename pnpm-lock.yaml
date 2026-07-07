@@ -80,6 +80,9 @@ importers:
       '@lit-pigeon/renderer-mjml':
         specifier: workspace:*
         version: link:../../packages/renderer-mjml
+      mjml-browser:
+        specifier: ^4.15.0
+        version: 4.18.0
     devDependencies:
       typescript:
         specifier: ^5.5.0
@@ -2585,6 +2588,9 @@ packages:
 
   mjml-body@4.18.0:
     resolution: {integrity: sha512-34AwX70/7NkRIajPsa5j6NySRiNrlLatTKhiLwTVFiVtrEFlfCcbeMNmdVixI3Ldvs8209ZC6euaAnXDRyR1zw==}
+
+  mjml-browser@4.18.0:
+    resolution: {integrity: sha512-Y3kpr3IFBk3Wm7AwONZ5vDAX7FxAaMk+RKbcKKewsuGI9oNCOSM2dWNcWVFdzZ9PF7awoaCgBSQudnJaJbUiBA==}
 
   mjml-button@4.18.0:
     resolution: {integrity: sha512-ZsWMI0j7EcFCMqbqdVwMWhmsVc03FhmypWXokKopGhwySn4IAB4AOURonRmFrO7k6sDeQ+iJ9QtTu7jA+S8wmg==}
@@ -5704,6 +5710,8 @@ snapshots:
       mjml-core: 4.18.0
     transitivePeerDependencies:
       - encoding
+
+  mjml-browser@4.18.0: {}
 
   mjml-button@4.18.0:
     dependencies:
