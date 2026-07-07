@@ -1,5 +1,18 @@
 # @lit-pigeon/angular
 
+## 0.1.6
+
+### Patch Changes
+
+- fc043b1: Put the `types` condition first in `exports` — per the Node/TypeScript
+  resolution spec it must precede `import`/`require`, otherwise it can never
+  match. Types still resolved via the top-level `types` fallback, but this
+  removes the bundler warning and makes conditional type resolution correct.
+- Updated dependencies [a17bffa]
+- Updated dependencies [fc043b1]
+  - @lit-pigeon/editor@0.3.2
+  - @lit-pigeon/core@0.3.2
+
 ## 0.1.5
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@lit-pigeon/react",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "React wrapper for the Pigeon email editor",
   "type": "module",
   "main": "./dist/index.js",
