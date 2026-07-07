@@ -1,6 +1,6 @@
 {
   "name": "@lit-pigeon/renderer-mjml",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "MJML-based HTML renderer for Pigeon email editor",
   "type": "module",
   "main": "./dist/index.cjs",

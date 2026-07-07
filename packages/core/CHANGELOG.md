@@ -1,5 +1,14 @@
 # @lit-pigeon/core
 
+## 0.3.2
+
+### Patch Changes
+
+- fc043b1: Put the `types` condition first in `exports` — per the Node/TypeScript
+  resolution spec it must precede `import`/`require`, otherwise it can never
+  match. Types still resolved via the top-level `types` fallback, but this
+  removes the bundler warning and makes conditional type resolution correct.
+
 ## 0.3.1
 
 ### Patch Changes
