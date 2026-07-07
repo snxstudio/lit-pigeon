@@ -44,26 +44,29 @@ actually reaches a user who installs an `@lit-pigeon/*` package:
 
 **Shipped (runtime) dependencies**
 
-- `hono`, `ajv` — patched via pnpm `overrides` (hono ≥ 4.12.25, ajv ≥ 8.18.0).
-- `mjml` (`mj-include` directory traversal) — only fixed in an unreleased
-  `5.0.0-alpha` pre-release, so we cannot bump to a stable fix yet. Lit Pigeon
-  generates MJML from a structured document model — `mj-include` paths are not
-  attacker-controllable in normal use — so exposure is limited to callers who
-  compile fully **untrusted raw MJML** server-side. Do not feed untrusted raw
-  MJML to `@lit-pigeon/renderer-mjml` / `ssr` / `rest` until an upstream fix
-  ships. Tracked upstream.
-- `html-minifier`, `lodash` (transitive, via `mjml`) — no fixed release is
-  available upstream; both are reached only through the MJML compile path above
-  and are not exposed to user input directly. They resolve when `mjml` is
-  updated.
+- `hono`, `ajv`, `lodash` — patched via pnpm `overrides` (hono ≥ 4.12.25,
+  ajv ≥ 8.18.0, lodash ≥ 4.18.0). Note: overrides fix *this repo's* install;
+  consumers doing a fresh install also resolve lodash ≥ 4.18.0 because mjml's
+  `^4.17` range permits it.
+- `mjml` (`mj-include` directory traversal) — fixed upstream in the mjml 5.x
+  line; we are on `mjml@^4.15` and evaluating the 4 → 5 major bump separately.
+  Lit Pigeon generates MJML from a structured document model — `mj-include`
+  paths are not attacker-controllable in normal use — so exposure is limited
+  to callers who compile fully **untrusted raw MJML** server-side. Do not feed
+  untrusted raw MJML to `@lit-pigeon/renderer-mjml` / `ssr` / `rest` on the
+  4.x line.
+- `html-minifier` (transitive, via `mjml` 4.x) — no fixed release on the 4.x
+  path; reached only through the MJML compile path above and not exposed to
+  user input directly. Resolves with the mjml 5 bump.
 
 **Dev-only dependencies (NOT in any published package's install tree)**
 
-- `vite`, `vitest`, `esbuild` — advisories affect the local dev server / test
-  runner only. Fixes require major-version migrations (Vite 6 / Vitest 3),
-  tracked as a follow-up.
-- `minimatch` (via the ESLint / typescript-eslint toolchain) — dev-time ReDoS;
-  clears with an ESLint 9 / typescript-eslint 8 upgrade, tracked as a follow-up.
+- `@angular/core` — used only to build/test the Angular wrapper locally;
+  pinned to a patched release (≥ 22.0.1) as a devDependency. Consumers bring
+  their own Angular via the `>=17.0.0` peer range.
+- `ws` (via vitest → happy-dom), `js-yaml` (via @changesets/cli), `esbuild`
+  (via size-limit) — dev-time only; we bump as patched releases become
+  installable through those toolchains.
 
 None of the dev-only items affect anyone who installs an `@lit-pigeon/*`
 package. We bump every item above as soon as a fixed release is available.
