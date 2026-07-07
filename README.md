@@ -37,8 +37,8 @@ There is no truly open-source, self-hosted, framework-agnostic drag-and-drop ema
 
 | Tool | Problem |
 |---|---|
-| **Unlayer** | "Open source" wrapper loads proprietary editor from CDN. Custom JS costs $250/mo+ |
-| **GrapesJS** | General web builder, not email-specific. Outlook rendering broken. MJML plugin adds 1.3 MB |
+| **Unlayer** | "Open source" wrapper loads a proprietary editor from a CDN; advanced features (custom JS/tools) are on paid plans |
+| **GrapesJS** | General web builder, not email-specific; email output needs the MJML plugin, which adds ~1.3 MB |
 | **MJML / React Email / Maizzle** | Code-only. Not visual editors |
 | **Mosaico** | Legacy Knockout.js, GPL, essentially abandoned |
 | **Stripo, Chamaileon, Beefree** | Proprietary, vendor lock-in |
@@ -49,13 +49,13 @@ There is no truly open-source, self-hosted, framework-agnostic drag-and-drop ema
 
 - **Zero lock-in** -- Your email data is a plain JSON document. Export to HTML anytime.
 - **Framework-agnostic** -- Built with Lit Web Components. Works everywhere custom elements work.
-- **Tiny footprint** -- Core engine is ~5 kB gzipped. Full editor under 17 kB gzipped.
+- **Lean footprint** -- ~7 kB gzipped document core; ~48 kB gzipped editor UI (excluding Lit). The TipTap rich-text engine (~140 kB gz) lazy-loads on first text edit. The live demo's initial JS is ~69 kB gzipped all-in — a fraction of the 250–300 kB typical for embeddable builders.
 - **Extensible** -- Plugin system inspired by ProseMirror. Add custom blocks, commands, and behaviors.
 - **Email-first** -- Every decision optimized for email rendering, not generic web pages.
 
 ---
 
-## Tested across email clients
+## Email-client compatibility (verification in progress)
 
 The four built-in starter templates compile to email-safe HTML via
 `@lit-pigeon/ssr` (MJML-compiled, table-based, with Outlook VML/`mso`
@@ -76,7 +76,7 @@ screenshot verification is in progress; the matrix below tracks capture status.
 | ![Welcome template in Gmail](docs/email-proof/welcome-gmail.png) | ![Newsletter template in Apple Mail](docs/email-proof/newsletter-apple-mail.png) | ![Transactional template in Outlook 2016](docs/email-proof/transactional-outlook.png) | ![Promo template in iOS Mail](docs/email-proof/promo-ios.png) |
 -->
 
-> Client screenshots are being captured with [Litmus](https://litmus.com) / [Email on Acid](https://www.emailonacid.com); this table will fill in as they land. To reproduce the source HTML locally today: `node packages/ssr/render-starters.mjs ./out` (writes one `.html` per starter).
+> Client screenshots are being captured with [Litmus](https://litmus.com) / [Email on Acid](https://www.emailonacid.com); this table will fill in as they land. To reproduce the source HTML locally today: `node packages/ssr/render-starters.mjs ./out` after a `pnpm build` (writes one `.html` per starter).
 
 ---
 
@@ -84,8 +84,8 @@ screenshot verification is in progress; the matrix below tracks capture status.
 
 | Package | Description | Size (gz) |
 |---|---|---|
-| [`@lit-pigeon/core`](./packages/core) | Pure TypeScript engine — document schema, state management, commands, undo/redo, plugin system | ~4.4 kB |
-| [`@lit-pigeon/editor`](./packages/editor) | Lit Web Components UI — canvas, palette, properties panels, toolbar, drag-and-drop, layers, merge tags, keyboard shortcuts | ~29.6 kB |
+| [`@lit-pigeon/core`](./packages/core) | Pure TypeScript engine — document schema, state management, commands, undo/redo, plugin system | ~7 kB |
+| [`@lit-pigeon/editor`](./packages/editor) | Lit Web Components UI — canvas, palette, properties panels, toolbar, drag-and-drop, layers, merge tags, keyboard shortcuts | ~48 kB (+ ~140 kB rich-text chunk, lazy-loaded on first text edit) |
 | [`@lit-pigeon/renderer-mjml`](./packages/renderer-mjml) | MJML-based HTML renderer — converts documents to email-safe HTML | ~2.6 kB + mjml |
 | [`@lit-pigeon/parser-mjml`](./packages/parser-mjml) | MJML → JSON document parser — import existing MJML into the editor | ~2.9 kB |
 | [`@lit-pigeon/react`](./packages/react) | React wrapper via `@lit/react` | 0.5 kB |
@@ -381,8 +381,9 @@ Lit Pigeon ships a ProseMirror-inspired plugin system since v0.1. The
 **Custom Block Plugin API guide** at [`docs/plugins/`](./docs/plugins/) walks
 through registering custom block types, defining commands, and using the
 `PigeonPlugin` lifecycle (`init` / `apply` / `onStateChange`) — with a full
-"Quote" block example and an honest accounting of the current gaps in canvas
-and renderer dispatch.
+"Quote" block example. Canvas, properties-panel, and renderer dispatch all
+resolve custom blocks through the registry, so a registered block type works
+end-to-end (editor → MJML → HTML) without patching internals.
 
 ---
 
@@ -469,7 +470,7 @@ PigeonDocument
 A separate track that any AI tool — Cursor, Windsurf, custom agents, raw LLM prompting — can target to author and import Lit Pigeon emails.
 
 - [x] AI authoring specification 1.0 — JSON Schema + prompting guide + example documents at [`docs/ai-spec/`](./docs/ai-spec/)
-- [x] `@lit-pigeon/mcp-server` — Model Context Protocol stdio server exposing 18 tools (create/list/get/validate document, set body attribute, set metadata, list block types, add row, add/update/delete block, render to MJML/HTML, import Figma frame, list/load/save/delete template)
+- [x] `@lit-pigeon/mcp-server` — Model Context Protocol stdio server exposing 27 tools (create/list/get/validate document, set body attribute, set metadata, list block types, add row, add/update/delete block, render to MJML/HTML, import Figma frame, list/load/save/delete template, list/get/save/delete brand kit, list/get/save/delete asset, list asset folders)
 - [x] `@lit-pigeon/figma-import` — Figma frame → `PigeonDocument` via the Figma REST API; standalone library + `import_figma_frame` MCP tool
 
 ### v0.3 -- Templates & Theming
@@ -566,12 +567,13 @@ Look for issues labeled [`good first issue`](../../issues?q=is%3Aissue+is%3Aopen
 
 ### Areas where help is needed
 
-- Additional block types (countdown timer, video embed, menu/nav)
-- Framework wrappers (Vue, Angular, Svelte)
-- Email client testing and rendering fixes
+- Email-client testing and rendering fixes (screenshot verification across Gmail / Outlook / Apple Mail — [#9](../../issues/9))
+- Playwright E2E coverage and Storybook for the editor ([#12](../../issues/12))
+- Dockerfiles for self-hosting the REST server and MCP server ([#13](../../issues/13))
+- REST persistence endpoints for templates and documents ([#14](../../issues/14))
+- Growing the stock template gallery ([#29](../../issues/29))
+- Accessibility audit (WCAG 2.1 AA — [#10](../../issues/10))
 - Documentation and tutorials
-- Accessibility improvements
-- Internationalization
 
 ---
 

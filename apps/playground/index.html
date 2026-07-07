@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lit Pigeon — Open Source Drag & Drop Email Editor</title>
-  <meta name="description" content="Lit Pigeon is an open-source, framework-agnostic drag & drop email editor built with web components. Design responsive emails visually and export clean MJML / HTML — ~17 kB gzipped, MIT licensed, no vendor lock-in." />
+  <meta name="description" content="Lit Pigeon is an open-source, framework-agnostic drag & drop email editor built with web components. Design responsive emails visually and export clean MJML / HTML — lightweight (~69 kB gzipped initial load), MIT licensed, no vendor lock-in." />
   <meta name="keywords" content="email editor, open source email editor, drag and drop email builder, MJML editor, responsive email, web components, email template builder, React email editor, Vue email editor" />
   <meta name="author" content="snx studio" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
@@ -16,7 +16,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Lit Pigeon" />
   <meta property="og:title" content="Lit Pigeon — Open Source Drag & Drop Email Editor" />
-  <meta property="og:description" content="Design responsive emails visually and export clean MJML / HTML. Open-source, framework-agnostic, ~17 kB gzipped, MIT licensed." />
+  <meta property="og:description" content="Design responsive emails visually and export clean MJML / HTML. Open-source, framework-agnostic, lightweight, MIT licensed." />
   <meta property="og:url" content="https://lit-pigeon.wearesnx.studio/" />
   <meta property="og:image" content="https://lit-pigeon.wearesnx.studio/editor-hero.png" />
   <meta property="og:image:width" content="3000" />
@@ -24,7 +24,7 @@
   <meta property="og:image:alt" content="The Lit Pigeon visual email editor with block palette, live email canvas, and properties panel" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Lit Pigeon — Open Source Drag & Drop Email Editor" />
-  <meta name="twitter:description" content="Design responsive emails visually and export clean MJML / HTML. Open-source, framework-agnostic, ~17 kB gzipped, MIT licensed." />
+  <meta name="twitter:description" content="Design responsive emails visually and export clean MJML / HTML. Open-source, framework-agnostic, lightweight, MIT licensed." />
   <meta name="twitter:image" content="https://lit-pigeon.wearesnx.studio/editor-hero.png" />
 
   <!-- Structured data (helps search + AI answer engines understand the project) -->
@@ -35,7 +35,7 @@
     "name": "Lit Pigeon",
     "applicationCategory": "DeveloperApplication",
     "operatingSystem": "Web, Node.js",
-    "description": "Open-source, framework-agnostic drag & drop email editor built with web components. Design responsive emails visually and export clean MJML / HTML. ~17 kB gzipped, MIT licensed.",
+    "description": "Open-source, framework-agnostic drag & drop email editor built with web components. Design responsive emails visually and export clean MJML / HTML. Lightweight and MIT licensed.",
     "url": "https://lit-pigeon.wearesnx.studio/",
     "softwareVersion": "0.5",
     "programmingLanguage": ["TypeScript", "JavaScript"],
@@ -676,7 +676,7 @@
         Open Source · Star on GitHub
       </a>
       <h1 class="fade-in-up"><img src="./lit-pigeon.png" alt="" width="56" height="56" style="vertical-align: middle; margin-right: 4px;"> Lit Pigeon</h1>
-      <p class="hero-tagline fade-in-up">Design responsive emails by dragging blocks around, then export MJML and HTML you actually own. Open source, ~17&nbsp;kB, no SaaS in the middle.</p>
+      <p class="hero-tagline fade-in-up">Design responsive emails by dragging blocks around, then export MJML and HTML you actually own. Open source, ~69&nbsp;kB gzipped at load, no SaaS in the middle.</p>
       <div class="hero-actions fade-in-up">
         <a href="./playground" class="btn btn-primary">
           Try the Playground
@@ -745,7 +745,7 @@
             <tr>
               <td>MJML / React Email</td>
               <td><span class="check">&#x2713;</span></td>
-              <td><span class="cross">&#x2717;</span> React-only</td>
+              <td><span class="cross">&#x2717;</span> Code-first (React Email is React-only)</td>
               <td>Varies</td>
               <td><span class="check">&#x2713;</span></td>
               <td><span class="cross">&#x2717;</span> Code-only</td>
@@ -762,12 +762,13 @@
               <td>Lit Pigeon</td>
               <td><span class="check">&#x2713;</span> MIT</td>
               <td><span class="check">&#x2713;</span> Web Components</td>
-              <td>~17 kB gzipped</td>
+              <td>~69 kB gzipped<sup>*</sup></td>
               <td><span class="check">&#x2713;</span> Built-in</td>
               <td><span class="check">&#x2713;</span> Drag &amp; Drop</td>
             </tr>
           </tbody>
         </table>
+        <p style="font-size: 0.8rem; opacity: 0.7; margin-top: 0.75rem;"><sup>*</sup> Initial JS of this site's playground (editor + core + Lit, gzipped). The TipTap rich-text engine (~140 kB gz) lazy-loads on first text edit. Other tools' sizes are their published editor bundles and vary by configuration.</p>
       </div>
     </div>
   </section>
@@ -796,8 +797,8 @@
           <p>Web components with Lit. Wrappers for React, Vue, Svelte, and Angular — or use vanilla JS.</p>
         </div>
         <div class="feature-card">
-          <h3>~17 kB Gzipped</h3>
-          <p>Tiny footprint. ~5 kB core engine plus ~12 kB editor UI — no bloated dependencies.</p>
+          <h3>Lean Footprint</h3>
+          <p>~7 kB document core + ~48 kB editor UI (gzipped). The rich-text engine lazy-loads on first text edit — this demo boots on ~69 kB of JS.</p>
         </div>
         <div class="feature-card">
           <h3>Plugin System</h3>

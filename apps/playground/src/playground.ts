@@ -335,15 +335,6 @@ if (themeSelect) {
   });
 }
 
-// Event listeners
-editor.addEventListener('pigeon:change', ((e: CustomEvent) => {
-  console.log('Document changed:', e.detail);
-}) as EventListener);
-
-editor.addEventListener('pigeon:ready', () => {
-  console.log('Pigeon editor ready');
-});
-
 // Save button
 const saveBtn = document.getElementById('btn-save')!;
 saveBtn.addEventListener('click', () => {
@@ -381,7 +372,7 @@ modalTabs.addEventListener('click', (e) => {
   }
 });
 
-document.getElementById('btn-export')!.addEventListener('click', async () => {
+async function openExportModal(tab: 'html' | 'mjml' | 'json' = 'html') {
   const doc = editor.getDocument();
 
   let htmlOutput = '';
@@ -390,12 +381,17 @@ document.getElementById('btn-export')!.addEventListener('click', async () => {
   try {
     const { MjmlRenderer, documentToMjml } = await import('@lit-pigeon/renderer-mjml');
     mjmlOutput = documentToMjml(doc);
-    const renderer = new MjmlRenderer();
-    const result = await renderer.render(doc);
-    htmlOutput = result.html;
+    try {
+      const renderer = new MjmlRenderer();
+      const result = await renderer.render(doc);
+      htmlOutput = result.html;
+    } catch (err) {
+      // Only the HTML compile failed — keep the generated MJML.
+      console.warn('HTML compilation failed:', err);
+      htmlOutput = '<!-- HTML compilation failed in this browser. Copy the MJML tab and run it through `npx mjml`, or render server-side with @lit-pigeon/ssr. -->';
+    }
   } catch (err) {
-    console.warn('MJML rendering failed:', err);
-    htmlOutput = '<!-- MJML rendering requires a Node.js environment. Use the JSON export and render server-side. -->';
+    console.warn('MJML generation failed:', err);
     mjmlOutput = '<!-- MJML generation failed -->';
   }
 
@@ -407,9 +403,19 @@ document.getElementById('btn-export')!.addEventListener('click', async () => {
 
   modalTitle.textContent = 'Export';
   modalTabs.style.display = 'flex';
-  showTab('html');
+  showTab(tab);
   exportModal.classList.add('open');
+}
+
+document.getElementById('btn-export')!.addEventListener('click', () => {
+  void openExportModal('html');
 });
+
+// The editor's own toolbar Export menu re-dispatches these events from
+// <pigeon-editor>; without listeners the menu silently does nothing.
+editor.addEventListener('pigeon:export-html', () => void openExportModal('html'));
+editor.addEventListener('pigeon:export-mjml', () => void openExportModal('mjml'));
+editor.addEventListener('pigeon:export-json', () => void openExportModal('json'));
 
 document.getElementById('btn-json')!.addEventListener('click', () => {
   const doc = editor.getDocument();

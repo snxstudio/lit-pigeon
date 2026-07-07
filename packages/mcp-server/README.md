@@ -51,8 +51,17 @@ After restarting your client, ask: *"Use lit-pigeon to build a welcome email wit
 | `load_template` | Hydrate a template into the document store. Returns the new `documentId`. |
 | `save_template` | Snapshot the current document as a reusable template (kebab-case `templateId`). |
 | `delete_template` | Remove a template by id. |
+| `list_brand_kits` | List saved brand kits (colors / fonts / logos). |
+| `get_brand_kit` | Return one brand kit by id. |
+| `save_brand_kit` | Create or update a brand kit. |
+| `delete_brand_kit` | Remove a brand kit by id. |
+| `list_assets` | List asset metadata, filterable by `folder`, `tags`, and free-text `search`, with pagination. |
+| `get_asset` | Return the metadata for one asset. |
+| `save_asset` | Create or update an asset metadata record. |
+| `delete_asset` | Remove one asset metadata record by id. Does not touch the underlying file. |
+| `list_asset_folders` | List every folder path used across saved assets. |
 
-Every tool takes a `documentId` after `create_document`. The id is opaque — keep it around for the rest of the conversation.
+Every document tool takes a `documentId` after `create_document`. The id is opaque — keep it around for the rest of the conversation.
 
 ## Workflow example
 

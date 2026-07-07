@@ -16,6 +16,15 @@ export default defineConfig({
         // Give the lazy-loaded rich-text bundle a stable name so size-limit
         // can target it predictably.
         manualChunks(id) {
+          // loader/controller/types are shared between the main entry and
+          // the lazy rich-text graph (they only touch TipTap via type-only
+          // imports). Pin them to a tiny bridge chunk: if Rollup places
+          // them inside the rich-text chunk, index.js ends up statically
+          // importing that chunk — eagerly loading TipTap (~150 kB gz) for
+          // every consumer and defeating the lazy-load design.
+          if (/\/src\/rich-text\/(loader|controller|types)\.ts/.test(id)) {
+            return 'rich-text-bridge';
+          }
           if (id.includes('/src/rich-text/') || id.includes('/@tiptap/')) {
             return 'rich-text';
           }

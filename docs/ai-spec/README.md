@@ -50,7 +50,7 @@ See the [JSON Schema](./lit-pigeon-ai-spec.schema.json) for every field, its typ
 2. **IDs must be unique strings.** Any non-empty stable string works. A short opaque slug is fine (`row-1`, `block-cta`).
 3. **`columnRatios.length === columns.length`** and they sum to 12. Common patterns: `[12]` single-column, `[6,6]` two equal, `[8,4]` or `[4,8]` sidebar, `[4,4,4]` three equal.
 4. **Text content is HTML**, not Markdown. Allowed tags: `p, br, strong, em, s, u, code, a, h1-h3, ul, ol, li, blockquote, span`. Anything else is stripped on the way to the canvas.
-5. **Merge tags** are literal text written as `{{identifier}}` inside a text block. They render as chips in the editor and pass through to MJML unchanged. Identifier must match `[A-Za-z_][A-Za-z0-9_]*` — `{{user.name}}` and `{{items[0]}}` are NOT supported.
+5. **Merge tags** are literal text written as `{{identifier}}` inside a text block. They render as chips in the editor and pass through to MJML unchanged. For editor chips the identifier must match `[A-Za-z_][A-Za-z0-9_]*` — `{{user.name}}` and `{{items[0]}}` won't render as chips. (Server-side substitution is more permissive: `@lit-pigeon/ssr`'s `applyMergeTags` resolves dotted paths like `{{user.name}}` against nested objects at render time; in the editor they simply pass through as plain text.)
 6. **Spacing is four-sided integers in pixels.** Use `{ top: 12, right: 12, bottom: 12, left: 12 }`, not strings.
 7. **Width is 600 by default.** Don't pick exotic widths — most email clients clip past 640.
 8. **Use `text/button/image` first.** `html` is a last resort; the editor and renderer pipelines are richer for typed blocks.
@@ -71,12 +71,12 @@ Parsers exist in the other direction: `mjmlToDocument(mjml)` round-trips MJML ba
 ## How to consume this spec
 
 - **LLMs / prompted models**: include the [prompting guide](./prompting-guide.md) in your system prompt. Reference the JSON Schema URL above for validation.
-- **MCP-compatible tools**: install `@lit-pigeon/mcp-server` (coming next) — it exposes the same operations as live tools.
+- **MCP-compatible tools**: install [`@lit-pigeon/mcp-server`](https://www.npmjs.com/package/@lit-pigeon/mcp-server) — it exposes the same operations as live tools.
 - **Custom CLIs / agents**: parse the JSON Schema, generate structured output, hand the result to `@lit-pigeon/core`'s `isValidDocument(doc)` before storing or rendering.
 - **Figma → Pigeon**: use [`@lit-pigeon/figma-import`](../../packages/figma-import/) directly, or invoke the `import_figma_frame` tool on the MCP server.
 
 ## Versioning
 
-This spec is versioned independently from the npm packages. Spec changes that break existing documents bump the major version (`2.0`); additive changes bump the minor (`1.1`). Track changes in [`CHANGELOG.md`](./CHANGELOG.md) (once it exists).
+This spec is versioned independently from the npm packages. Spec changes that break existing documents bump the major version (`2.0`); additive changes bump the minor (`1.1`). Changes are tracked in [`CHANGELOG.md`](./CHANGELOG.md).
 
 The `PigeonDocument.version` field locks each document to a spec major. Documents at the wrong version should be rejected.

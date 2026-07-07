@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://lit-pigeon.dev/ai-spec/1.0/document.schema.json",
+  "$id": "https://raw.githubusercontent.com/snxstudio/lit-pigeon/main/docs/ai-spec/lit-pigeon-ai-spec.schema.json",
   "title": "PigeonDocument",
   "description": "A Lit Pigeon email document — the canonical authoring target for AI tools that produce emails. Render with `documentToMjml(doc)` and then `mjml2html(mjml)` to get email-safe HTML.",
   "type": "object",
