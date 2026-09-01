@@ -225,6 +225,28 @@ importers:
         specifier: ^3.0.0
         version: 3.2.7(@types/node@26.3.0)(happy-dom@20.11.6)
 
+  packages/import-unlayer:
+    dependencies:
+      '@lit-pigeon/core':
+        specifier: workspace:^
+        version: link:../core
+      htmlparser2:
+        specifier: ^9.1.0
+        version: 9.1.0
+    devDependencies:
+      typescript:
+        specifier: ^5.5.0
+        version: 5.9.3
+      vite:
+        specifier: ^6.0.0
+        version: 6.4.3(@types/node@26.3.0)
+      vite-plugin-dts:
+        specifier: ^4.0.0
+        version: 4.5.4(@types/node@26.3.0)(rollup@4.63.0)(typescript@5.9.3)(vite@6.4.3(@types/node@26.3.0))
+      vitest:
+        specifier: ^3.0.0
+        version: 3.2.7(@types/node@26.3.0)(happy-dom@20.11.6)
+
   packages/lint:
     dependencies:
       '@lit-pigeon/core':
