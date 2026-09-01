@@ -1,0 +1,63 @@
+{
+  "name": "@lit-pigeon/import-unlayer",
+  "version": "0.1.0",
+  "description": "Unlayer design-JSON to PigeonDocument importer for Lit Pigeon — migrate off Unlayer without rebuilding your templates",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite build --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@lit-pigeon/core": "workspace:^",
+    "htmlparser2": "^9.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "vite": "^6.0.0",
+    "vite-plugin-dts": "^4.0.0",
+    "vitest": "^3.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/snxstudio/lit-pigeon.git",
+    "directory": "packages/import-unlayer"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/snxstudio/lit-pigeon/tree/main/packages/import-unlayer#readme",
+  "bugs": "https://github.com/snxstudio/lit-pigeon/issues",
+  "author": "Lit Pigeon Contributors",
+  "keywords": [
+    "email",
+    "email-template",
+    "email-editor",
+    "unlayer",
+    "unlayer-alternative",
+    "migration",
+    "import",
+    "mjml",
+    "html-email",
+    "lit",
+    "web-components"
+  ]
+}

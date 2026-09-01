@@ -35,6 +35,13 @@
     "gzip": true
   },
   {
+    "name": "@lit-pigeon/import-unlayer (ESM)",
+    "path": "packages/import-unlayer/dist/index.js",
+    "ignore": ["@lit-pigeon/core", "htmlparser2"],
+    "limit": "4 kB",
+    "gzip": true
+  },
+  {
     "name": "@lit-pigeon/react (ESM, excluding react/lit)",
     "path": "packages/react/dist/index.js",
     "ignore": ["react", "react-dom", "@lit/react", "@lit-pigeon/editor", "@lit-pigeon/core"],

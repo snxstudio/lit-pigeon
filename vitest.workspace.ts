@@ -4,6 +4,7 @@ export default defineWorkspace([
   'packages/core',
   'packages/renderer-mjml',
   'packages/parser-mjml',
+  'packages/import-unlayer',
   'packages/editor',
   'packages/ssr',
   'packages/rest',
