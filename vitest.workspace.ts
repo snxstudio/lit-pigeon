@@ -10,4 +10,8 @@ export default defineWorkspace([
   'packages/rest',
   'packages/blocks',
   'packages/lint',
+  'packages/figma-import',
+  'packages/mcp-server',
+  'packages/svelte',
+  'packages/vue',
 ]);
