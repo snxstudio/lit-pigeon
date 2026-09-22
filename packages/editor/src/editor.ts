@@ -998,8 +998,16 @@ export class PigeonEditor extends LitElement {
     return false;
   }
 
+  /** True when the key press is aimed at the editor, or at nothing else on the page. */
+  private _isForEditor(e: KeyboardEvent): boolean {
+    const target = e.composedPath()[0];
+    if (target === document || target === document.body || target === document.documentElement) return true;
+    return e.composedPath().includes(this);
+  }
+
   private _handleKeyDown = (e: KeyboardEvent) => {
     if (!this._state) return;
+    if (!this._isForEditor(e)) return;
     if (this._isInTextInput(e)) return;
     // TipTap owns key input while a block is in inline edit mode.
     if (this._editingBlockId !== null) return;
