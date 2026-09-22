@@ -448,4 +448,56 @@ describe('pigeon-editor keyboard shortcuts', () => {
       expect(lastSelect!.type).toBe('body');
     });
   });
+
+  describe('key presses aimed outside the editor', () => {
+    function pressKeyOn(target: HTMLElement, opts: KeyboardEventInit) {
+      target.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, composed: true, ...opts }));
+    }
+
+    it('ignores Delete from a focused host widget', async () => {
+      const { doc, rowId, blockId } = makeDoc();
+      const editor = await mountEditor(doc);
+      selectBlockOnEditor(editor, rowId, blockId);
+      await editor.updateComplete;
+
+      const listbox = document.createElement('div');
+      listbox.setAttribute('role', 'listbox');
+      listbox.tabIndex = 0;
+      document.body.appendChild(listbox);
+
+      pressKeyOn(listbox, { key: 'Delete' });
+      await editor.updateComplete;
+
+      expect(editor.getDocument().body.rows[0].columns[0].blocks).toHaveLength(1);
+    });
+
+    it('does not preventDefault ArrowDown meant for a host widget', async () => {
+      const { doc, rowId, blockId } = makeDoc();
+      const editor = await mountEditor(doc);
+      selectBlockOnEditor(editor, rowId, blockId);
+      await editor.updateComplete;
+
+      const listbox = document.createElement('div');
+      listbox.tabIndex = 0;
+      document.body.appendChild(listbox);
+
+      const event = new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true });
+      listbox.dispatchEvent(event);
+
+      expect(event.defaultPrevented).toBe(false);
+    });
+
+    it('still handles Delete fired from inside the editor', async () => {
+      const { doc, rowId, blockId } = makeDoc();
+      const editor = await mountEditor(doc);
+      selectBlockOnEditor(editor, rowId, blockId);
+      await editor.updateComplete;
+
+      const canvas = editor.shadowRoot!.querySelector('pigeon-canvas') as HTMLElement;
+      pressKeyOn(canvas, { key: 'Delete' });
+      await editor.updateComplete;
+
+      expect(editor.getDocument().body.rows[0].columns[0].blocks).toHaveLength(0);
+    });
+  });
 });
