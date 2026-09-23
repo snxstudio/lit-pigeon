@@ -10,6 +10,8 @@ export class PigeonHtmlBlock extends LitElement {
   @property({ type: Boolean, reflect: true })
   selected = false;
 
+  private _resizer?: ResizeObserver;
+
   static styles = css`
     :host {
       display: block;
@@ -33,8 +35,10 @@ export class PigeonHtmlBlock extends LitElement {
     }
 
     .content {
-      word-wrap: break-word;
-      overflow-wrap: break-word;
+      display: block;
+      width: 100%;
+      border: 0;
+      pointer-events: none;
     }
 
     .empty-state {
@@ -63,10 +67,26 @@ export class PigeonHtmlBlock extends LitElement {
         @click=${this._handleClick}
       >
         ${v.content
-          ? html`<div class="content" .innerHTML=${v.content}></div>`
+          ? html`<iframe
+              class="content"
+              title="Custom HTML"
+              sandbox="allow-same-origin"
+              .srcdoc=${`<style>body{margin:0;display:flow-root}</style>${v.content}`}
+              @load=${this._fit}
+            ></iframe>`
           : html`<div class="empty-state">&lt;/&gt; Custom HTML</div>`}
       </div>
     `;
+  }
+
+  /** No scripts run inside the sandbox, so the parent sizes the frame to its content. */
+  private _fit(e: Event) {
+    const frame = e.target as HTMLIFrameElement;
+    this._resizer?.disconnect();
+    this._resizer = new ResizeObserver(() => {
+      frame.style.height = `${frame.contentDocument!.body.scrollHeight}px`;
+    });
+    this._resizer.observe(frame);
   }
 
   private _handleClick(e: Event) {
