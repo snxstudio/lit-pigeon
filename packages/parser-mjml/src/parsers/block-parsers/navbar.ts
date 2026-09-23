@@ -12,9 +12,11 @@ export function parseNavBarBlock(
   attrs: Record<string, string>,
   linkElements: NavLinkData[],
 ): NavBarBlock {
+  // MJML prepends base-url to every link href as-is
+  const baseUrl = getAttr(attrs, 'base-url');
   const links: NavLink[] = linkElements.map((el) => {
     const link: NavLink = {
-      href: getAttr(el.attrs, 'href', '#'),
+      href: baseUrl + getAttr(el.attrs, 'href', '#'),
       text: el.innerText.trim() || 'Link',
     };
     const color = getAttr(el.attrs, 'color');
