@@ -13,13 +13,12 @@ const ENTITIES: Record<string, string> = {
 const BLOCK_TAG = /^(p|div|h[1-6]|blockquote|table|tr|ul|ol|section|header|footer)$/;
 
 /** Tags whose content never reaches the reader. */
-const HIDDEN_TAG = /^(style|script|head|title)$/;
+const HIDDEN_TAG = /^(style|script)$/;
 
 function decodeEntities(value: string): string {
   return value.replace(/&(#x[0-9a-f]+|#\d+|amp|lt|gt|quot|apos|nbsp);/gi, (match, name: string) => {
     if (name[0] !== '#') return ENTITIES[name.toLowerCase()];
     const code = /x/i.test(name) ? parseInt(name.slice(2), 16) : parseInt(name.slice(1), 10);
-    if (code === 160) return ' ';
     return code <= 0x10ffff ? String.fromCodePoint(code) : match;
   });
 }
@@ -50,8 +49,18 @@ function htmlToText(html: string): string {
   let hidden = 0;
   let out = '';
 
-  const token = /<!--[\s\S]*?--!?>|<(\/?)([a-z][a-z0-9]*)\b([^>]*)>|([^<]+)|</gi;
-  for (const [raw, closing, rawTag, attrs, text] of html.matchAll(token)) {
+  // Comments are skipped by searching for their end rather than with a lazy
+  // `[\s\S]*?`, and tags stop at the next `<`, so the scan stays linear.
+  const token = /<!--|<(\/?)([a-z][a-z0-9]*)\b([^<>]*)>|([^<]+)|</gi;
+  const commentEnd = /--!?>/g;
+  let match: RegExpExecArray | null;
+  while ((match = token.exec(html))) {
+    const [raw, closing, rawTag, attrs, text] = match;
+    if (raw === '<!--') {
+      commentEnd.lastIndex = token.lastIndex;
+      token.lastIndex = commentEnd.exec(html) ? commentEnd.lastIndex : html.length;
+      continue;
+    }
     if (text !== undefined || raw === '<') {
       if (!hidden) out += decodeEntities((text ?? raw).replace(/\s+/g, ' '));
       continue;

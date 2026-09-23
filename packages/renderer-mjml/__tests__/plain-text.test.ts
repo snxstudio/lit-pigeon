@@ -116,6 +116,13 @@ describe('documentToPlainText', () => {
     expect(text).toBe('ABC\n');
   });
 
+  it('stays fast on unterminated comments and tags', () => {
+    const started = performance.now();
+    documentToPlainText(docWith(createBlock('html', { content: '<!--'.repeat(50_000) })));
+    documentToPlainText(docWith(createBlock('html', { content: '<a'.repeat(50_000) })));
+    expect(performance.now() - started).toBeLessThan(500);
+  });
+
   it('renders social icons, navbar links and hero content', () => {
     const text = documentToPlainText(
       docWith(
