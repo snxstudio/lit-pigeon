@@ -108,7 +108,7 @@ function renderRow(row: RowNode): string {
     row.columns[0].blocks[0].type === 'hero'
   ) {
     return wrapConditional(
-      renderHeroSection(row.columns[0].blocks[0] as HeroBlock),
+      wrapRepeat(renderHeroSection(row.columns[0].blocks[0] as HeroBlock), row.attributes.repeat),
       row.attributes.condition,
     );
   }
@@ -149,9 +149,12 @@ function renderRow(row: RowNode): string {
     .join('\n');
 
   return wrapConditional(
-    `  <mj-section ${attrs.join(' ')}>
+    wrapRepeat(
+      `  <mj-section ${attrs.join(' ')}>
 ${columnsMarkup}
   </mj-section>`,
+      row.attributes.repeat,
+    ),
     row.attributes.condition,
   );
 }
@@ -168,6 +171,19 @@ function wrapConditional(sectionMarkup: string, condition?: string): string {
   return `  <mj-raw>{{#if ${expr}}}</mj-raw>
 ${sectionMarkup}
   <mj-raw>{{/if}}</mj-raw>`;
+}
+
+/**
+ * Wrap a section's MJML in a Handlebars `{{#each}}` loop when the row has a
+ * `repeat` path, using the same pass-through `<mj-raw>` markers as
+ * {@link wrapConditional}.
+ */
+function wrapRepeat(sectionMarkup: string, repeat?: string): string {
+  const path = repeat?.trim();
+  if (!path) return sectionMarkup;
+  return `  <mj-raw>{{#each ${path}}}</mj-raw>
+${sectionMarkup}
+  <mj-raw>{{/each}}</mj-raw>`;
 }
 
 /**

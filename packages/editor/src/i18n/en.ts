@@ -234,6 +234,7 @@ export const EN_MESSAGES: Record<string, string> = {
   'panel.row.backgroundImageUrl': 'Background Image URL',
   'panel.row.fullWidth': 'Full Width',
   'panel.row.displayCondition': 'Display condition',
+  'panel.row.repeat': 'Repeat for each',
 
   // controls — color picker
   'control.color.label': 'Color',

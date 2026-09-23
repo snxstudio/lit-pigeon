@@ -24,10 +24,16 @@ export function parseBody(bodyNode: MjmlNode, warnings: ParseWarning[]): BodyDat
   // Tracks a `{{#if …}}` display condition emitted as an mj-raw marker before
   // a section, applied to the next parsed row to round-trip conditional rows.
   let pendingCondition: string | undefined;
+  // Same for a `{{#each …}}` marker, which round-trips repeat rows.
+  let pendingRepeat: string | undefined;
   const applyCondition = (row: RowNode): RowNode => {
     if (pendingCondition) {
       row.attributes.condition = pendingCondition;
       pendingCondition = undefined;
+    }
+    if (pendingRepeat) {
+      row.attributes.repeat = pendingRepeat;
+      pendingRepeat = undefined;
     }
     return row;
   };
@@ -35,10 +41,12 @@ export function parseBody(bodyNode: MjmlNode, warnings: ParseWarning[]): BodyDat
   for (const child of bodyNode.children) {
     switch (child.tag) {
       case 'mj-raw': {
-        // Detect the conditional wrappers the renderer emits. Opening markers
-        // arm a condition for the following section; closing markers are noise.
+        // Detect the conditional and loop wrappers the renderer emits. Opening
+        // markers arm the following section; closing markers are noise.
         const match = /\{\{#if\s+([^}]+?)\s*\}\}/.exec(child.text ?? '');
         if (match) pendingCondition = match[1].trim();
+        const each = /\{\{#each\s+([^}]+?)\s*\}\}/.exec(child.text ?? '');
+        if (each) pendingRepeat = each[1].trim();
         break;
       }
       case 'mj-section':

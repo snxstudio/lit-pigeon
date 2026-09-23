@@ -203,6 +203,13 @@ export interface RowNode {
      * / Liquid-style, passed through verbatim), e.g. `condition: "user.premium"`.
      */
     condition?: string;
+    /**
+     * Optional array merge-tag path. When set, the row repeats once per item:
+     * the renderer wraps the section in `{{#each <repeat>}} … {{/each}}`
+     * (Handlebars), inside any `condition`, e.g. `repeat: "order.items"`.
+     * Merge tags inside the row then resolve against the item (`{{name}}`).
+     */
+    repeat?: string;
     /** Written out as MJML `css-class`. */
     cssClass?: string;
   };
