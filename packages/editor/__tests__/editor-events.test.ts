@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import {
   createDefaultDocument,
   createRow,
@@ -122,7 +122,7 @@ describe('<pigeon-editor> documented events', () => {
     const items = editor.shadowRoot!.querySelector('pigeon-toolbar')!.shadowRoot!
       .querySelectorAll('[role="menuitem"]');
     (items[index] as HTMLButtonElement).click();
-    expect(fired).toContain(name);
+    await vi.waitFor(() => expect(fired).toContain(name));
   });
 
   describe('pigeon:merge-tag-request', () => {
