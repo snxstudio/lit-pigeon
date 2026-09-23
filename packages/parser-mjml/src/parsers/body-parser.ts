@@ -3,7 +3,7 @@ import { generateId } from '@lit-pigeon/core';
 import { parseSpacing } from '../utils/parse-spacing.js';
 import { getAttr, getNumericAttr } from '../utils/parse-attributes.js';
 import { parseSection } from './section-parser.js';
-import { parseHeroBlock } from './block-parsers/hero.js';
+import { parseHeroBlock, heroTextHtml, heroButtonHtml } from './block-parsers/hero.js';
 import type { ParseWarning, MjmlNode } from '../mjml-to-document.js';
 
 export interface BodyData {
@@ -46,8 +46,8 @@ export function parseBody(bodyNode: MjmlNode, warnings: ParseWarning[]): BodyDat
         break;
       case 'mj-hero': {
         // mj-hero becomes a row with a single column containing a hero block
-        const heroContent = extractHeroContent(child);
-        const heroBlock = parseHeroBlock(child.attrs, heroContent);
+        const heroContent = extractHeroContent(child, warnings);
+        const heroBlock = parseHeroBlock(child.attrs, heroContent.content, heroContent.innerPadding);
         const column: ColumnNode = {
           id: generateId(),
           type: 'column',
@@ -96,15 +96,25 @@ export function parseBody(bodyNode: MjmlNode, warnings: ParseWarning[]): BodyDat
   return { width, backgroundColor, rows };
 }
 
-function extractHeroContent(heroNode: MjmlNode): string {
-  // Extract text content from mj-text children inside the hero
-  const textParts: string[] = [];
+function extractHeroContent(
+  heroNode: MjmlNode,
+  warnings: ParseWarning[],
+): { content: string; innerPadding?: string } {
+  const [only] = heroNode.children;
+  if (heroNode.children.length === 1 && only.tag === 'mj-text') {
+    return { content: heroTextHtml(only.attrs, only.text, true), innerPadding: only.attrs.padding };
+  }
+
+  // The hero block holds one HTML string, so each child becomes the HTML MJML renders for it
+  const parts: string[] = [];
   for (const child of heroNode.children) {
     if (child.tag === 'mj-text') {
-      textParts.push(child.text);
+      parts.push(heroTextHtml(child.attrs, child.text, false));
     } else if (child.tag === 'mj-button') {
-      textParts.push(child.text);
+      parts.push(heroButtonHtml(child.attrs, child.text));
+    } else {
+      warnings.push({ message: `Unsupported mj-hero child element: ${child.tag}`, tag: child.tag });
     }
   }
-  return textParts.join('') || '<p>Hero Content</p>';
+  return { content: parts.join('') || '<p>Hero Content</p>' };
 }

@@ -20,10 +20,9 @@ const RENDERER_TEXT_COLOR = '#000000';
 /**
  * The text block has no colour, font size or font family of its own, so the
  * resolved mj-text values are kept as an inline span in the content, the same
- * shape the rich-text editor produces. mj-hero text is left to the hero parser.
+ * shape the rich-text editor produces.
  */
 export function inlineTextStyles(node: MjmlNode, bodyFontFamily: string): void {
-  if (node.tag === 'mj-hero') return;
   if (node.tag === 'mj-text') {
     const { color, 'font-size': fontSize, 'font-family': fontFamily } = node.attrs;
     const decls: string[] = [];
