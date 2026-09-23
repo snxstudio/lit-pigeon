@@ -11,7 +11,8 @@ idiomatic Angular `@Input()`s and `@Output()`s.
 npm install @lit-pigeon/angular
 ```
 
-Requires `@angular/core` >= 17 as a peer dependency.
+Requires `@angular/core` >= 22 as a peer dependency. The package is compiled
+with ng-packagr in partial (Ivy) mode, so it works in AOT production builds.
 
 ## Usage
 
@@ -48,11 +49,137 @@ export class AppComponent {
 
 ### Inputs & outputs
 
-`@Input()` — `document`, `config`. `@Output()` — `pigeonChange`,
-`pigeonSelect`, `pigeonReady`, `pigeonPreview`, `pigeonExport`,
-`pigeonExportJson`, `pigeonExportMjml`, `pigeonExportHtml`. The component also
-exposes imperative helpers: `getDocument()`, `loadDocument(doc)`, `undo()`,
-`redo()`. Core types are re-exported for convenience.
+`@Input()` — `document`, `config`, `renderer`, `documentToMjml`, `theme`,
+`themeOverrides`, `templateStorage`, `assetStorage`. `@Output()` —
+`pigeonChange`, `pigeonSelect`, `pigeonReady`, `pigeonPreview`,
+`pigeonExport`, `pigeonExportJson`, `pigeonExportMjml`, `pigeonExportHtml`
+(`{ document, html }`, with `html` null when no `renderer` is set). The
+component also exposes imperative helpers: `getDocument()`,
+`loadDocument(doc)`, `undo()`, `redo()`, `exportMjml()` and `exportHtml()`.
+Core types are re-exported for convenience.
+
+Binding `[document]` to the object the editor last emitted through
+`pigeonChange` does nothing; binding a different object loads it and resets
+undo history, including resetting back to the original document.
+
+### MJML and HTML export
+
+The wrapper does not set a renderer for you. Pass one from
+`@lit-pigeon/renderer-mjml`; without it the Preview button does nothing and
+`exportMjml()` / `exportHtml()` return `null`.
+
+```typescript
+import { Component, ViewChild } from '@angular/core';
+import { PigeonEditorComponent, type PigeonDocument } from '@lit-pigeon/angular';
+import { mjmlToDocument } from '@lit-pigeon/parser-mjml';
+import { MjmlRenderer, documentToMjml } from '@lit-pigeon/renderer-mjml';
+
+@Component({
+  selector: 'app-template-editor',
+  imports: [PigeonEditorComponent],
+  template: `
+    <pigeon-editor-wrapper
+      #editor
+      [document]="doc"
+      [renderer]="renderer"
+      [documentToMjml]="toMjml"
+      (pigeonChange)="doc = $event.document"
+    />
+  `,
+})
+export class TemplateEditorComponent {
+  @ViewChild('editor') editor!: PigeonEditorComponent;
+
+  doc: PigeonDocument = mjmlToDocument(savedMjml).document;
+  renderer = new MjmlRenderer();
+  toMjml = documentToMjml;
+
+  async save() {
+    const mjml = this.editor.exportMjml();
+    const html = await this.editor.exportHtml();
+    // store { mjml, html }
+  }
+}
+```
+
+`@lit-pigeon/renderer-mjml` imports `mjml`, which is Node-only; an Angular
+build fails with `Could not resolve "fs"` (and `path`, `url`, `os`, `http`,
+`https`). Alias it to the browser build in your app's `package.json`:
+
+```json
+{
+  "overrides": {
+    "mjml": "npm:mjml-browser@^4.18.0"
+  }
+}
+```
+
+(`pnpm.overrides` with pnpm, `resolutions` with Yarn.) `mjml-browser` is
+CommonJS, so allow it in `angular.json` to silence the
+`Module 'mjml' ... is not ESM` warning:
+
+```json
+"build": {
+  "options": {
+    "allowedCommonJsDependencies": ["mjml"]
+  }
+}
+```
+
+`mjml-browser` adds about 1.2 MB (raw) to the bundle, which exceeds the default
+`initial` budget of a new Angular app. Lazy-load the route that hosts the
+editor, or raise the budget.
+
+### Image uploads with auth headers
+
+Uploads are configured through `[config]`'s `assetManager`, an
+`AssetManagerConfig`:
+
+```typescript
+interface AssetManagerConfig {
+  enabled?: boolean;
+  uploadUrl?: string;
+  uploadHeaders?: Record<string, string>;
+  acceptedTypes?: string[];
+  maxFileSize?: number;
+  uploadHandler?: (file: File) => Promise<string>;
+  presignedUpload?: {
+    getUploadParams: (file: File) => Promise<PresignedUploadParams>;
+  };
+  stock?: StockConfig;
+}
+```
+
+`uploadHandler` takes precedence over `presignedUpload` and `uploadUrl`, and
+resolves to the public URL of the uploaded image:
+
+```typescript
+import type { EditorConfig } from '@lit-pigeon/angular';
+
+config: Partial<EditorConfig> = {
+  assetManager: {
+    uploadHandler: async (file) => {
+      const body = new FormData();
+      body.append('file', file);
+      const res = await fetch('/api/email-assets', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${this.auth.token()}` },
+        body,
+      });
+      if (!res.ok) throw new Error(`Upload failed: ${res.status}`);
+      return (await res.json()).url;
+    },
+  },
+};
+```
+
+```html
+<pigeon-editor-wrapper [document]="doc" [config]="config" />
+```
+
+For a fixed header set, `uploadUrl` plus `uploadHeaders` also works: the editor
+POSTs the file as multipart field `file` and reads `url`, `src` or `location`
+from the JSON response.
 
 Part of [Lit Pigeon](https://github.com/snxstudio/lit-pigeon) — open-source drag-and-drop email editor.
 

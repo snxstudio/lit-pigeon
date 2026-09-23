@@ -15,6 +15,16 @@ import type { PigeonDocument, EditorConfig, Selection } from '@lit-pigeon/core';
 import '@lit-pigeon/editor';
 import type { PigeonEditor } from '@lit-pigeon/editor';
 
+const PASSTHROUGH_INPUTS = [
+  'renderer',
+  'documentToMjml',
+  'theme',
+  'themeOverrides',
+  'templateStorage',
+  'assetStorage',
+] as const;
+type PassthroughInput = (typeof PASSTHROUGH_INPUTS)[number];
+
 @Component({
   selector: 'pigeon-editor-wrapper',
   standalone: true,
@@ -38,6 +48,12 @@ export class PigeonEditorComponent implements AfterViewInit, OnChanges, OnDestro
 
   @Input() document?: PigeonDocument;
   @Input() config?: Partial<EditorConfig>;
+  @Input() renderer?: PigeonEditor['renderer'];
+  @Input() documentToMjml?: PigeonEditor['documentToMjml'];
+  @Input() theme?: PigeonEditor['theme'];
+  @Input() themeOverrides?: PigeonEditor['themeOverrides'];
+  @Input() templateStorage?: PigeonEditor['templateStorage'];
+  @Input() assetStorage?: PigeonEditor['assetStorage'];
 
   @Output() pigeonChange = new EventEmitter<{ document: PigeonDocument }>();
   @Output() pigeonSelect = new EventEmitter<{ selection: Selection | null }>();
@@ -46,7 +62,7 @@ export class PigeonEditorComponent implements AfterViewInit, OnChanges, OnDestro
   @Output() pigeonExport = new EventEmitter<void>();
   @Output() pigeonExportJson = new EventEmitter<{ document: PigeonDocument }>();
   @Output() pigeonExportMjml = new EventEmitter<{ mjml: string }>();
-  @Output() pigeonExportHtml = new EventEmitter<{ html: string }>();
+  @Output() pigeonExportHtml = new EventEmitter<{ document: PigeonDocument; html: string | null }>();
 
   private _listeners: Array<[string, EventListener]> = [];
 
@@ -60,6 +76,9 @@ export class PigeonEditorComponent implements AfterViewInit, OnChanges, OnDestro
     }
     if (this.config) {
       el.config = this.config;
+    }
+    for (const key of PASSTHROUGH_INPUTS) {
+      this._syncInput(el, key);
     }
 
     // Wire event listeners
@@ -93,11 +112,16 @@ export class PigeonEditorComponent implements AfterViewInit, OnChanges, OnDestro
     const el = this.editorRef?.nativeElement;
     if (!el) return;
 
-    if (changes['document'] && this.document) {
-      el.document = this.document;
+    // Setting el.document is a no-op when a host resets back to the original
+    // object, so load genuinely different documents explicitly.
+    if (changes['document'] && this.document && this.document !== el.getDocument()) {
+      el.loadDocument(this.document);
     }
     if (changes['config'] && this.config) {
       el.config = this.config;
+    }
+    for (const key of PASSTHROUGH_INPUTS) {
+      if (changes[key]) this._syncInput(el, key);
     }
   }
 
@@ -129,6 +153,22 @@ export class PigeonEditorComponent implements AfterViewInit, OnChanges, OnDestro
   /** Redo the last undone change. */
   redo(): boolean {
     return this.editorRef?.nativeElement?.redo() ?? false;
+  }
+
+  /** Export the current document as MJML. Requires `documentToMjml`. */
+  exportMjml(): string | null {
+    return this.editorRef?.nativeElement?.exportMjml() ?? null;
+  }
+
+  /** Export the current document as HTML. Requires `renderer`. */
+  async exportHtml(): Promise<string | null> {
+    return (await this.editorRef?.nativeElement?.exportHtml()) ?? null;
+  }
+
+  private _syncInput(el: PigeonEditor, key: PassthroughInput): void {
+    if (this[key] !== undefined) {
+      Object.assign(el, { [key]: this[key] });
+    }
   }
 
   private _addListener(el: HTMLElement, event: string, handler: EventListener): void {

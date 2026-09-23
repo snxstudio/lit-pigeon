@@ -50,7 +50,7 @@
   },
   {
     "name": "@lit-pigeon/angular (ESM, excluding @angular/core)",
-    "path": "packages/angular/dist/index.js",
+    "path": "packages/angular/dist/fesm2022/lit-pigeon-angular.mjs",
     "ignore": ["@angular/core", "@lit-pigeon/editor", "@lit-pigeon/core"],
     "limit": "2 kB",
     "gzip": true
