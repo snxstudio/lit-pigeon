@@ -39,6 +39,7 @@ import {
   resizeColumns,
   addColumn,
   removeColumn,
+  updateColumnAttributes,
   undo as coreUndo,
   redo as coreRedo,
   canUndo as coreCanUndo,
@@ -483,6 +484,7 @@ export class PigeonEditor extends LitElement {
           @property-change=${this._handlePropertyChange}
           @row-property-change=${this._handleRowPropertyChange}
           @row-layout-change=${this._handleRowLayoutChange}
+          @column-property-change=${this._handleColumnPropertyChange}
           @body-property-change=${this._handleBodyPropertyChange}
           @row-select=${this._handleRowSelect}
           @column-select=${this._handleColumnSelect}
@@ -1292,6 +1294,16 @@ export class PigeonEditor extends LitElement {
   }>) {
     const { rowId, attributes } = e.detail;
     const cmd = updateRowAttributes(rowId, attributes);
+    cmd(this._state, this._dispatch);
+  }
+
+  private _handleColumnPropertyChange(e: CustomEvent<{
+    rowId: string;
+    columnId: string;
+    attributes: Record<string, unknown>;
+  }>) {
+    const { rowId, columnId, attributes } = e.detail;
+    const cmd = updateColumnAttributes(rowId, columnId, attributes);
     cmd(this._state, this._dispatch);
   }
 
