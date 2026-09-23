@@ -41,3 +41,32 @@ describe('pigeon-editor export-html', () => {
     expect(events[0].detail.html).toBeNull();
   });
 });
+
+describe('pigeon-editor export-mjml and export-json', () => {
+  afterEach(() => { document.body.innerHTML = ''; });
+
+  async function clickExport(el: PigeonEditor, type: 'pigeon:export-mjml' | 'pigeon:export-json') {
+    const events: CustomEvent[] = [];
+    const listener = (e: Event) => events.push(e as CustomEvent);
+    document.addEventListener(type, listener);
+    const toolbar = el.shadowRoot!.querySelector('pigeon-toolbar')!;
+    toolbar.dispatchEvent(new CustomEvent(type, { bubbles: true, composed: true }));
+    document.removeEventListener(type, listener);
+    return events;
+  }
+
+  it('fires exactly one export-mjml event, carrying the mjml', async () => {
+    const el = await mount();
+    el.documentToMjml = () => '<mjml></mjml>';
+    const events = await clickExport(el, 'pigeon:export-mjml');
+    expect(events).toHaveLength(1);
+    expect(events[0].detail.mjml).toBe('<mjml></mjml>');
+  });
+
+  it('fires exactly one export-json event, carrying the document', async () => {
+    const el = await mount();
+    const events = await clickExport(el, 'pigeon:export-json');
+    expect(events).toHaveLength(1);
+    expect(events[0].detail.document).toBe(el.getDocument());
+  });
+});

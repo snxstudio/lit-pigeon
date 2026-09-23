@@ -793,7 +793,7 @@ export class PigeonEditor extends LitElement {
   }
 
   private async _handleExportHtml(e: Event) {
-    // The toolbar's own event is composed and would reach the host without html.
+    // The toolbar's own export events are composed; stop them so the host sees only ours.
     e.stopPropagation();
     const document = this._state.doc;
     const html = await this.exportHtml();
@@ -804,7 +804,8 @@ export class PigeonEditor extends LitElement {
     }));
   }
 
-  private _handleExportMjml() {
+  private _handleExportMjml(e: Event) {
+    e.stopPropagation();
     const mjml = this.documentToMjml ? this.documentToMjml(this._state.doc, { fonts: this._renderFonts() }) : null;
     this.dispatchEvent(new CustomEvent('pigeon:export-mjml', {
       detail: { document: this._state.doc, mjml },
@@ -813,7 +814,8 @@ export class PigeonEditor extends LitElement {
     }));
   }
 
-  private _handleExportJson() {
+  private _handleExportJson(e: Event) {
+    e.stopPropagation();
     this.dispatchEvent(new CustomEvent('pigeon:export-json', {
       detail: { document: this._state.doc },
       bubbles: true,
