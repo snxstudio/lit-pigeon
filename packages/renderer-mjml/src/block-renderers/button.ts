@@ -17,6 +17,7 @@ export function renderButtonBlock(block: ButtonBlock): string {
     fontWeight,
     alignment,
     fullWidth,
+    cssClass,
   } = block.values;
 
   const attrs: string[] = [
@@ -33,6 +34,10 @@ export function renderButtonBlock(block: ButtonBlock): string {
 
   if (fullWidth) {
     attrs.push('width="100%"');
+  }
+
+  if (cssClass) {
+    attrs.push(`css-class="${escapeAttr(cssClass)}"`);
   }
 
   // mj-button accepts inline HTML — pass content through unmodified.

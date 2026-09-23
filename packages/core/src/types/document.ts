@@ -20,6 +20,8 @@ export interface TextBlock {
     padding: Spacing;
     lineHeight: string;
     textAlign: 'left' | 'center' | 'right';
+    /** Written out as MJML `css-class`. */
+    cssClass?: string;
   };
 }
 
@@ -34,6 +36,8 @@ export interface ImageBlock {
     padding: Spacing;
     alignment: 'left' | 'center' | 'right';
     borderRadius?: number;
+    /** Written out as MJML `css-class`. */
+    cssClass?: string;
   };
 }
 
@@ -52,6 +56,8 @@ export interface ButtonBlock {
     fontWeight: string;
     alignment: 'left' | 'center' | 'right';
     fullWidth: boolean;
+    /** Written out as MJML `css-class`. */
+    cssClass?: string;
   };
 }
 
@@ -176,6 +182,8 @@ export interface ColumnNode {
     padding: Spacing;
     borderRadius?: number;
     verticalAlign: 'top' | 'middle' | 'bottom';
+    /** Written out as MJML `css-class`. */
+    cssClass?: string;
   };
   blocks: ContentBlock[];
 }
@@ -195,6 +203,8 @@ export interface RowNode {
      * / Liquid-style, passed through verbatim), e.g. `condition: "user.premium"`.
      */
     condition?: string;
+    /** Written out as MJML `css-class`. */
+    cssClass?: string;
   };
   columns: ColumnNode[];
   columnRatios: number[];
@@ -215,6 +225,8 @@ export interface PigeonDocument {
       backgroundColor: string;
       fontFamily: string;
       contentAlignment: 'center' | 'left';
+      /** Document-level CSS, written out as a non-inline `<mj-style>`. */
+      css?: string;
     };
     rows: RowNode[];
   };

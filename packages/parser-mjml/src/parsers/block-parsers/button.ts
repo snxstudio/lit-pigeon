@@ -24,6 +24,7 @@ export function parseButtonBlock(attrs: Record<string, string>, innerText: strin
       fontWeight: getAttr(attrs, 'font-weight', '600'),
       alignment: (getAttr(attrs, 'align', 'center') as 'left' | 'center' | 'right'),
       fullWidth: getAttr(attrs, 'width') === '100%',
+      cssClass: getAttr(attrs, 'css-class') || undefined,
     },
   };
 }
