@@ -485,7 +485,6 @@ export class PigeonEditor extends LitElement {
           @body-property-change=${this._handleBodyPropertyChange}
           @row-select=${this._handleRowSelect}
           @column-select=${this._handleColumnSelect}
-          @merge-tag-request=${this._handleMergeTagRequest}
         ></pigeon-properties>
       </div>
 
@@ -798,13 +797,6 @@ export class PigeonEditor extends LitElement {
 
   private _handleExport() {
     this.dispatchEvent(new CustomEvent('pigeon:export', {
-      bubbles: true,
-      composed: true,
-    }));
-  }
-
-  private _handleMergeTagRequest() {
-    this.dispatchEvent(new CustomEvent('pigeon:merge-tag-request', {
       bubbles: true,
       composed: true,
     }));

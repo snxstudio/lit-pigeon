@@ -193,7 +193,7 @@ export class PigeonBodyPanel extends LitElement {
 
   private _togglePicker() {
     if (!this.mergeTags.length) {
-      this.dispatchEvent(new CustomEvent('merge-tag-request', { bubbles: true, composed: true }));
+      this.dispatchEvent(new CustomEvent('pigeon:merge-tag-request', { bubbles: true, composed: true }));
       return;
     }
     const trigger = this._triggerRef.value;
