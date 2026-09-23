@@ -2,8 +2,14 @@
   {
     "name": "@lit-pigeon/core (ESM, excluding immer + nanoid)",
     "path": "packages/core/dist/index.js",
-    "ignore": ["immer", "nanoid"],
+    "ignore": ["immer", "nanoid", "./gallery.js"],
     "limit": "8 kB",
+    "gzip": true
+  },
+  {
+    "name": "@lit-pigeon/core (lazy starter gallery chunk)",
+    "path": "packages/core/dist/gallery.js",
+    "limit": "5 kB",
     "gzip": true
   },
   {

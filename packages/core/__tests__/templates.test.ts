@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   getStarterTemplates,
   getStarterTemplate,
+  loadGalleryTemplates,
   InMemoryTemplateStorage,
   isValidDocument,
 } from '../src/index.js';
@@ -36,11 +37,50 @@ describe('starter templates', () => {
   });
 });
 
+describe('gallery templates', () => {
+  it('loads the eight gallery templates', async () => {
+    const ids = (await loadGalleryTemplates()).map((t) => t.id);
+    expect(ids).toEqual([
+      'starter-order-confirmation',
+      'starter-shipping-update',
+      'starter-password-reset',
+      'starter-invoice',
+      'starter-event-invite',
+      'starter-product-launch',
+      'starter-abandoned-cart',
+      'starter-monthly-digest',
+    ]);
+  });
+
+  it('every gallery template is a valid document with unique node ids and merge tags', async () => {
+    for (const t of await loadGalleryTemplates()) {
+      expect(isValidDocument(t.document), t.id).toBe(true);
+      const ids = t.document.body.rows.flatMap((r) => [r.id, ...r.columns.flatMap((c) => [c.id, ...c.blocks.map((b) => b.id)])]);
+      expect(new Set(ids).size, t.id).toBe(ids.length);
+      expect(JSON.stringify(t.document), t.id).toMatch(/\{\{\w+\}\}/);
+    }
+  });
+
+  it('returns deep copies', async () => {
+    const [first] = await loadGalleryTemplates();
+    first.document.metadata.name = 'MUTATED';
+    const [again] = await loadGalleryTemplates();
+    expect(again.document.metadata.name).not.toBe('MUTATED');
+  });
+});
+
 describe('InMemoryTemplateStorage', () => {
-  it('lists the four starters by default', async () => {
+  it('lists the four starters and the eight gallery templates by default', async () => {
     const storage = new InMemoryTemplateStorage();
     const list = await storage.list();
-    expect(list).toHaveLength(4);
+    expect(list).toHaveLength(12);
+    expect(list.slice(0, 4).map((t) => t.id)).toEqual(getStarterTemplates().map((t) => t.id));
+  });
+
+  it('keeps a seeded template over a gallery template with the same id', async () => {
+    const seed = { ...getStarterTemplate('starter-welcome')!, id: 'starter-invoice', name: 'Mine' };
+    const storage = new InMemoryTemplateStorage({ seed: [seed] });
+    expect((await storage.get('starter-invoice'))!.name).toBe('Mine');
   });
 
   it('skips starters when includeStarters=false', async () => {

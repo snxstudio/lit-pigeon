@@ -347,3 +347,13 @@ export function getStarterTemplate(id: string): Template | null {
   const t = STARTER_TEMPLATES.find((x) => x.id === id);
   return t ? structuredClone(t) : null;
 }
+
+/**
+ * The deeper gallery (order confirmation, shipping update, password reset,
+ * invoice, event invite, product launch, abandoned cart, monthly digest).
+ * Code-split so the documents only download when a picker asks for them.
+ */
+export async function loadGalleryTemplates(): Promise<Template[]> {
+  const { GALLERY_TEMPLATES } = await import('./gallery.js');
+  return GALLERY_TEMPLATES.map((t) => structuredClone(t));
+}
