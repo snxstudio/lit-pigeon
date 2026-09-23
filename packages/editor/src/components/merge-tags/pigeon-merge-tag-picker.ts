@@ -117,7 +117,7 @@ export class PigeonMergeTagPicker extends LitElement {
     const grouped = this._groupByCategory(filteredTags);
 
     return html`
-      <div class="picker" style="position: absolute; left: ${this.x}px; top: ${this.y}px;">
+      <div class="picker" style="position: fixed; left: ${this.x}px; top: ${this.y}px;">
         <div class="search-box">
           <input
             type="text"
