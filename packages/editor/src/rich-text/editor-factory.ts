@@ -14,7 +14,7 @@ export function createEditor(opts: CreateEditorOptions): Editor {
     editorProps: {
       handleKeyDown: (_view, event) => {
         if (event.key === 'Escape') {
-          opts.onEscape?.();
+          opts.onEscape?.(commitHTML());
           return true;
         }
         return false;
@@ -25,6 +25,14 @@ export function createEditor(opts: CreateEditorOptions): Editor {
     },
   });
 
+  // TipTap normalises markup it loads (inline styles, <b> -> <strong>, ...).
+  // If the user changed nothing, hand back the stored HTML untouched.
+  const initial = editor.getHTML();
+  const commitHTML = () => {
+    const html = editor.getHTML();
+    return html === initial ? opts.initialHTML : sanitizeHTML(html);
+  };
+
   editor.on('focus', ({ editor: e }) => richTextController.setActive(e));
   editor.on('blur', ({ editor: e }) => {
     // The user is operating a formatting control (font-size select, color
@@ -33,7 +41,7 @@ export function createEditor(opts: CreateEditorOptions): Editor {
     // selection; the real commit happens on the next genuine blur.
     if (richTextController.isHeld()) return;
     richTextController.clearIfActive(e);
-    opts.onBlur?.(sanitizeHTML(e.getHTML()));
+    opts.onBlur?.(commitHTML());
   });
   editor.on('destroy', () => richTextController.clearIfActive(editor));
   if (opts.onUpdate) {
