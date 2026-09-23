@@ -1,5 +1,23 @@
 # @lit-pigeon/editor
 
+## 0.3.3
+
+### Patch Changes
+
+- cb1b6de: Angular wrapper: new `renderer`, `documentToMjml`, `theme`, `themeOverrides`, `templateStorage` and `assetStorage` inputs, passed straight through to `<pigeon-editor>`, plus `exportMjml()` and `exportHtml()` methods, so a host can get `{ mjml, html }` for the current document. Binding `[document]` to a different object now loads it (including resetting back to the original document); binding the object the editor already holds does nothing.
+
+  Editor: the toolbar's Export HTML now fires a single `pigeon:export-html` event with `{ document, html }`, where `html` comes from `renderer` (or is `null` without one). Export MJML and Export JSON now fire a single event too. Hosts previously received two events for each export, and the first had an empty payload.
+
+- 6cfa63f: `pigeon:export` and `pigeon:merge-tag-request` now actually fire. `pigeon:export` fires when the toolbar's Export menu opens. When `config.mergeTags` is set without static `tags`, the text, HTML and body panels show the Tag button, and clicking it fires `pigeon:merge-tag-request` so the host can supply tags with `setMergeTags()`.
+- 599cf42: Entering and leaving inline edit on a text block without changing anything (by blur or Escape) now keeps the stored HTML byte for byte. Previously TipTap's normalisation rewrote imported markup, such as inline `<span style="color:...">` or `<b>`, and added an undo step.
+- ba5c40a: The merge-tag picker now opens directly under the Tag button that opened it. Its viewport coordinates were being applied as an offset from wherever the picker sat in the panel, so it appeared far from the button.
+- e5c318b: Sandbox the preview iframe. Rendered email markup (for example an imported `mj-raw` with an `onerror` handler) used to run script in the preview with the host page's origin. Links in the preview still open in a new tab.
+- 8e29f49: Moving `<pigeon-editor>` in the DOM (a host dialog or tab re-attaching it) no longer resets the document and undo history to the initial `document`. State is created once and kept across disconnect and reconnect, and keyboard shortcuts keep working after the move.
+- 82d1187: HTML blocks no longer run script in the editor canvas. Their markup (for example imported `mj-raw` with `<img onerror>`, `<script>` or `javascript:` links) is now shown in a sandboxed iframe without script permission, sized to its content. The stored content and the exported MJML/HTML are unchanged.
+- 73b24ca: Keyboard shortcuts now only act on key presses aimed at the editor (or at nothing in particular). Embedded in a host app, Delete/Backspace, arrows and Cmd+C/V pressed in the host's own widgets no longer edit or hijack the email.
+- Updated dependencies [14c1b54]
+  - @lit-pigeon/core@0.3.3
+
 ## 0.3.2
 
 ### Patch Changes

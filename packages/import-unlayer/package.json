@@ -1,6 +1,6 @@
 {
   "name": "@lit-pigeon/import-unlayer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Unlayer design-JSON to PigeonDocument importer for Lit Pigeon — migrate off Unlayer without rebuilding your templates",
   "type": "module",
   "main": "./dist/index.cjs",

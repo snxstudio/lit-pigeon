@@ -1,5 +1,28 @@
 # @lit-pigeon/angular
 
+## 0.2.0
+
+### Minor Changes
+
+- cb1b6de: Angular wrapper: new `renderer`, `documentToMjml`, `theme`, `themeOverrides`, `templateStorage` and `assetStorage` inputs, passed straight through to `<pigeon-editor>`, plus `exportMjml()` and `exportHtml()` methods, so a host can get `{ mjml, html }` for the current document. Binding `[document]` to a different object now loads it (including resetting back to the original document); binding the object the editor already holds does nothing.
+
+  Editor: the toolbar's Export HTML now fires a single `pigeon:export-html` event with `{ document, html }`, where `html` comes from `renderer` (or is `null` without one). Export MJML and Export JSON now fire a single event too. Hosts previously received two events for each export, and the first had an empty payload.
+
+### Patch Changes
+
+- e5e36df: Build the Angular wrapper with ng-packagr (partial Ivy compilation, Angular Package Format) instead of plain Vite. The previous output had no Ivy metadata, so `PigeonEditorComponent` failed at runtime in AOT production builds. The peer range is now `@angular/core` >= 22, which is what the partial output from the Angular 22 compiler supports.
+- Updated dependencies [cb1b6de]
+- Updated dependencies [6cfa63f]
+- Updated dependencies [599cf42]
+- Updated dependencies [ba5c40a]
+- Updated dependencies [14c1b54]
+- Updated dependencies [e5c318b]
+- Updated dependencies [8e29f49]
+- Updated dependencies [82d1187]
+- Updated dependencies [73b24ca]
+  - @lit-pigeon/editor@0.3.3
+  - @lit-pigeon/core@0.3.3
+
 ## 0.1.6
 
 ### Patch Changes
