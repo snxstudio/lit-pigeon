@@ -88,6 +88,7 @@ screenshot verification is in progress; the matrix below tracks capture status.
 | [`@lit-pigeon/editor`](./packages/editor) | Lit Web Components UI — canvas, palette, properties panels, toolbar, drag-and-drop, layers, merge tags, keyboard shortcuts | ~48 kB (+ ~140 kB rich-text chunk, lazy-loaded on first text edit) |
 | [`@lit-pigeon/renderer-mjml`](./packages/renderer-mjml) | MJML-based HTML renderer — converts documents to email-safe HTML | ~2.6 kB + mjml |
 | [`@lit-pigeon/parser-mjml`](./packages/parser-mjml) | MJML → JSON document parser — import existing MJML into the editor | ~2.9 kB |
+| [`@lit-pigeon/import-unlayer`](./packages/import-unlayer) | Unlayer design-JSON → `PigeonDocument` importer — migrate off Unlayer without rebuilding your templates | ~3.5 kB |
 | [`@lit-pigeon/react`](./packages/react) | React wrapper via `@lit/react` | 0.5 kB |
 | [`@lit-pigeon/angular`](./packages/angular) | Angular component wrapper | ~1 kB |
 | [`@lit-pigeon/vue`](./packages/vue) | Vue 3 component wrapper | ~1 kB |
@@ -501,6 +502,7 @@ A separate track that any AI tool — Cursor, Windsurf, custom agents, raw LLM p
 - [x] Hero block detection in Figma importer (image + overlay-text heuristic, in `@lit-pigeon/figma-import/converters/hero.ts`)
 - [x] Standard block catalog — `@lit-pigeon/blocks` (video, countdown, accordion, table, carousel shipped as plugin `BlockDefinition`s)
 - [x] Pre-flight QA linter — `@lit-pigeon/lint` (alt-text, contrast, link, merge-tag, spam-score, image-weight, link-reachability; sync + async, also exposed as REST endpoints)
+- [x] Unlayer design-JSON importer — `@lit-pigeon/import-unlayer` (3.46 kB gz; `unlayerToDocument(design)` returns the document plus a warning per setting that could not be carried across)
 - [ ] `import_figma_frame` live-sandbox smoke test in CI
 
 ### Known gaps (surfaced during plugin-API docs work)
@@ -527,6 +529,7 @@ lit-pigeon/
     editor/            # Lit Web Components UI
     renderer-mjml/     # JSON -> MJML -> HTML renderer
     parser-mjml/       # MJML -> JSON parser (import existing templates)
+    import-unlayer/    # Unlayer design JSON -> PigeonDocument importer
     react/             # React wrapper via @lit/react
     angular/           # Angular component wrapper
     vue/               # Vue 3 component wrapper
