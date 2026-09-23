@@ -109,6 +109,13 @@ describe('documentToPlainText', () => {
     expect(text).toBe('Read docs (https://x.test) &constructor; &#99999999;\n');
   });
 
+  it('drops HTML comments, including ones closed with --!>', () => {
+    const text = documentToPlainText(
+      docWith(createBlock('html', { content: '<p>A<!-- one -->B<!-- two --!>C</p>' })),
+    );
+    expect(text).toBe('ABC\n');
+  });
+
   it('renders social icons, navbar links and hero content', () => {
     const text = documentToPlainText(
       docWith(

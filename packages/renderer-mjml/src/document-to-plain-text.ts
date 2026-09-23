@@ -50,7 +50,7 @@ function htmlToText(html: string): string {
   let hidden = 0;
   let out = '';
 
-  const token = /<!--[\s\S]*?-->|<(\/?)([a-z][a-z0-9]*)\b([^>]*)>|([^<]+)|</gi;
+  const token = /<!--[\s\S]*?--!?>|<(\/?)([a-z][a-z0-9]*)\b([^>]*)>|([^<]+)|</gi;
   for (const [raw, closing, rawTag, attrs, text] of html.matchAll(token)) {
     if (text !== undefined || raw === '<') {
       if (!hidden) out += decodeEntities((text ?? raw).replace(/\s+/g, ' '));
