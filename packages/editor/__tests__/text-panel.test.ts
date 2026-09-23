@@ -121,5 +121,23 @@ describe('pigeon-text-panel', () => {
       expect(textarea.value).toBe('Hello {{lastName}} world');
       expect(events[0].detail.values).toEqual({ content: 'Hello {{lastName}} world' });
     });
+
+    it('opens the picker in the viewport right under the Tag button', async () => {
+      const panel = await mount(block, SAMPLE_TAGS);
+      const trigger = panel.shadowRoot!.querySelector('.tag-btn') as HTMLButtonElement;
+      trigger.getBoundingClientRect = () =>
+        ({ left: 440, right: 500, top: 100, bottom: 122, width: 60, height: 22, x: 440, y: 100 }) as DOMRect;
+      trigger.click();
+      await panel.updateComplete;
+
+      const picker = panel.shadowRoot!.querySelector('pigeon-merge-tag-picker') as HTMLElement & {
+        updateComplete: Promise<boolean>;
+      };
+      await picker.updateComplete;
+      const box = getComputedStyle(picker.shadowRoot!.querySelector('.picker')!);
+      expect(box.position).toBe('fixed');
+      expect(box.left).toBe('240px');
+      expect(box.top).toBe('126px');
+    });
   });
 });
