@@ -1,4 +1,5 @@
 import type { ParseWarning, MjmlNode } from '../mjml-to-document.js';
+import { MJML_DEFAULTS } from './mjml-defaults.js';
 
 type Attrs = Record<string, string>;
 
@@ -14,7 +15,8 @@ const CSS_CLASS_TAGS = new Set(['mj-section', 'mj-column', 'mj-text', 'mj-button
 
 /**
  * Applies mj-attributes defaults to every node in place, with MJML's
- * precedence: element attribute > mj-class > tag default > mj-all.
+ * precedence: element attribute > mj-class > tag default > mj-all > the
+ * element's own MJML default.
  */
 export function resolveAttributes(
   node: MjmlNode,
@@ -31,7 +33,7 @@ export function resolveAttributes(
     return { ...acc, ...values, ...cssClass };
   }, {});
 
-  node.attrs = { ...defaults.all, ...defaults.tags[node.tag], ...classAttrs, ...own };
+  node.attrs = { ...MJML_DEFAULTS[node.tag], ...defaults.all, ...defaults.tags[node.tag], ...classAttrs, ...own };
 
   const cssClass = node.attrs['css-class'];
   if (cssClass && !CSS_CLASS_TAGS.has(node.tag)) {

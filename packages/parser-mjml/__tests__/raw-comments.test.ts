@@ -23,7 +23,7 @@ describe('HTML comments inside raw content', () => {
       '<mj-text><p>Hello</p><!-- body starts --><!--[if mso]><span>Outlook</span><![endif]--></mj-text>',
     );
     expect(block.type === 'text' && block.values.content).toBe(
-      '<p>Hello</p><!-- body starts --><!--[if mso]><span>Outlook</span><![endif]-->',
+      '<p><span style="font-size: 13px">Hello</span></p><!-- body starts --><!--[if mso]><span>Outlook</span><![endif]-->',
     );
   });
 

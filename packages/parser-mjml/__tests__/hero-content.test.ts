@@ -17,9 +17,9 @@ describe('mj-hero content', () => {
         '<mj-text padding="0 20px">Book {{ cutoff_date }}</mj-text>',
     );
     expect(content).toBe(
-      '<div style="font-weight:bold;line-height:38px;text-align:center;">' +
+      '<div style="font-weight:bold;line-height:38px;text-align:center;padding:10px 25px;">' +
         '<span style="color: #ffffff; font-size: 30px">Peak season</span></div>' +
-        '<div style="padding:0 20px;">Book {{ cutoff_date }}</div>',
+        '<div style="line-height:1;padding:0 20px;"><span style="font-size: 13px">Book {{ cutoff_date }}</span></div>',
     );
   });
 
@@ -29,14 +29,14 @@ describe('mj-hero content', () => {
       '<mj-attributes><mj-text color="#eeeeee" align="center" /></mj-attributes>',
     );
     expect(content).toBe(
-      '<div style="text-align:center;"><span style="color: #eeeeee">Hi</span></div>' +
-        '<div style="text-align:center;"><span style="color: #eeeeee">There</span></div>',
+      '<div style="line-height:1;text-align:center;padding:10px 25px;"><span style="color: #eeeeee; font-size: 13px">Hi</span></div>' +
+        '<div style="line-height:1;text-align:center;padding:10px 25px;"><span style="color: #eeeeee; font-size: 13px">There</span></div>',
     );
   });
 
   it('reads a lone mj-text as the hero content, with its padding as the inner padding', () => {
     const { values } = parseHero('<mj-text padding="12px 24px"><p>Only</p></mj-text>');
-    expect(values.content).toBe('<p>Only</p>');
+    expect(values.content).toBe('<div style="line-height:1;"><p><span style="font-size: 13px">Only</span></p></div>');
     expect(values.innerPadding).toEqual({ top: 12, right: 24, bottom: 12, left: 24 });
   });
 

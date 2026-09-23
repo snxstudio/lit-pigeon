@@ -20,7 +20,7 @@ describe('mj-hero round trip', () => {
 
   it('keeps the hero text, its styling and the button link', () => {
     expect(html).toContain('<span style="color: #ffffff; font-size: 30px">Peak season is here</span>');
-    expect(html).toContain('<span style="color: #e0e7ff">Book before {{ cutoff_date }}.</span>');
+    expect(html).toContain('<span style="color: #e0e7ff; font-size: 13px">Book before {{ cutoff_date }}.</span>');
     expect(html).toMatch(/<td align="center" bgcolor="#ffd166"[^>]*><a href="https:\/\/app.example.com\/quote"/);
   });
 
