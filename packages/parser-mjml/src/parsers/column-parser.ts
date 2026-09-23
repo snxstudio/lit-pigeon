@@ -9,6 +9,7 @@ import { parseDividerBlock } from './block-parsers/divider.js';
 import { parseSpacerBlock } from './block-parsers/spacer.js';
 import { parseSocialBlock, type SocialElementData } from './block-parsers/social.js';
 import { parseHtmlBlock } from './block-parsers/html.js';
+import { parseTableBlock } from './block-parsers/table.js';
 import { parseNavBarBlock, type NavLinkData } from './block-parsers/navbar.js';
 import type { ParseWarning, MjmlNode } from '../mjml-to-document.js';
 
@@ -62,6 +63,8 @@ function parseBlockElement(node: MjmlNode, warnings: ParseWarning[]): ContentBlo
     }
     case 'mj-raw':
       return parseHtmlBlock(node.text);
+    case 'mj-table':
+      return parseTableBlock(node.attrs, node.text);
     case 'mj-navbar': {
       const linkElements: NavLinkData[] = node.children
         .filter(c => c.tag === 'mj-navbar-link')

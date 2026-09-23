@@ -42,7 +42,7 @@ function parseMjmlToTree(mjml: string): MjmlNode {
   // Tags whose inner content should be captured as raw text
   const rawContentTags = new Set([
     'mj-text', 'mj-button', 'mj-raw', 'mj-preview',
-    'mj-social-element', 'mj-navbar-link',
+    'mj-social-element', 'mj-navbar-link', 'mj-table',
   ]);
 
   // Self-closing MJML tags that never have children
