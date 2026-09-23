@@ -169,6 +169,12 @@ function parseMjmlToTree(mjml: string): MjmlNode {
         stack.pop();
       }
     },
+    oncomment(data) {
+      // Keeps Outlook conditional comments (<!--[if mso]>) inside raw content
+      if (rawCapture) {
+        rawBuffer += `<!--${data}-->`;
+      }
+    },
   }, {
     recognizeSelfClosing: true,
     lowerCaseTags: true,
