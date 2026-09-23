@@ -88,6 +88,7 @@ export function resizeColumns(rowId: string, ratios: number[]): Command {
     if (rowIndex === -1) return false;
 
     const row = state.doc.body.rows[rowIndex];
+    if (row.locked) return false;
     if (ratios.length !== row.columns.length) return false;
 
     const sum = ratios.reduce((a, b) => a + b, 0);

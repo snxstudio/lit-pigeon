@@ -11,6 +11,7 @@ export interface PigeonEditorProps {
   config?: Partial<EditorConfig>;
   renderer?: Renderer;
   documentToMjml?: (doc: PigeonDocument) => string;
+  readonly?: boolean;
 }
 
 export interface PigeonEditorEvents {

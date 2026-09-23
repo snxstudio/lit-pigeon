@@ -26,6 +26,9 @@ export class PigeonRow extends LitElement {
   @property({ type: Boolean, attribute: 'show-actions', reflect: true })
   showActions = false;
 
+  @property({ type: Boolean })
+  readonly = false;
+
   @state()
   private _dragging = false;
 
@@ -169,6 +172,7 @@ export class PigeonRow extends LitElement {
     const bgStyle = a.backgroundColor ? `background-color: ${a.backgroundColor};` : '';
     const bgImgStyle = a.backgroundImage ? `background-image: url(${a.backgroundImage}); background-size: cover; background-position: center;` : '';
     const padStyle = `padding: ${a.padding.top}px ${a.padding.right}px ${a.padding.bottom}px ${a.padding.left}px;`;
+    const locked = this.row.locked;
 
     return html`
       <div
@@ -176,7 +180,7 @@ export class PigeonRow extends LitElement {
         style="${bgStyle} ${bgImgStyle} ${padStyle}"
         @click=${this._onRowClick}
       >
-        <div class="row-label">Row</div>
+        ${this.readonly ? '' : html`<div class="row-label">${locked ? 'Locked' : 'Row'}</div>`}
 
         <div class="columns">
           ${this.row.columns.map((col, i) => {
@@ -189,14 +193,15 @@ export class PigeonRow extends LitElement {
                   row-id="${this.row.id}"
                   .selection=${this.selection}
                   .editingBlockId=${this.editingBlockId}
+                  ?locked=${locked || this.readonly}
                 ></pigeon-column>
               </div>
             `;
           })}
         </div>
 
-        <div class="actions">
-          <button
+        ${this.readonly ? '' : html`<div class="actions">
+          ${locked ? '' : html`<button
             class="action-btn drag-handle"
             title="Drag to reorder"
             draggable="true"
@@ -231,7 +236,7 @@ export class PigeonRow extends LitElement {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="6 9 12 15 18 9"/>
             </svg>
-          </button>
+          </button>`}
           <button
             class="action-btn"
             title="Save to library"
@@ -241,7 +246,7 @@ export class PigeonRow extends LitElement {
               <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
             </svg>
           </button>
-          <button
+          ${locked ? '' : html`<button
             class="action-btn"
             title="Duplicate"
             @click=${this._onDuplicate}
@@ -260,8 +265,8 @@ export class PigeonRow extends LitElement {
               <polyline points="3 6 5 6 21 6"/>
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
             </svg>
-          </button>
-        </div>
+          </button>`}
+        </div>`}
       </div>
     `;
   }

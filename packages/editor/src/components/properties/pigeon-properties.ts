@@ -124,6 +124,20 @@ export class PigeonProperties extends LitElement {
       font-size: 10px;
     }
 
+    .locked-note {
+      margin: 0 0 12px;
+      padding: 8px 10px;
+      border-radius: var(--pigeon-radius-sm, 4px);
+      background: var(--pigeon-surface, #f8fafc);
+      color: var(--pigeon-text-secondary, #64748b);
+      font-family: var(--pigeon-font);
+      font-size: 12px;
+    }
+
+    .locked {
+      opacity: 0.6;
+    }
+
     .empty-state {
       display: flex;
       flex-direction: column;
@@ -173,7 +187,7 @@ export class PigeonProperties extends LitElement {
       if (row) {
         return html`
           <div class="panel-wrapper" part="panel">
-            <pigeon-row-panel .row=${row}></pigeon-row-panel>
+            ${this._lockGuard(row.id, html`<pigeon-row-panel .row=${row}></pigeon-row-panel>`)}
           </div>
         `;
       }
@@ -185,7 +199,7 @@ export class PigeonProperties extends LitElement {
         return html`
           <div class="panel-wrapper" part="panel">
             ${this._renderBreadcrumb(this.selection.rowId, this.selection.columnId, this._blockLabel(block))}
-            ${this._renderBlockPanel(block, this.selection.rowId, this.selection.columnId)}
+            ${this._lockGuard(this.selection.rowId, this._renderBlockPanel(block, this.selection.rowId, this.selection.columnId))}
           </div>
         `;
       }
@@ -247,6 +261,15 @@ export class PigeonProperties extends LitElement {
               <span class="crumb current">${current}</span>`
           : ''}
       </nav>
+    `;
+  }
+
+  /** A locked row's panels stay readable but inert, with a note saying why. */
+  private _lockGuard(rowId: string, panel: unknown) {
+    if (!this._findRow(rowId)?.locked) return panel;
+    return html`
+      <p class="locked-note" role="note">This row is locked, so it can't be moved, deleted or edited.</p>
+      <div class="locked" inert>${panel}</div>
     `;
   }
 
