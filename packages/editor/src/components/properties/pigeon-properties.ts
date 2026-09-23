@@ -39,6 +39,9 @@ export class PigeonProperties extends LitElement {
   mergeTags: MergeTag[] = [];
 
   @property({ attribute: false })
+  requestMergeTags = false;
+
+  @property({ attribute: false })
   assetManagerConfig?: AssetManagerConfig;
 
   @property({ attribute: false })
@@ -157,6 +160,7 @@ export class PigeonProperties extends LitElement {
           <pigeon-body-panel
             .doc=${this.doc}
             .mergeTags=${this.mergeTags}
+            .requestMergeTags=${this.requestMergeTags}
             .swatches=${this._swatches}
             .brandFonts=${this._brandFonts}
           ></pigeon-body-panel>
@@ -262,7 +266,7 @@ export class PigeonProperties extends LitElement {
   private _renderBlockPanel(block: ContentBlock, rowId: string, columnId: string) {
     switch (block.type) {
       case 'text':
-        return html`<pigeon-text-panel .block=${block} .rowId=${rowId} .columnId=${columnId} .mergeTags=${this.mergeTags}></pigeon-text-panel>`;
+        return html`<pigeon-text-panel .block=${block} .rowId=${rowId} .columnId=${columnId} .mergeTags=${this.mergeTags} .requestMergeTags=${this.requestMergeTags}></pigeon-text-panel>`;
       case 'image':
         return html`<pigeon-image-panel
           .block=${block}
@@ -291,7 +295,7 @@ export class PigeonProperties extends LitElement {
       case 'social':
         return html`<pigeon-social-panel .block=${block} .rowId=${rowId} .columnId=${columnId}></pigeon-social-panel>`;
       case 'html':
-        return html`<pigeon-html-panel .block=${block} .rowId=${rowId} .columnId=${columnId} .mergeTags=${this.mergeTags}></pigeon-html-panel>`;
+        return html`<pigeon-html-panel .block=${block} .rowId=${rowId} .columnId=${columnId} .mergeTags=${this.mergeTags} .requestMergeTags=${this.requestMergeTags}></pigeon-html-panel>`;
       default: {
         const unknownType = (block as { type?: string }).type ?? 'unknown';
         const def = getBlockDefinition(unknownType);
