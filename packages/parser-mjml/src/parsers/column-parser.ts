@@ -34,6 +34,7 @@ export function parseColumn(columnNode: MjmlNode, warnings: ParseWarning[]): Col
       padding: parseSpacing(getAttr(attrs, 'padding'), 0),
       borderRadius: getNumericAttr(attrs, 'border-radius', 0) || undefined,
       verticalAlign: (getAttr(attrs, 'vertical-align', 'top') as 'top' | 'middle' | 'bottom'),
+      cssClass: getAttr(attrs, 'css-class') || undefined,
     },
     blocks,
   };

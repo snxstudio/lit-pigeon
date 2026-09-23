@@ -5,7 +5,7 @@ import { spacingToMjml } from '../utils/spacing.js';
  * Renders an ImageBlock to an MJML <mj-image> element.
  */
 export function renderImageBlock(block: ImageBlock): string {
-  const { src, alt, width, href, padding, alignment, borderRadius } = block.values;
+  const { src, alt, width, href, padding, alignment, borderRadius, cssClass } = block.values;
 
   const attrs: string[] = [
     `src="${escapeAttr(src)}"`,
@@ -24,6 +24,10 @@ export function renderImageBlock(block: ImageBlock): string {
 
   if (borderRadius !== undefined && borderRadius > 0) {
     attrs.push(`border-radius="${borderRadius}px"`);
+  }
+
+  if (cssClass) {
+    attrs.push(`css-class="${escapeAttr(cssClass)}"`);
   }
 
   return `<mj-image ${attrs.join(' ')} />`;

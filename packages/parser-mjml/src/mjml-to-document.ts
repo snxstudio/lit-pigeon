@@ -2,6 +2,8 @@ import { Parser } from 'htmlparser2';
 import type { PigeonDocument } from '@lit-pigeon/core';
 import { parseHead, type HeadData } from './parsers/head-parser.js';
 import { parseBody } from './parsers/body-parser.js';
+import { resolveAttributes } from './utils/resolve-attributes.js';
+import { inlineTextStyles } from './utils/inline-text-style.js';
 
 export interface ParseOptions {
   /** If true, lenient parsing will skip unknown elements instead of warning. */
@@ -176,7 +178,7 @@ export function mjmlToDocument(mjml: string, _options?: ParseOptions): ParseResu
   const bodyNode = findNode(mjmlRoot, 'mj-body');
 
   // Parse head
-  let headData: HeadData = {};
+  let headData: HeadData = { attributeDefaults: { all: {}, tags: {}, classes: {} } };
   if (headNode) {
     headData = parseHead(
       headNode.children.map(c => ({
@@ -203,6 +205,10 @@ export function mjmlToDocument(mjml: string, _options?: ParseOptions): ParseResu
     };
   }
 
+  const fontFamily = headData.fontFamily ?? 'Arial, Helvetica, sans-serif';
+  resolveAttributes(bodyNode, headData.attributeDefaults, warnings);
+  inlineTextStyles(bodyNode, fontFamily);
+
   const bodyData = parseBody(bodyNode, warnings);
 
   const now = new Date().toISOString();
@@ -218,8 +224,9 @@ export function mjmlToDocument(mjml: string, _options?: ParseOptions): ParseResu
       attributes: {
         width: bodyData.width,
         backgroundColor: bodyData.backgroundColor,
-        fontFamily: headData.fontFamily ?? 'Arial, Helvetica, sans-serif',
+        fontFamily,
         contentAlignment: 'center',
+        css: headData.css,
       },
       rows: bodyData.rows,
     },
