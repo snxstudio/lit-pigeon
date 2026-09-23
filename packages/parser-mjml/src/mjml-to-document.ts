@@ -31,57 +31,6 @@ export interface MjmlNode {
 }
 
 /**
- * Serializes the inner content of an MjmlNode back to HTML string.
- * This is used for nodes like mj-text that contain arbitrary HTML.
- */
-export function nodeInnerHtml(node: MjmlNode): string {
-  let html = '';
-
-  // Interleave text chunks and child nodes
-  // Since our parser accumulates all direct text in node.text
-  // and children are separate, we need a raw content approach.
-  // Let's reconstruct from the node structure.
-  if (node.children.length === 0) {
-    return node.text;
-  }
-
-  // We have children - need to rebuild the HTML
-  html += node.text.split('').length > 0 ? '' : '';
-
-  // Unfortunately our tree doesn't track interleaving of text and children.
-  // So we take a simpler approach: serialize children as HTML, prepend any direct text.
-  if (node.text.trim()) {
-    html += node.text;
-  }
-
-  for (const child of node.children) {
-    html += serializeNode(child);
-  }
-
-  return html;
-}
-
-function serializeNode(node: MjmlNode): string {
-  const attrsStr = Object.entries(node.attrs)
-    .map(([k, v]) => `${k}="${v}"`)
-    .join(' ');
-
-  const openTag = attrsStr ? `<${node.tag} ${attrsStr}>` : `<${node.tag}>`;
-
-  if (node.children.length === 0 && !node.text) {
-    // Self-closing
-    return attrsStr ? `<${node.tag} ${attrsStr} />` : `<${node.tag} />`;
-  }
-
-  let inner = node.text;
-  for (const child of node.children) {
-    inner += serializeNode(child);
-  }
-
-  return `${openTag}${inner}</${node.tag}>`;
-}
-
-/**
  * Parses an MJML string into an intermediate tree of MjmlNodes.
  * Uses a raw-text tracking approach to correctly capture inner HTML content
  * for elements like mj-text and mj-raw.
@@ -102,6 +51,12 @@ function parseMjmlToTree(mjml: string): MjmlNode {
     'mj-all', 'mj-class', 'mj-font', 'mj-breakpoint',
   ]);
 
+  // HTML void elements: serialised without a closing tag inside raw content
+  const voidElements = new Set([
+    'area', 'base', 'br', 'col', 'embed', 'hr', 'img',
+    'input', 'link', 'meta', 'source', 'track', 'wbr',
+  ]);
+
   // Track raw content capture
   let rawCapture: { node: MjmlNode; depth: number } | null = null;
   let rawBuffer = '';
@@ -115,7 +70,7 @@ function parseMjmlToTree(mjml: string): MjmlNode {
           .map(([k, v]) => `${k}="${v}"`)
           .join(' ');
         rawBuffer += attrStr ? `<${name} ${attrStr}>` : `<${name}>`;
-        rawDepth++;
+        if (!voidElements.has(name)) rawDepth++;
         return;
       }
 
@@ -146,6 +101,7 @@ function parseMjmlToTree(mjml: string): MjmlNode {
     },
     onclosetag(name) {
       if (rawCapture) {
+        if (voidElements.has(name)) return;
         if (rawDepth > 0) {
           // Closing a nested tag inside raw content
           rawBuffer += `</${name}>`;

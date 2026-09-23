@@ -300,6 +300,12 @@ importers:
         specifier: ^9.1.0
         version: 9.1.0
     devDependencies:
+      '@lit-pigeon/renderer-mjml':
+        specifier: workspace:^
+        version: link:../renderer-mjml
+      mjml:
+        specifier: ^4.15.0
+        version: 4.18.0
       typescript:
         specifier: ^5.5.0
         version: 5.9.3
