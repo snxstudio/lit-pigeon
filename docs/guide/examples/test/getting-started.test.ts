@@ -20,8 +20,10 @@ afterEach(() => {
 describe('getting started: vanilla', () => {
   it('renders, reports changes and exports MJML and HTML', async () => {
     const page = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../src/getting-started/index.html'), 'utf8');
-    const body = /<body>([\s\S]*)<\/body>/.exec(page)![1].replace(/<script[\s\S]*?<\/script>/g, '');
-    document.body.innerHTML = body;
+    // Use the page's markup, minus its module script (the test imports main.ts itself).
+    const parsed = new DOMParser().parseFromString(page, 'text/html');
+    parsed.querySelectorAll('script').forEach((script) => script.remove());
+    document.body.innerHTML = parsed.body.innerHTML;
     const { save, lastChange } = await import('../src/getting-started/main.js');
     const editor = await findEditor();
     editor.loadDocument(starter());
