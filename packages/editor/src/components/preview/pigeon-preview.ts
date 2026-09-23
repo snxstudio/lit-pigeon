@@ -333,6 +333,7 @@ export class PigeonPreview extends LitElement {
         return html`
           <iframe
             style="width: ${this._device === 'mobile' ? '375px' : '100%'}; height: 100%;"
+            sandbox="allow-popups allow-popups-to-escape-sandbox"
             srcdoc=${this._htmlContent}
           ></iframe>
         `;
