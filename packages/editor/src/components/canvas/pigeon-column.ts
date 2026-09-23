@@ -20,6 +20,7 @@ import '../blocks/social-block.js';
 import '../blocks/html-block.js';
 import '../blocks/hero-block.js';
 import '../blocks/navbar-block.js';
+import { sanitizeCanvasHTML } from '../blocks/canvas-html.js';
 
 @customElement('pigeon-column')
 export class PigeonColumn extends LitElement {
@@ -264,7 +265,7 @@ export class PigeonColumn extends LitElement {
     const def = getBlockDefinition(block.type);
     const registered = block as unknown as RegisteredBlock;
     const inner = def?.renderCanvas
-      ? unsafeHTML(def.renderCanvas(registered))
+      ? unsafeHTML(sanitizeCanvasHTML(def.renderCanvas(registered)))
       : html`<span class="custom-block__label"
           >${def?.label ?? block.type}</span
         >`;

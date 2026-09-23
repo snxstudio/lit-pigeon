@@ -3,6 +3,7 @@ import { customElement, property } from 'lit/decorators.js';
 import type { TextBlock } from '@lit-pigeon/core';
 import type { Editor } from '@tiptap/core';
 import { loadRichTextEditor } from '../../rich-text/loader.js';
+import { sanitizeCanvasHTML } from './canvas-html.js';
 
 @customElement('pigeon-text-block')
 export class PigeonTextBlock extends LitElement {
@@ -74,7 +75,7 @@ export class PigeonTextBlock extends LitElement {
       >
         ${this.editing
           ? html`<div class="content" style="${textStyle}"></div>`
-          : html`<div class="content" style="${textStyle}" .innerHTML=${v.content}></div>`}
+          : html`<div class="content" style="${textStyle}" .innerHTML=${sanitizeCanvasHTML(v.content)}></div>`}
       </div>
     `;
   }
