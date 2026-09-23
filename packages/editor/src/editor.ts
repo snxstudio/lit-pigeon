@@ -257,7 +257,8 @@ export class PigeonEditor extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     configureI18n(this.config.locale, this.config.messages);
-    this._initState();
+    // Hosts move the element (dialogs, tabs); a re-attach must not reset the document.
+    if (!this._state) this._initState();
     this._applyDir();
     this._resolveBrandKit();
     this._applyTheme();
