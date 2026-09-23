@@ -77,6 +77,13 @@
     "gzip": true
   },
   {
+    "name": "@lit-pigeon/thumbnail (ESM, excluding playwright + workspace deps)",
+    "path": "packages/thumbnail/dist/index.js",
+    "ignore": ["playwright-core", "@lit-pigeon/core", "@lit-pigeon/ssr"],
+    "limit": "2 kB",
+    "gzip": true
+  },
+  {
     "name": "@lit-pigeon/rest (ESM, excluding node:http + workspace deps)",
     "path": "packages/rest/dist/index.js",
     "ignore": ["node:http", "@lit-pigeon/core", "@lit-pigeon/ssr", "@lit-pigeon/lint"],

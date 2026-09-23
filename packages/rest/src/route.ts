@@ -28,6 +28,21 @@ export interface JsonResponse {
   contentType?: string;
 }
 
+/**
+ * Rasterises a document to a preview image. Structural on purpose, so this
+ * package does not depend on `@lit-pigeon/thumbnail` (and through it on a
+ * headless browser) to serve every other route — `renderThumbnail` from that
+ * package satisfies it.
+ *
+ * Only the render options common to every endpoint are named here; the
+ * request's `options` object is forwarded whole, so thumbnail-specific keys
+ * such as `width` or `timeoutMs` reach the renderer untouched.
+ */
+export type ThumbnailRenderer = (
+  doc: PigeonDocument,
+  options: RenderDocumentOptions,
+) => Promise<{ thumbnail: string; width: number; height: number }>;
+
 export interface RouteContext {
   /**
    * When set, the request must include a matching `Authorization: Bearer <token>`
@@ -38,6 +53,8 @@ export interface RouteContext {
   brandKitStorage?: BrandKitStorage;
   /** Optional persistence for assets. Endpoints return 503 when unset. */
   assetStorage?: AssetStorage;
+  /** Optional thumbnail rasteriser. `/render/thumbnail` returns 503 when unset. */
+  thumbnailRenderer?: ThumbnailRenderer;
 }
 
 /**
@@ -73,6 +90,8 @@ export async function handleRequest(req: JsonRequest, ctx: RouteContext = {}): P
       return handleRender(req.body);
     case '/render/mjml':
       return handleRenderMjml(req.body);
+    case '/render/thumbnail':
+      return handleRenderThumbnail(req.body, ctx);
     case '/validate':
       return handleValidate(req.body);
     case '/parse':
@@ -106,6 +125,29 @@ async function handleRenderMjml(body: unknown): Promise<JsonResponse> {
     outlookWorkarounds: parsed.options.outlookWorkarounds,
   });
   return { status: 200, body: mjml, contentType: 'text/plain; charset=utf-8' };
+}
+
+async function handleRenderThumbnail(body: unknown, ctx: RouteContext): Promise<JsonResponse> {
+  if (!ctx.thumbnailRenderer) {
+    return json(503, {
+      error:
+        'Thumbnail rendering is not configured on this server. Install `@lit-pigeon/thumbnail` ' +
+        'and construct the handler with `thumbnailRenderer` to enable this endpoint.',
+    });
+  }
+  const parsed = readDocAndOptions(body);
+  if ('error' in parsed) return json(400, { error: parsed.error });
+  const v = validateDocumentSafe(parsed.document);
+  if (!v.valid) return json(400, { error: 'Invalid document', validationErrors: v.errors });
+  try {
+    return json(200, await ctx.thumbnailRenderer(parsed.document, parsed.options));
+  } catch (err) {
+    // A missing browser or a blown time budget is the server's configuration
+    // failing, not the caller's document — keep 503 distinct from a 500.
+    const code = (err as { code?: unknown }).code;
+    const status = code === 'BROWSER_UNAVAILABLE' || code === 'THUMBNAIL_TIMEOUT' ? 503 : 500;
+    return json(status, { error: errorMessage(err) });
+  }
 }
 
 async function handleValidate(body: unknown): Promise<JsonResponse> {

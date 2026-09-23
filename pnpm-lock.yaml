@@ -454,6 +454,28 @@ importers:
         specifier: ^3.0.0
         version: 3.2.7(@types/node@26.3.0)(happy-dom@20.11.6)(less@4.9.1)(sass@1.105.0)
 
+  packages/thumbnail:
+    dependencies:
+      '@lit-pigeon/core':
+        specifier: workspace:^
+        version: link:../core
+      '@lit-pigeon/ssr':
+        specifier: workspace:^
+        version: link:../ssr
+    devDependencies:
+      '@types/node':
+        specifier: ^25.9.1
+        version: 25.9.5
+      playwright-core:
+        specifier: ^1.63.0
+        version: 1.63.0
+      typescript:
+        specifier: ^5.5.0
+        version: 5.9.3
+      vitest:
+        specifier: ^3.0.0
+        version: 3.2.7(@types/node@25.9.5)(happy-dom@20.11.6)(less@4.9.1)(sass@1.105.0)
+
   packages/vue:
     dependencies:
       '@lit-pigeon/core':
@@ -3437,6 +3459,11 @@ packages:
 
   pkg-types@2.3.1:
     resolution: {integrity: sha512-y+ichcgc2LrADuhLNAx8DFjVfgz91pRxfZdI3UDhxHvcVEZsenLO+7XaU5vOp0u/7V/wZ+plyuQxtrDlZJ+yeg==}
+
+  playwright-core@1.63.0:
+    resolution: {integrity: sha512-rYCsBF/M5HjUch52bbtVONEFjv6Xu8sm8h72dNlR5bzIE1fvC/bxgspzkjSfU+MweEMmPM8KJebG6nnyxo5mCg==}
+    engines: {node: '>=20'}
+    hasBin: true
 
   postcss@8.5.26:
     resolution: {integrity: sha512-u82N74LFzG8ca+dD8puPnplTXoGH4fTPpVGuIbt36G3qvNlkvfD0lEAZSxaly3KX8TS/L1A1gsCEmvKmBcVbkQ==}
@@ -7301,6 +7328,8 @@ snapshots:
       confbox: 0.2.4
       exsolve: 1.1.1
       pathe: 2.0.3
+
+  playwright-core@1.63.0: {}
 
   postcss@8.5.26:
     dependencies:

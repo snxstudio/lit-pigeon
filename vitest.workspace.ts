@@ -8,6 +8,7 @@ export default defineWorkspace([
   'packages/editor',
   'packages/ssr',
   'packages/rest',
+  'packages/thumbnail',
   'packages/blocks',
   'packages/lint',
   'packages/figma-import',

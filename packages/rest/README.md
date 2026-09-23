@@ -40,13 +40,19 @@ npx lit-pigeon-rest        # honours PORT / HOST / LIT_PIGEON_REST_TOKEN
 
 ### Endpoints
 
-`GET /health`, plus POST `/render`, `/render/mjml`, `/validate`, `/parse`,
-`/lint`, and `/lint/async`. Each POST takes `{ document, options? }` JSON. A
-lower-level pure router, `handleRequest(jsonRequest, ctx)`, is also exported for
-custom transports.
+`GET /health`, plus POST `/render`, `/render/mjml`, `/render/thumbnail`,
+`/validate`, `/parse`, `/lint`, and `/lint/async`. Each POST takes
+`{ document, options? }` JSON. A lower-level pure router,
+`handleRequest(jsonRequest, ctx)`, is also exported for custom transports.
 
 Rendering, parsing, and linting are powered by [`@lit-pigeon/ssr`](../ssr) and
 [`@lit-pigeon/lint`](../lint).
+
+`/render/thumbnail` needs a rasteriser injected, so this package pulls in no
+headless browser to serve everything else. Pass `thumbnailRenderer:
+renderThumbnail` from [`@lit-pigeon/thumbnail`](../thumbnail) to enable it; left
+unset, the endpoint answers 503, as the brand-kit and asset routes do when their
+storage is unconfigured.
 
 Part of [Lit Pigeon](https://github.com/snxstudio/lit-pigeon) — open-source drag-and-drop email editor.
 
