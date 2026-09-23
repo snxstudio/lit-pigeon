@@ -2,14 +2,18 @@ import { Editor } from '@tiptap/core';
 import { buildBaseExtensions } from './extensions/base.js';
 import { sanitizeHTML } from './serialization.js';
 import { preprocessForEditor } from './preprocess.js';
+import { holdRawFragments, RawStore } from './raw-html.js';
 import { richTextController } from './controller.js';
 import type { CreateEditorOptions } from './types.js';
 
 export function createEditor(opts: CreateEditorOptions): Editor {
+  // Email scaffolding the schema cannot hold (comments, tables, images,
+  // wrapper attributes) is parked here for the lifetime of this editor.
+  const store = new RawStore();
   const editor: Editor = new Editor({
     element: opts.element,
-    extensions: buildBaseExtensions(),
-    content: preprocessForEditor(opts.initialHTML || '<p></p>'),
+    extensions: buildBaseExtensions(store),
+    content: preprocessForEditor(holdRawFragments(opts.initialHTML || '<p></p>', store)),
     autofocus: 'end',
     editorProps: {
       handleKeyDown: (_view, event) => {
@@ -30,7 +34,7 @@ export function createEditor(opts: CreateEditorOptions): Editor {
   const initial = editor.getHTML();
   const commitHTML = () => {
     const html = editor.getHTML();
-    return html === initial ? opts.initialHTML : sanitizeHTML(html);
+    return html === initial ? opts.initialHTML : sanitizeHTML(html, store);
   };
 
   editor.on('focus', ({ editor: e }) => richTextController.setActive(e));
@@ -45,7 +49,7 @@ export function createEditor(opts: CreateEditorOptions): Editor {
   });
   editor.on('destroy', () => richTextController.clearIfActive(editor));
   if (opts.onUpdate) {
-    editor.on('update', ({ editor: e }) => opts.onUpdate!(sanitizeHTML(e.getHTML())));
+    editor.on('update', ({ editor: e }) => opts.onUpdate!(sanitizeHTML(e.getHTML(), store)));
   }
   // Register immediately — autofocus may not fire a separate focus event in some test envs.
   richTextController.setActive(editor);
