@@ -363,6 +363,12 @@ export class PigeonToolbar extends LitElement {
 
   private _toggleExportMenu() {
     this._exportMenuOpen = !this._exportMenuOpen;
+    if (this._exportMenuOpen) {
+      this.dispatchEvent(new CustomEvent('toolbar-export', {
+        bubbles: true,
+        composed: true,
+      }));
+    }
   }
 
   private _onExportHtml() {
