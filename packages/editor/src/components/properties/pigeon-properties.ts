@@ -26,6 +26,7 @@ import './panels/spacer-panel.js';
 import './panels/social-panel.js';
 import './panels/html-panel.js';
 import './panels/custom-panel.js';
+import './controls/block-condition.js';
 
 @customElement('pigeon-properties')
 export class PigeonProperties extends LitElement {
@@ -186,6 +187,7 @@ export class PigeonProperties extends LitElement {
           <div class="panel-wrapper" part="panel">
             ${this._renderBreadcrumb(this.selection.rowId, this.selection.columnId, this._blockLabel(block))}
             ${this._renderBlockPanel(block, this.selection.rowId, this.selection.columnId)}
+            <pigeon-block-condition .block=${block} .rowId=${this.selection.rowId} .columnId=${this.selection.columnId}></pigeon-block-condition>
           </div>
         `;
       }

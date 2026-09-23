@@ -21,14 +21,16 @@ export function parseBody(bodyNode: MjmlNode, warnings: ParseWarning[]): BodyDat
 
   const rows: RowNode[] = [];
 
-  // Tracks a `{{#if …}}` display condition emitted as an mj-raw marker before
+  // Tracks `{{#if …}}` display conditions emitted as mj-raw markers before
   // a section, applied to the next parsed row to round-trip conditional rows.
-  let pendingCondition: string | undefined;
+  // A hero row can carry two: the row's, then the hero block's.
+  let pendingConditions: string[] = [];
   const applyCondition = (row: RowNode): RowNode => {
-    if (pendingCondition) {
-      row.attributes.condition = pendingCondition;
-      pendingCondition = undefined;
-    }
+    const [rowCondition, blockCondition] = pendingConditions;
+    if (rowCondition) row.attributes.condition = rowCondition;
+    const [block] = row.columns[0]?.blocks ?? [];
+    if (blockCondition && block?.type === 'hero') block.values.condition = blockCondition;
+    pendingConditions = [];
     return row;
   };
 
@@ -38,7 +40,7 @@ export function parseBody(bodyNode: MjmlNode, warnings: ParseWarning[]): BodyDat
         // Detect the conditional wrappers the renderer emits. Opening markers
         // arm a condition for the following section; closing markers are noise.
         const match = /\{\{#if\s+([^}]+?)\s*\}\}/.exec(child.text ?? '');
-        if (match) pendingCondition = match[1].trim();
+        if (match) pendingConditions.push(match[1].trim());
         break;
       }
       case 'mj-section':
