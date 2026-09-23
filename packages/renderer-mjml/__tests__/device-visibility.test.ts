@@ -9,6 +9,7 @@ import {
   type PigeonDocument,
 } from '@lit-pigeon/core';
 import { documentToMjml } from '../src/index.js';
+import { withCssClass } from '../src/utils/visibility.js';
 
 function docWith(type: BlockType, values: Record<string, unknown>, columnAttrs: Record<string, unknown> = {}): PigeonDocument {
   const doc = createDefaultDocument('Visibility');
@@ -67,5 +68,18 @@ describe('device visibility in MJML', () => {
     expect(html).toMatch(/class="[^"]*pigeon-hide-desktop/);
     expect(html).toContain('pigeon-hide-desktop-outlook');
     expect(html).toContain('@media only screen and (max-width:479px)');
+  });
+
+  it('adds the class in linear time on markup built from repeated dashes', () => {
+    const markup = `<mj-${'-'.repeat(50_000)}`;
+    const start = performance.now();
+    expect(withCssClass(markup, 'pigeon-hide-mobile')).toBe(markup);
+    expect(withCssClass(`${markup}>`, 'x')).toBe(`${markup} css-class="x">`);
+    expect(performance.now() - start).toBeLessThan(100);
+  });
+
+  it('keeps self-closing tags well formed', () => {
+    expect(withCssClass('<mj-image src="a.png" />', 'x')).toBe('<mj-image src="a.png" css-class="x" />');
+    expect(withCssClass('<mj-raw><div>x</div></mj-raw>', 'x')).toBe('<mj-raw><div>x</div></mj-raw>');
   });
 });

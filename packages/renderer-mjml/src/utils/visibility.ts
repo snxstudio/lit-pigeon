@@ -12,10 +12,11 @@ export function visibilityClass(v: DeviceVisibility): string {
  * unchanged.
  */
 export function withCssClass(markup: string, cls: string): string {
-  if (!cls) return markup;
-  return markup.replace(/^\s*<mj-(?!raw\b)[\w-]+[^>]*?(?=\/?>)/, (tag) =>
-    / css-class="/.test(tag) ? tag.replace(/( css-class="[^"]*)/, `$1 ${cls}`) : `${tag} css-class="${cls}"`,
-  );
+  const open = cls && /^\s*<mj-([\w-]+)/.exec(markup);
+  const end = open && open[1] !== 'raw' ? markup.search(/ ?\/?>/) : -1;
+  if (end < 0) return markup;
+  const tag = markup.slice(0, end);
+  return (tag.includes(' css-class="') ? tag.replace(/( css-class="[^"]*)/, `$1 ${cls}`) : `${tag} css-class="${cls}"`) + markup.slice(end);
 }
 
 /**
