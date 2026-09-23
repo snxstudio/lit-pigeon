@@ -72,6 +72,11 @@ export function parseBody(bodyNode: MjmlNode, warnings: ParseWarning[]): BodyDat
         break;
       }
       case 'mj-wrapper':
+        warnings.push({
+          message:
+            'mj-wrapper styling (padding, background-color) was dropped: the document model has no wrapper; its sections were imported unwrapped',
+          tag: 'mj-wrapper',
+        });
         // Treat wrapper children as normal sections
         for (const wrapperChild of child.children) {
           if (wrapperChild.tag === 'mj-section') {

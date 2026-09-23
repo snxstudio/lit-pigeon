@@ -18,6 +18,7 @@ export function parseImageBlock(attrs: Record<string, string>): ImageBlock {
       padding: parseSpacing(getAttr(attrs, 'padding'), 10),
       alignment: (getAttr(attrs, 'align', 'center') as 'left' | 'center' | 'right'),
       borderRadius: getNumericAttr(attrs, 'border-radius', 0),
+      cssClass: getAttr(attrs, 'css-class') || undefined,
     },
   };
 }
