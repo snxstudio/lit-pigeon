@@ -57,20 +57,35 @@ function parseMjmlToTree(mjml: string): MjmlNode {
     'input', 'link', 'meta', 'source', 'track', 'wbr',
   ]);
 
+  // Raw tags holding HTML; the others (preview, social and navbar labels) hold plain text
+  const htmlContentTags = new Set(['mj-text', 'mj-button', 'mj-raw']);
+
+  // Elements whose text htmlparser2 leaves undecoded, so it must not be re-escaped
+  const rawTextElements = new Set(['style', 'script']);
+
+  // htmlparser2 decodes entities; re-escape so captured HTML means what the source meant
+  const escapeText = (text: string) =>
+    text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const escapeAttr = (value: string) =>
+    value.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+
   // Track raw content capture
   let rawCapture: { node: MjmlNode; depth: number } | null = null;
   let rawBuffer = '';
   let rawDepth = 0;
+  let inRawTextElement = false;
 
   const parser = new Parser({
     onopentag(name, attrs) {
       if (rawCapture) {
         // We're inside a raw content tag - accumulate as HTML string
+        const isHtml = htmlContentTags.has(rawCapture.node.tag);
         const attrStr = Object.entries(attrs)
-          .map(([k, v]) => `${k}="${v}"`)
+          .map(([k, v]) => `${k}="${isHtml ? escapeAttr(v) : v}"`)
           .join(' ');
         rawBuffer += attrStr ? `<${name} ${attrStr}>` : `<${name}>`;
         if (!voidElements.has(name)) rawDepth++;
+        if (rawTextElements.has(name)) inRawTextElement = true;
         return;
       }
 
@@ -93,7 +108,8 @@ function parseMjmlToTree(mjml: string): MjmlNode {
     },
     ontext(text) {
       if (rawCapture) {
-        rawBuffer += text;
+        const escape = htmlContentTags.has(rawCapture.node.tag) && !inRawTextElement;
+        rawBuffer += escape ? escapeText(text) : text;
         return;
       }
       const current = stack[stack.length - 1];
@@ -106,6 +122,7 @@ function parseMjmlToTree(mjml: string): MjmlNode {
           // Closing a nested tag inside raw content
           rawBuffer += `</${name}>`;
           rawDepth--;
+          if (rawTextElements.has(name)) inRawTextElement = false;
           return;
         }
         // Closing the raw content tag itself
