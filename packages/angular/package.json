@@ -1,6 +1,6 @@
 {
   "name": "@lit-pigeon/angular",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "description": "Angular wrapper for the Pigeon email editor web component",
   "scripts": {
     "build": "ng-packagr -p ng-package.json -c tsconfig.lib.json",
