@@ -12,6 +12,7 @@ export function parseTextBlock(attrs: Record<string, string>, innerHtml: string)
       padding: parseSpacing(getAttr(attrs, 'padding'), 10),
       lineHeight: getAttr(attrs, 'line-height', '1.5'),
       textAlign: (getAttr(attrs, 'align', 'left') as 'left' | 'center' | 'right'),
+      cssClass: getAttr(attrs, 'css-class') || undefined,
     },
   };
 }

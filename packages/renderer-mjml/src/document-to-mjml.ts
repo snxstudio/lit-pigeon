@@ -68,7 +68,7 @@ function renderCustomBlock(block: ContentBlock): string {
  * @param widthPercent - The column width as a percentage string (e.g., "50%")
  */
 function renderColumn(column: ColumnNode, widthPercent: string): string {
-  const { backgroundColor, padding, borderRadius, verticalAlign } = column.attributes;
+  const { backgroundColor, padding, borderRadius, verticalAlign, cssClass } = column.attributes;
 
   const attrs: string[] = [
     `width="${widthPercent}"`,
@@ -82,6 +82,10 @@ function renderColumn(column: ColumnNode, widthPercent: string): string {
 
   if (borderRadius !== undefined && borderRadius > 0) {
     attrs.push(`border-radius="${borderRadius}px"`);
+  }
+
+  if (cssClass) {
+    attrs.push(`css-class="${escapeAttr(cssClass)}"`);
   }
 
   const blocksMarkup = column.blocks.map((block) => `      ${renderBlock(block)}`).join('\n');
@@ -109,7 +113,7 @@ function renderRow(row: RowNode): string {
     );
   }
 
-  const { backgroundColor, backgroundImage, padding, fullWidth } = row.attributes;
+  const { backgroundColor, backgroundImage, padding, fullWidth, cssClass } = row.attributes;
 
   const attrs: string[] = [
     `padding="${spacingToMjml(padding)}"`,
@@ -127,6 +131,10 @@ function renderRow(row: RowNode): string {
     attrs.push(`background-url="${escapeAttr(backgroundImage)}"`);
     attrs.push('background-size="cover"');
     attrs.push('background-repeat="no-repeat"');
+  }
+
+  if (cssClass) {
+    attrs.push(`css-class="${escapeAttr(cssClass)}"`);
   }
 
   // Calculate column width percentages from ratios
@@ -252,7 +260,7 @@ function renderFontTags(fonts: FontDefinition[]): string {
  * - <mj-preview> for preview text
  */
 function renderHead(doc: PigeonDocument, options: Required<DocumentToMjmlOptions>): string {
-  const { fontFamily } = doc.body.attributes;
+  const { fontFamily, css } = doc.body.attributes;
   const previewText = doc.metadata.previewText;
 
   const headParts: string[] = [];
@@ -273,6 +281,13 @@ function renderHead(doc: PigeonDocument, options: Required<DocumentToMjmlOptions
       <mj-text font-size="14px" line-height="1.5" />
       <mj-button font-size="14px" />
     </mj-attributes>`);
+
+  if (css) {
+    // A literal </mj-style would end the element early; <\/ means the same in CSS
+    headParts.push(`    <mj-style>
+${css.replace(/<\/mj-style/gi, '<\\/mj-style')}
+    </mj-style>`);
+  }
 
   // Preview text
   if (previewText) {

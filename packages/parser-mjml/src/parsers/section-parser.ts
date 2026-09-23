@@ -58,6 +58,7 @@ export function parseSection(sectionNode: MjmlNode, warnings: ParseWarning[]): R
       backgroundImage: getAttr(attrs, 'background-url') || undefined,
       padding: parseSpacing(getAttr(attrs, 'padding'), 0),
       fullWidth: isFullWidth,
+      cssClass: getAttr(attrs, 'css-class') || undefined,
     },
     columns,
     columnRatios,
