@@ -63,3 +63,6 @@ export { setDragData, getDragData, clearDragData, writeDragTransfer, readDragTra
 export type { DragData, DragItemType } from './dnd/drag-manager.js';
 export { calculateRowDropIndex, calculateBlockDropIndex } from './dnd/drop-zones.js';
 export type { DropTarget } from './dnd/drop-zones.js';
+
+// Locales
+export { loadLocale, BUILT_IN_LOCALES } from './i18n/index.js';
