@@ -792,9 +792,13 @@ export class PigeonEditor extends LitElement {
     }
   }
 
-  private _handleExportHtml() {
+  private async _handleExportHtml(e: Event) {
+    // The toolbar's own event is composed and would reach the host without html.
+    e.stopPropagation();
+    const document = this._state.doc;
+    const html = await this.exportHtml();
     this.dispatchEvent(new CustomEvent('pigeon:export-html', {
-      detail: { document: this._state.doc },
+      detail: { document, html },
       bubbles: true,
       composed: true,
     }));
