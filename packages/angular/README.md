@@ -11,7 +11,8 @@ idiomatic Angular `@Input()`s and `@Output()`s.
 npm install @lit-pigeon/angular
 ```
 
-Requires `@angular/core` >= 17 as a peer dependency.
+Requires `@angular/core` >= 22 as a peer dependency. The package is compiled
+with ng-packagr in partial (Ivy) mode, so it works in AOT production builds.
 
 ## Usage
 
