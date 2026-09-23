@@ -24,6 +24,9 @@ export class PigeonTextPanel extends LitElement {
   @property({ type: Array })
   mergeTags: MergeTag[] = [];
 
+  @property({ attribute: false })
+  requestMergeTags = false;
+
   @state() private _pickerOpen = false;
   @state() private _pickerX = 0;
   @state() private _pickerY = 0;
@@ -88,7 +91,7 @@ export class PigeonTextPanel extends LitElement {
       <div class="field">
         <div class="label-row">
           <label>${t('panel.common.contentHtml')}</label>
-          ${hasTags ? html`
+          ${hasTags || this.requestMergeTags ? html`
             <button class="tag-btn" ${ref(this._triggerRef)} @click=${this._togglePicker} title=${t('panel.common.insertMergeTag')}>
               ${t('panel.common.tagBtn')}
             </button>
@@ -139,6 +142,10 @@ export class PigeonTextPanel extends LitElement {
   }
 
   private _togglePicker() {
+    if (!this.mergeTags.length) {
+      this.dispatchEvent(new CustomEvent('merge-tag-request', { bubbles: true, composed: true }));
+      return;
+    }
     const trigger = this._triggerRef.value;
     if (!trigger) return;
     if (!this._pickerOpen) {

@@ -102,11 +102,12 @@ function slugify(input: string): string {
  * @fires pigeon:select - Fired when the selection changes
  * @fires pigeon:ready  - Fired once after the editor has initialised
  * @fires pigeon:preview - Fired when the user clicks Preview in the toolbar
- * @fires pigeon:export  - Fired when the user clicks Export in the toolbar
+ * @fires pigeon:export  - Fired when the user opens the Export menu in the toolbar
  * @fires pigeon:export-json - Fired for JSON export
  * @fires pigeon:export-mjml - Fired for MJML export
  * @fires pigeon:export-html - Fired for HTML export
- * @fires pigeon:merge-tag-request - Fired when merge tag trigger detected but no static tags
+ * @fires pigeon:merge-tag-request - Fired when the user clicks a Tag button while
+ *   `config.mergeTags` is set without static `tags`; answer with `setMergeTags()`
  *
  * @csspart toolbar - The toolbar area
  * @csspart palette - The left palette area
@@ -415,6 +416,7 @@ export class PigeonEditor extends LitElement {
         @toolbar-device=${this._handleDevice}
         @toolbar-fullscreen=${this._handleFullscreen}
         @toolbar-templates=${this._handleTemplatesOpen}
+        @toolbar-export=${this._handleExport}
         @pigeon:preview=${this._handlePreview}
         @pigeon:export-html=${this._handleExportHtml}
         @pigeon:export-mjml=${this._handleExportMjml}
@@ -471,6 +473,7 @@ export class PigeonEditor extends LitElement {
           .doc=${doc}
           .selection=${sel}
           .mergeTags=${this.config.mergeTags?.tags ?? []}
+          .requestMergeTags=${!!this.config.mergeTags && !this.config.mergeTags.tags?.length}
           .assetManagerConfig=${this.config.assetManager ?? {}}
           .assetStorage=${this.assetStorage ?? this.config.assetStorage}
           .brandKit=${this._activeBrandKit}
@@ -482,6 +485,7 @@ export class PigeonEditor extends LitElement {
           @body-property-change=${this._handleBodyPropertyChange}
           @row-select=${this._handleRowSelect}
           @column-select=${this._handleColumnSelect}
+          @merge-tag-request=${this._handleMergeTagRequest}
         ></pigeon-properties>
       </div>
 
@@ -790,6 +794,20 @@ export class PigeonEditor extends LitElement {
         composed: true,
       }));
     }
+  }
+
+  private _handleExport() {
+    this.dispatchEvent(new CustomEvent('pigeon:export', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  private _handleMergeTagRequest() {
+    this.dispatchEvent(new CustomEvent('pigeon:merge-tag-request', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   private _handleExportHtml() {

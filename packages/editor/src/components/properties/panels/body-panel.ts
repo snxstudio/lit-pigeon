@@ -18,6 +18,9 @@ export class PigeonBodyPanel extends LitElement {
   mergeTags: MergeTag[] = [];
 
   @property({ attribute: false })
+  requestMergeTags = false;
+
+  @property({ attribute: false })
   swatches: BrandColor[] = [];
 
   @property({ attribute: false })
@@ -161,7 +164,7 @@ export class PigeonBodyPanel extends LitElement {
       <div class="field">
         <div class="label-row">
           <label>${t('panel.body.previewText')}</label>
-          ${this.mergeTags.length > 0 ? html`
+          ${this.mergeTags.length > 0 || this.requestMergeTags ? html`
             <button class="tag-btn" ${ref(this._triggerRef)} @click=${this._togglePicker} title=${t('panel.common.insertMergeTag')}>
               ${t('panel.common.tagBtn')}
             </button>
@@ -189,6 +192,10 @@ export class PigeonBodyPanel extends LitElement {
   }
 
   private _togglePicker() {
+    if (!this.mergeTags.length) {
+      this.dispatchEvent(new CustomEvent('merge-tag-request', { bubbles: true, composed: true }));
+      return;
+    }
     const trigger = this._triggerRef.value;
     if (!trigger) return;
     if (!this._pickerOpen) {
