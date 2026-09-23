@@ -4,6 +4,9 @@ export { MjmlRenderer } from './mjml-renderer.js';
 // Document-to-MJML conversion
 export { documentToMjml } from './document-to-mjml.js';
 
+// Document-to-plain-text conversion (the text/plain alternative part)
+export { documentToPlainText } from './document-to-plain-text.js';
+
 // Individual block renderers
 export { renderTextBlock } from './block-renderers/text.js';
 export { renderImageBlock } from './block-renderers/image.js';
