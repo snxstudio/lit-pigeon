@@ -1,11 +1,8 @@
 import type { LinkStyle } from '../types/document.js';
+import { generatedStyleMarker, generatedStyleName } from './generated-style.js';
 
-/**
- * Marks the `<mj-style>` block the renderer generates for `linkStyle`, so the
- * parser can lift it back into the document instead of collecting it as
- * hand-written CSS in `body.attributes.css`.
- */
-export const LINK_STYLE_MARKER = '/* pigeon-link-style */';
+/** The name this block carries in its generated-style marker. */
+export const LINK_STYLE_NAME = 'link-style';
 
 /** The selector the rule is written under, and matched back out by. */
 const LINK_SELECTOR = 'a, a:visited';
@@ -26,7 +23,7 @@ export function linkStyleToCss(style: LinkStyle): string | undefined {
   ].filter(Boolean);
   if (!declarations.length) return undefined;
 
-  return `${LINK_STYLE_MARKER}
+  return `${generatedStyleMarker(LINK_STYLE_NAME)}
 ${LINK_SELECTOR} { ${declarations.join(' ')} }
 a[x-apple-data-detectors] { color: inherit !important; text-decoration: inherit !important; }`;
 }
@@ -36,7 +33,7 @@ a[x-apple-data-detectors] { color: inherit !important; text-decoration: inherit 
  * that is not our own generated block, so hand-written CSS is left alone.
  */
 export function cssToLinkStyle(css: string): LinkStyle | undefined {
-  if (!css.trimStart().startsWith(LINK_STYLE_MARKER)) return undefined;
+  if (generatedStyleName(css) !== LINK_STYLE_NAME) return undefined;
 
   const rule = new RegExp(`${LINK_SELECTOR}\\s*\\{([^}]*)\\}`).exec(css)?.[1] ?? '';
   const color = /(?:^|;|\s)color:\s*([^;]+)/.exec(rule)?.[1].trim();

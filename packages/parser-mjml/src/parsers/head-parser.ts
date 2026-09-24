@@ -1,5 +1,5 @@
 import type { LinkStyle } from '@lit-pigeon/core';
-import { cssToLinkStyle } from '@lit-pigeon/core';
+import { LINK_STYLE_NAME, cssToLinkStyle, generatedStyleName } from '@lit-pigeon/core';
 import type { ParseWarning } from '../mjml-to-document.js';
 import type { AttributeDefaults } from '../utils/resolve-attributes.js';
 
@@ -49,11 +49,13 @@ export function parseHead(headChildren: HeadNode[], _warnings: ParseWarning[]): 
       case 'mj-style': {
         // Inline styles are applied by MJML at compile time and have no place in the document
         if (child.attrs.inline === 'inline' || !child.text.trim()) break;
-        // Our own generated link rule goes back to linkStyle rather than being
-        // handed to the user as CSS they never wrote.
-        const linkStyle = cssToLinkStyle(child.text);
-        if (linkStyle) result.linkStyle = linkStyle;
-        else styles.push(child.text.trim());
+        // A block the renderer generated is not the user's CSS: collecting it
+        // would hand it back as if they had written it, and the next export
+        // would emit it twice. Whatever the document can hold goes back to the
+        // field it came from; the rest is regenerated on export anyway.
+        const generated = generatedStyleName(child.text);
+        if (generated === LINK_STYLE_NAME) result.linkStyle = cssToLinkStyle(child.text);
+        else if (!generated) styles.push(child.text.trim());
         break;
       }
       default:
