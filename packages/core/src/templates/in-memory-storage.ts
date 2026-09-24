@@ -1,8 +1,11 @@
 import type { Template, TemplateStorage } from '../types/template.js';
-import { getStarterTemplates } from './starters.js';
+import { getStarterTemplates, loadGalleryTemplates } from './starters.js';
 
 export interface InMemoryTemplateStorageOptions {
-  /** When true (default), the storage is seeded with the built-in starter templates. */
+  /**
+   * When true (default), the storage is seeded with the built-in starter
+   * templates, and the lazily loaded gallery is merged in on first access.
+   */
   includeStarters?: boolean;
   /** Additional templates to seed alongside the starters. */
   seed?: Template[];
@@ -18,9 +21,12 @@ export interface InMemoryTemplateStorageOptions {
  */
 export class InMemoryTemplateStorage implements TemplateStorage {
   private readonly _byId = new Map<string, Template>();
+  private readonly _includeGallery: boolean;
+  private _gallery?: Promise<void>;
 
   constructor(opts: InMemoryTemplateStorageOptions = {}) {
-    if (opts.includeStarters !== false) {
+    this._includeGallery = opts.includeStarters !== false;
+    if (this._includeGallery) {
       for (const t of getStarterTemplates()) this._byId.set(t.id, t);
     }
     if (opts.seed) {
@@ -29,17 +35,20 @@ export class InMemoryTemplateStorage implements TemplateStorage {
   }
 
   async list(): Promise<Template[]> {
+    await this._ready();
     // Deep-clone on read so consumers can't mutate stored templates by reference.
     return Array.from(this._byId.values()).map((t) => structuredClone(t));
   }
 
   async get(id: string): Promise<Template | null> {
+    await this._ready();
     const t = this._byId.get(id);
     return t ? structuredClone(t) : null;
   }
 
   async save(template: Template): Promise<void> {
     if (!template.id) throw new Error('Template.id is required');
+    await this._ready();
     const clone = structuredClone(template);
     clone.updatedAt = new Date().toISOString();
     if (!this._byId.has(clone.id)) clone.createdAt = clone.updatedAt;
@@ -47,6 +56,16 @@ export class InMemoryTemplateStorage implements TemplateStorage {
   }
 
   async delete(id: string): Promise<void> {
+    await this._ready();
     this._byId.delete(id);
+  }
+
+  /** Merges the gallery once; seeded or saved templates with the same id win. */
+  private _ready(): Promise<void> {
+    if (!this._includeGallery) return Promise.resolve();
+    this._gallery ??= loadGalleryTemplates().then((templates) => {
+      for (const t of templates) if (!this._byId.has(t.id)) this._byId.set(t.id, t);
+    });
+    return this._gallery;
   }
 }
