@@ -34,7 +34,7 @@ export interface PigeonPlugin {
 
 The history plugin in [`packages/core/src/history/history-plugin.ts`](../../packages/core/src/history/history-plugin.ts) is the canonical example. It implements `name`, `init`, and `apply` — undo and redo are exported as commands that read history state through `state.plugins.get('history')`.
 
-Plugins are passed to `EditorState.create({ plugins })`. The editor shell (`<pigeon-editor>`) accepts additional plugins through its `config` property and always injects history if you don't supply it yourself.
+Plugins are passed to `EditorState.create({ plugins })`. The editor shell (`<pigeon-editor>`) accepts additional plugins through `config.plugins` and always injects history if you don't supply it yourself. It reads `config.plugins` when the element first connects and again on every `loadDocument()`, so set `config` before the element is added to the page. The shell does not register a plugin's `blocks` and has no API for running its `commands`; see [Custom blocks](../guide/custom-blocks.md).
 
 ---
 
@@ -68,7 +68,7 @@ When you read a block back from the document (e.g. from `doc.body.rows[…].colu
 
 ### 2. A `BlockDefinition` registered into the block registry
 
-The registry in [`packages/core/src/schema/block-registry.ts`](../../packages/core/src/schema/block-registry.ts) holds the metadata used by tooling (defaults factory, MCP `list_block_types`, palette enumeration when you wire one). Either register manually with `registerBlock(...)` or — preferred — return the definition from your plugin's `blocks` array. The plugin registry will register them for you.
+The registry in [`packages/core/src/schema/block-registry.ts`](../../packages/core/src/schema/block-registry.ts) holds the metadata used by the editor palette, `createBlock`, the canvas, the property panel and the MJML renderer. Register with `registerBlock(...)` before any `<pigeon-editor>` connects (the palette reads the registry when it connects). A plugin's `blocks` array is registered only when the plugin is added to a `PluginRegistry` (`new PluginRegistry().register(plugin)`); `<pigeon-editor>` does not do this for `config.plugins`.
 
 ```typescript
 import type { BlockDefinition } from '@lit-pigeon/core';
@@ -95,7 +95,7 @@ The editor ships per-block Lit components for both. Use the existing files as te
 - Canvas renderers: [`packages/editor/src/components/blocks/image-block.ts`](../../packages/editor/src/components/blocks/image-block.ts) and [`button-block.ts`](../../packages/editor/src/components/blocks/button-block.ts) — selected-outline styling and `block-select` dispatch live there.
 - Property panels: [`packages/editor/src/components/properties/panels/text-panel.ts`](../../packages/editor/src/components/properties/panels/text-panel.ts) and [`button-panel.ts`](../../packages/editor/src/components/properties/panels/button-panel.ts) — `property-change` event shape lives there.
 
-The pieces are reusable Lit elements; the limitation is wiring them into the canvas. See [Known gaps](#known-gaps).
+The editor does not render your own Lit components for custom blocks: the canvas shows the HTML from `BlockDefinition.renderCanvas`, and the property panel is generated from `propertySchema` (see [Known gaps](#known-gaps) and the [custom blocks guide](../guide/custom-blocks.md), which has a complete, tested example). The canvas component and property panel in the walk-through below are only useful in your own UI outside `<pigeon-editor>`.
 
 ---
 
@@ -365,17 +365,23 @@ const state = EditorState.create({
 });
 ```
 
-Or via the editor shell:
+Or via the editor shell. Register the block definition yourself (the shell does not register `plugin.blocks`), and set `config` before the element connects:
 
 ```html
-<pigeon-editor id="editor"></pigeon-editor>
 <script type="module">
   import '@lit-pigeon/editor';
+  import { registerBlock } from '@lit-pigeon/core';
   import { createQuotePlugin } from './quote-plugin.js';
-  const editor = document.querySelector('#editor');
+  import { quoteDefinition } from './quote-definition.js';
+
+  registerBlock(quoteDefinition);
+  const editor = document.createElement('pigeon-editor');
   editor.config = { plugins: [createQuotePlugin()] };
+  document.body.append(editor);
 </script>
 ```
+
+The plugin's `commands` are not reachable from `<pigeon-editor>`; call them against your own `EditorState`.
 
 ---
 
@@ -535,7 +541,7 @@ export function renderQuoteBlock(block: QuoteBlock): string {
 The block-registry tests in [`packages/core/__tests__/schema.test.ts`](../../packages/core/__tests__/schema.test.ts) are the template for verifying defaults and discoverability:
 
 ```typescript
-import { describe, it, expect } from 'vitest';
+import { beforeAll, describe, it, expect } from 'vitest';
 import { getBlockDefinition, isKnownBlockType, registerBlock } from '@lit-pigeon/core';
 import { quoteDefinition } from './quote-definition.js';
 

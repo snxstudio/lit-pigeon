@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Migrate from Unlayer — Lit Pigeon</title>
+  <meta name="description" content="Paste an Unlayer design JSON and open it in the Lit Pigeon editor. Runs in your browser; nothing is uploaded. See exactly what converts and what does not, then download MJML, HTML or JSON." />
+  <meta name="theme-color" content="#f7f1e5" />
+  <link rel="canonical" href="https://lit-pigeon.wearesnx.studio/migrate-from-unlayer/" />
+  <link rel="icon" type="image/png" href="../lit-pigeon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..700;1,9..144,500..700&family=Geist+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f7f1e5;
+      --paper-deep: #efe6d3;
+      --card: #fffdf8;
+      --ink: #242b32;
+      --ink-soft: #5d6672;
+      --line: rgba(36, 43, 50, 0.16);
+      --line-soft: rgba(36, 43, 50, 0.09);
+      --flame: #e8590c;
+      --flame-text: #b34a08;
+      --go: #2f7d4f;
+      --radius: 6px;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --serif: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+      --mono: 'Geist Mono', 'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    *:focus-visible {
+      outline: 2px solid var(--flame);
+      outline-offset: 2px;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    a { color: var(--ink-soft); text-decoration: none; }
+    a:hover { color: var(--ink); }
+
+    code { font-family: var(--mono); font-size: 0.92em; }
+
+    .airmail {
+      height: 8px;
+      background: repeating-linear-gradient(
+        -45deg,
+        var(--flame) 0 12px,
+        var(--paper) 12px 24px,
+        var(--ink) 24px 36px,
+        var(--paper) 36px 48px
+      );
+    }
+
+    .airmail--thin { height: 5px; opacity: 0.9; }
+
+    .nav {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .nav-logo {
+      font-family: var(--serif);
+      font-size: 19px;
+      font-weight: 600;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      list-style: none;
+    }
+
+    .nav-links a { font-size: 14px; font-weight: 500; }
+
+    .hero { padding: 56px 0 32px; }
+
+    .kicker {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--flame-text);
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    h1, h2 {
+      font-family: var(--serif);
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      line-height: 1.15;
+    }
+
+    h1 { font-size: clamp(32px, 4.4vw, 46px); margin-bottom: 14px; }
+    h1 em { font-style: italic; color: var(--flame-text); }
+    h2 { font-size: clamp(24px, 3vw, 30px); margin-bottom: 10px; }
+
+    .lede { max-width: 680px; color: var(--ink-soft); font-size: 17px; }
+
+    .privacy {
+      display: inline-flex;
+      gap: 8px;
+      margin-top: 18px;
+      padding: 8px 14px;
+      border: 1px dashed rgba(36, 43, 50, 0.35);
+      border-radius: var(--radius);
+      background: var(--card);
+      font-size: 14px;
+    }
+
+    .privacy strong { color: var(--go); }
+
+    .section { padding: 40px 0; border-top: 1px solid var(--line); }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+
+    .step-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .step-head h2 { margin: 0; }
+
+    textarea {
+      width: 100%;
+      min-height: 200px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 1.5;
+      resize: vertical;
+    }
+
+    textarea.dragging { border-color: var(--flame); border-style: dashed; }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--ink);
+      font: 600 14px var(--font);
+      cursor: pointer;
+    }
+
+    .btn:hover { border-color: var(--ink); }
+
+    .btn-primary {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: var(--paper);
+      box-shadow: 3px 3px 0 rgba(232, 89, 12, 0.85);
+    }
+
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    select {
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--card);
+      color: var(--ink);
+      font: 14px var(--font);
+      max-width: 100%;
+    }
+
+    .status { font-size: 14px; color: var(--ink-soft); }
+    .status.ok { color: var(--go); }
+    .status.error { color: var(--flame-text); }
+
+    .warnings { margin-top: 16px; }
+    .warnings[hidden] { display: none; }
+
+    .warnings h3 { font-size: 14px; margin-bottom: 6px; }
+
+    .warnings ul {
+      list-style: none;
+      border: 1px solid rgba(232, 89, 12, 0.35);
+      border-radius: var(--radius);
+      background: rgba(232, 89, 12, 0.06);
+    }
+
+    .warnings li {
+      padding: 8px 12px;
+      font-size: 14px;
+      border-bottom: 1px solid rgba(232, 89, 12, 0.18);
+    }
+
+    .warnings li:last-child { border-bottom: none; }
+
+    .warnings li code {
+      margin-right: 8px;
+      color: var(--flame-text);
+      font-size: 12px;
+    }
+
+    .editor-frame {
+      height: 720px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #fff;
+    }
+
+    pigeon-editor { display: block; width: 100%; height: 100%; }
+
+    .coverage { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+    .table-scroll { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      background: var(--card);
+      border: 1px solid var(--line);
+    }
+
+    th, td {
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    th {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--ink-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      background: var(--paper-deep);
+    }
+
+    .yes { color: var(--go); font-weight: 600; }
+    .no { color: var(--flame-text); font-weight: 600; }
+
+    .note { margin-top: 12px; font-size: 13px; color: var(--ink-soft); }
+
+    pre {
+      margin-top: 12px;
+      padding: 16px;
+      overflow-x: auto;
+      background: var(--ink);
+      color: var(--paper);
+      border-radius: var(--radius);
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .footer { padding: 36px 0; text-align: center; }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      list-style: none;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+      .container { padding: 0 16px; }
+      .coverage { grid-template-columns: 1fr; }
+      .editor-frame { height: 640px; }
+      .nav-links { gap: 16px; }
+      .sample-picker, .sample-picker select { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="airmail" aria-hidden="true"></div>
+
+  <nav class="nav">
+    <div class="container">
+      <a href="../" class="nav-logo"><img src="../lit-pigeon.png" alt="" width="26" height="26"> Lit Pigeon</a>
+      <ul class="nav-links">
+        <li><a href="../playground/">Playground</a></li>
+        <li><a href="https://github.com/snxstudio/lit-pigeon" target="_blank" rel="noopener">GitHub</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <span class="kicker">Change of address · Unlayer → Lit Pigeon</span>
+        <h1>Bring your Unlayer templates.<br><em>Leave the lock-in.</em></h1>
+        <p class="lede">Paste the design JSON that Unlayer's <code>editor.saveDesign()</code> passes to its callback (<a href="https://github.com/unlayer/react-email-editor#readme" target="_blank" rel="noopener">documented in the react-email-editor README</a>). It opens in the Lit Pigeon editor, with a list of anything that did not convert, and you can download it as MJML, HTML or Lit Pigeon JSON.</p>
+        <p class="privacy"><strong>Stays on your machine.</strong> The conversion runs in this page. Your design is not uploaded anywhere, and there is no sign-up.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="card">
+          <div class="step-head">
+            <h2>1. Paste your design</h2>
+            <label class="sample-picker">
+              <select id="sample-select" aria-label="Load a sample Unlayer design">
+                <option value="">Or try it with a sample…</option>
+              </select>
+            </label>
+          </div>
+          <textarea id="design-input" spellcheck="false" placeholder='Paste Unlayer design JSON here, or drop a .json file.&#10;&#10;{ "counters": { … }, "body": { "rows": [ … ], "values": { … } }, "schemaVersion": 16 }'></textarea>
+          <div class="actions">
+            <button class="btn btn-primary" id="btn-import">Open in the editor</button>
+            <span class="status" id="status" role="status"></span>
+          </div>
+          <div class="warnings" id="warnings" hidden>
+            <h3 id="warnings-title"></h3>
+            <ul id="warnings-list"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="step-head">
+          <h2>2. Check it, edit it, take it with you</h2>
+          <div class="actions">
+            <button class="btn" data-download="mjml" disabled>Download MJML</button>
+            <button class="btn" data-download="html" disabled>Download HTML</button>
+            <button class="btn" data-download="json" disabled>Download JSON</button>
+          </div>
+        </div>
+        <div class="editor-frame">
+          <pigeon-editor id="editor"></pigeon-editor>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="coverage">
+      <div class="container">
+        <span class="kicker">What survives the move</span>
+        <h2>What maps, and what doesn't</h2>
+        <p class="lede">The content-block table is produced when this page loads, by running each Unlayer block type through the importer, so it cannot drift from what the importer actually does.</p>
+        <div class="coverage" style="margin-top: 20px;">
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Unlayer block</th><th>Becomes</th></tr></thead>
+              <tbody id="coverage-blocks"></tbody>
+            </table>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Design setting</th><th>Result</th></tr></thead>
+              <tbody id="coverage-settings"></tbody>
+            </table>
+          </div>
+        </div>
+        <p class="note">Settings marked “not carried over” are ignored without a warning, so check them after import. The importer's README lists the full mapping.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <span class="kicker">In your own code</span>
+        <h2>Migrate a whole library</h2>
+        <p class="lede">The same importer is a published package. Run it over every saved design, then load the result into the editor or render it straight to MJML.</p>
+        <pre><code>npm install @lit-pigeon/import-unlayer
+
+import { unlayerToDocument } from '@lit-pigeon/import-unlayer';
+
+const { document, warnings } = unlayerToDocument(design);</code></pre>
+        <p class="note"><a href="https://github.com/snxstudio/lit-pigeon/tree/main/packages/import-unlayer#readme">Read the @lit-pigeon/import-unlayer README</a></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <ul class="footer-links">
+      <li><a href="../">Home</a></li>
+      <li><a href="../playground/">Playground</a></li>
+      <li><a href="https://github.com/snxstudio/lit-pigeon" target="_blank" rel="noopener">GitHub</a></li>
+      <li><a href="https://www.npmjs.com/package/@lit-pigeon/import-unlayer" target="_blank" rel="noopener">npm</a></li>
+    </ul>
+    <p class="note">Unlayer is a trademark of its owner. Lit Pigeon is an independent project and is not affiliated with or endorsed by Unlayer.</p>
+  </footer>
+
+  <div class="airmail airmail--thin" aria-hidden="true"></div>
+
+  <script type="module" src="../src/migrate.ts"></script>
+</body>
+</html>

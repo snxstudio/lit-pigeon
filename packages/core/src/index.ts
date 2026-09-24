@@ -114,6 +114,7 @@ export { deepEqual } from './utils/deep-equal.js';
 export {
   getStarterTemplates,
   getStarterTemplate,
+  loadGalleryTemplates,
   InMemoryTemplateStorage,
   type Template,
   type TemplateCategory,

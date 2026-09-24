@@ -47,7 +47,7 @@ After restarting your client, ask: *"Use lit-pigeon to build a welcome email wit
 | `render_to_mjml` | Serialize to MJML. |
 | `render_to_html` | Render to email-client-safe HTML (with inline CSS). Returns `{ html, errors }`. |
 | `import_figma_frame` | Fetch a Figma frame via the REST API, convert to a `PigeonDocument`, and load it into the store. Returns `{ documentId, warnings }`. |
-| `list_templates` | List the four starter templates (welcome / newsletter / transactional / promo) and any saved during this session. |
+| `list_templates` | List the four starter templates (welcome / newsletter / transactional / promo) and any saved templates. |
 | `load_template` | Hydrate a template into the document store. Returns the new `documentId`. |
 | `save_template` | Snapshot the current document as a reusable template (kebab-case `templateId`). |
 | `delete_template` | Remove a template by id. |
@@ -92,7 +92,11 @@ const transport = new SSEServerTransport('/mcp', responseWriter);
 await server.connect(transport);
 ```
 
-The `DocumentStore` is also exported if you want to persist documents elsewhere — supply your own via `buildServer({ store })`.
+`buildServer(options)` accepts `store` (a `DocumentStore`), `templateStorage`, `brandKitStorage` and `assetStorage` (any implementation of the `@lit-pigeon/core` storage interfaces; in-memory by default), and `name`/`version` for the MCP handshake. Filesystem implementations are exported: `FsTemplateStorage`, `FsBrandKitStorage`, `FsAssetStorage` and `FsRowLibraryStorage`.
+
+## Persistence
+
+The `lit-pigeon-mcp` command persists saved templates, brand kits and asset records to `~/.lit-pigeon/templates`, `~/.lit-pigeon/brand-kits` and `~/.lit-pigeon/assets`. Override the directories with `LIT_PIGEON_TEMPLATES_DIR`, `LIT_PIGEON_BRAND_KITS_DIR` and `LIT_PIGEON_ASSETS_DIR`. Documents created with `create_document` live in memory for the session.
 
 ## Figma import (live)
 
@@ -108,10 +112,6 @@ The tool fetches the Figma file via the REST API, converts the frame to a
 `PigeonDocument`, and loads it into the same store as `create_document` —
 follow it with `update_block`, `render_to_html`, etc. See
 [`@lit-pigeon/figma-import`](../figma-import/) for the conversion heuristics.
-
-## What's coming
-
-- File-system-backed `TemplateStorage` (so saved templates survive restarts) wired in via `buildServer({ templateStorage })`.
 
 ## License
 
