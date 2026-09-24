@@ -1,6 +1,6 @@
 # Comparison: bundle size and features
 
-Measured and sourced on **2026-09-23**. Numbers are from one run on one machine; re-run the script to check them.
+Measured and sourced on **2026-09-23** with Node v22.22.2 and esbuild 0.28.2, and reproduced byte for byte on 2026-09-24. Top-level packages are pinned; their transitive dependencies are whatever npm resolves on the day, so a later run can differ slightly. Re-run the script to check.
 
 ## Initial JS size
 
@@ -39,23 +39,23 @@ How to read the table:
 
 | | Lit Pigeon | Unlayer | GrapesJS + grapesjs-mjml | Easy Email | EmailBuilder.js | Templatical |
 | --- | --- | --- | --- | --- | --- | --- |
-| Licence | MIT | Wrapper MIT [1]; editor proprietary, paid plans [2] | BSD-3-Clause [3][4] | MIT; separate Pro version [5] | MIT [6] | Editor packages FSL-1.1-MIT (MIT after 2 years); renderer and importers MIT [7] |
-| Visual editor on npm | ✓ | ✓ wrapper; editor loads from Unlayer's CDN [1][8] | ✓ | ✓ | ✗ fork-and-host sample app [6] | ✓ [7] |
-| UI framework | Lit web components; React, Vue, Svelte and Angular wrappers | React wrapper [1] (other wrappers: ?) | Framework-agnostic; official React wrapper [3] | React [5] | React [6] | Vue inside; examples for React, Vue, Svelte, Angular and vanilla [7] |
-| MJML export | ✓ | ? | ✓ [4] | ✓ `JsonToMjml` [9] | ✗ not mentioned [6] | ✓ [7] |
-| MJML import | ✓ `@lit-pigeon/parser-mjml` | ? | ✓ import modal [4] | ✓ `MjmlToJson` [10] | ✗ not mentioned [6] | ✓ `@templatical/import-mjml` [7] |
-| HTML export | ✓ | ✓ `exportHtml` [1] | ✓ [4] | ? | ✓ [6] | ✓ via MJML [7] |
+| Licence | MIT | Wrapper MIT [1]; the editor itself is not in that repository and is served from Unlayer's CDN [8]; paid plans [2] | BSD-3-Clause [3][4] | MIT; separate Pro version [5] | MIT [6] | Editor packages FSL-1.1-MIT (MIT after 2 years); renderer and importers MIT [7] |
+| Visual editor on npm | ✓ | ✓ wrapper; editor loads from Unlayer's CDN [1][8] | ✓ [3][4] | ✓ [5] | ✗ fork-and-host sample app [6] | ✓ [7] |
+| UI framework | Lit web components; React, Vue, Svelte and Angular wrappers | React wrapper [1] (other wrappers: ?) | Plain JavaScript; official React wrapper `@grapesjs/react` [3] | React [5] | React [6] | Vue inside; examples for React, Vue, Svelte, Angular and vanilla [7] |
+| MJML export | ✓ | ? | ✓ [4] | ✓ `JsonToMjml` [9] | ✗ outputs JSON or HTML [6] | ✓ [7] |
+| MJML import | ✓ `@lit-pigeon/parser-mjml` | ? | ✓ import modal [4] | ✓ `MjmlToJson` [10] | ? not mentioned [6] | ✓ `@templatical/import-mjml` [7] |
+| HTML export | ✓ | ✓ `exportHtml` [1] | ✓ in-browser MJML compiler [4] | ? | ✓ [6] | ✓ via MJML [7] |
 | Custom blocks | ✓ plugin registry | ✓ custom tools, limited by plan [2] | ✓ `customComponents` [4] | ✓ `createCustomBlock` [9]; premium blocks in Pro [5] | ✓ blocks are npm packages [6] | ✓ [7] |
 | Unlayer design import | ✓ `@lit-pigeon/import-unlayer` | n/a | ? | ? | ? | ✓ `@templatical/import-unlayer` [7] |
-| MCP server | ✓ `@lit-pigeon/mcp-server`, self-hosted | ? | ? | ? | ? | ? (a `.mcp.json` is in the repo; no documented server) [7] |
-| Paid hosted tier | ✗ | ✓ Launch $250, Scale $750, Optimize $2,000 per month [2] | ? | ✓ Easy Email Pro [5] | ? | ✓ optional Cloud tier [7] |
+| MCP server | ✓ `@lit-pigeon/mcp-server`, self-hosted | ? | ? | ? | ? | Hosted MCP server, Cloud tier only [7] |
+| Paid hosted tier | ✗ | ✓ Launch $250, Scale $750, Optimize $2,000 per month; Enterprise on request [2] | ? | ? commercial Pro edition exists [5]; not verified whether it is hosted | ? | ✓ optional Cloud tier [7] |
 
-Unlayer's plan features, from the search-engine summary of [2] (the page itself could not be loaded from the benchmark environment): custom CSS from the Optimize plan, and custom JS at Enterprise.
+Unlayer's plan features, from search-engine summaries of [2] (the page itself could not be loaded from the benchmark environment): custom CSS from the Optimize plan, and custom JS at Enterprise. Unlayer has also stated that custom JS is a premium feature [11]. Check [2] before relying on any Unlayer price or plan detail.
 
 ### Sources
 
 1. unlayer/react-email-editor README and licence: <https://github.com/unlayer/react-email-editor>
-2. Unlayer pricing: <https://unlayer.com/pricing> (retrieved through a search-engine summary on 2026-09-23; not loaded directly)
+2. Unlayer pricing: <https://unlayer.com/pricing> (retrieved through search-engine summaries on 2026-09-23 and 2026-09-24; not loaded directly)
 3. GrapesJS README: <https://github.com/GrapesJS/grapesjs>
 4. grapesjs-mjml README: <https://github.com/GrapesJS/mjml>
 5. Easy Email README: <https://github.com/zalify/easy-email>
@@ -64,5 +64,8 @@ Unlayer's plan features, from the search-engine summary of [2] (the page itself 
 8. `defaultScriptUrl` in `react-email-editor@2.1.2` `dist/index.mjs`: <https://unpkg.com/react-email-editor@2.1.2/dist/index.mjs>
 9. `easy-email-core` utilities (`JsonToMjml.tsx`, `createCustomBlock.ts`): <https://github.com/zalify/easy-email/tree/master/packages/easy-email-core/src/utils>
 10. `easy-email-extensions` utilities (`MjmlToJson.ts`): <https://github.com/zalify/easy-email/tree/master/packages/easy-email-extensions/src/utils>
+11. Unlayer maintainer reply, 14 February 2019: <https://github.com/unlayer/react-email-editor/issues/57>
 
 Found an error or a stale number? Open an issue or a PR with the source.
+
+Product names are trademarks of their respective owners and are used only to identify the products compared. Lit Pigeon is not affiliated with or endorsed by any of them.
