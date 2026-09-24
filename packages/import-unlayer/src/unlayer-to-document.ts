@@ -1,4 +1,4 @@
-import type { ColumnNode, ContentBlock, PigeonDocument, RowNode } from '@lit-pigeon/core';
+import type { ColumnNode, ContentBlock, LinkStyle, PigeonDocument, RowNode } from '@lit-pigeon/core';
 import { generateId } from '@lit-pigeon/core';
 import type { UnlayerColumn, UnlayerDesign, UnlayerRow } from './types.js';
 import type { ImportWarning } from './warnings.js';
@@ -60,6 +60,7 @@ export function unlayerToDocument(
 
   const now = new Date().toISOString();
   const previewText = str(bodyValues.preheaderText);
+  const linkStyle = convertLinkStyle(bodyValues.linkStyle);
 
   return {
     document: {
@@ -76,12 +77,33 @@ export function unlayerToDocument(
           backgroundColor: color(bodyValues.backgroundColor) ?? DEFAULT_BACKGROUND,
           fontFamily: inherited.fontFamily ?? DEFAULT_FONT,
           contentAlignment: bodyValues.contentAlign === 'left' ? 'left' : 'center',
+          ...(linkStyle ? { linkStyle } : {}),
         },
         rows,
       },
     },
     warnings,
   };
+}
+
+/**
+ * Unlayer's `body.values.linkStyle` carries `linkColor` and `linkUnderline`
+ * alongside hover variants Pigeon has no home for — `:hover` is ignored by most
+ * email clients, so those are dropped rather than promised. `inherit: true`
+ * means "leave links to the client", which is what an absent `linkStyle` does.
+ */
+function convertLinkStyle(value: unknown): LinkStyle | undefined {
+  if (typeof value !== 'object' || value === null) return undefined;
+  if (dig(value, 'inherit') === true) return undefined;
+
+  const linkColor = color(dig(value, 'linkColor'));
+  const underline = dig(value, 'linkUnderline');
+
+  const style: LinkStyle = {
+    ...(linkColor ? { color: linkColor } : {}),
+    ...(typeof underline === 'boolean' ? { underline } : {}),
+  };
+  return Object.keys(style).length ? style : undefined;
 }
 
 function coerceDesign(design: UnlayerDesign | string, warnings: ImportWarning[]): UnlayerDesign | null {

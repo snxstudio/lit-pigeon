@@ -32,7 +32,8 @@
             "width": { "type": "integer", "minimum": 300, "maximum": 800, "default": 600, "description": "Email canvas width in pixels. 600 is the de-facto email standard." },
             "backgroundColor": { "type": "string", "description": "Hex color of the canvas background." },
             "fontFamily": { "type": "string", "description": "CSS font-family stack. Use web-safe fonts for best email-client compatibility." },
-            "contentAlignment": { "enum": ["center", "left"], "default": "center" }
+            "contentAlignment": { "enum": ["center", "left"], "default": "center" },
+            "linkStyle": { "$ref": "#/$defs/LinkStyle" }
           }
         },
         "rows": { "type": "array", "items": { "$ref": "#/$defs/Row" } }
@@ -94,6 +95,14 @@
         "right":  { "type": "integer", "minimum": 0 },
         "bottom": { "type": "integer", "minimum": 0 },
         "left":   { "type": "integer", "minimum": 0 }
+      }
+    },
+    "LinkStyle": {
+      "type": "object",
+      "description": "Document-level link colour and underline. Omit to leave links at each client's default.",
+      "properties": {
+        "color": { "type": "string" },
+        "underline": { "type": "boolean" }
       }
     },
     "Border": {

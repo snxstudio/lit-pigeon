@@ -55,6 +55,31 @@ describe('unlayerToDocument', () => {
     expect(document.metadata.previewText).toBe('Peek');
   });
 
+  it('maps the body link style', () => {
+    const { document } = unlayerToDocument(
+      design([], {
+        linkStyle: {
+          body: true,
+          linkColor: '#e8590c',
+          linkUnderline: false,
+          // Hover has no home in the document model and is dropped, not promised.
+          linkHoverColor: '#ff922b',
+          linkHoverUnderline: true,
+        },
+      }),
+    );
+    expect(document.body.attributes.linkStyle).toEqual({ color: '#e8590c', underline: false });
+  });
+
+  it.each([
+    ['no linkStyle at all', {}],
+    ['a linkStyle that inherits', { linkStyle: { inherit: true, linkColor: '#e8590c' } }],
+    ['a linkStyle with nothing set', { linkStyle: { linkColor: '' } }],
+  ])('leaves the link style unset for a design with %s', (_name, bodyValues) => {
+    const { document } = unlayerToDocument(design([], bodyValues));
+    expect(document.body.attributes).not.toHaveProperty('linkStyle');
+  });
+
   it('treats Unlayer\'s empty-string colours as unset', () => {
     const { document } = unlayerToDocument(design([row([], { values: { backgroundColor: '' } })]));
     expect(document.body.rows[0].attributes.backgroundColor).toBeUndefined();

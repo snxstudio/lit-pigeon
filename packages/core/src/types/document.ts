@@ -17,6 +17,17 @@ export interface Border {
 }
 
 /**
+ * Document-level link styling. A brand setting rather than a per-link
+ * decision, so it lives on the body and is rendered as one `<mj-style>` rule
+ * targeting `a`. Each part is optional; whatever is unset stays at the
+ * client's default.
+ */
+export interface LinkStyle {
+  color?: string;
+  underline?: boolean;
+}
+
+/**
  * Hides a block or column at one breakpoint. Rendered as an MJML `css-class`
  * (`pigeon-hide-mobile` / `pigeon-hide-desktop`) plus a media query.
  */
@@ -272,6 +283,12 @@ export interface PigeonDocument {
       backgroundColor: string;
       fontFamily: string;
       contentAlignment: 'center' | 'left';
+      /**
+       * Link colour and underline for the whole document. Omitted, or with a
+       * part omitted, links fall back to whatever each client defaults to —
+       * blue and underlined in most, purple once visited in some.
+       */
+      linkStyle?: LinkStyle;
       /** Document-level CSS, written out as a non-inline `<mj-style>`. */
       css?: string;
     };
