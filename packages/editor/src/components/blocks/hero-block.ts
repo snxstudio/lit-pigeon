@@ -149,7 +149,7 @@ export class PigeonHeroBlock extends LitElement {
       element: this._editorHost,
       initialHTML: this.block.values.content || '<p></p>',
       onBlur: (html) => this._commit(html),
-      onEscape: () => this._exit(),
+      onEscape: (html) => this._commit(html),
     });
   }
 
@@ -167,11 +167,6 @@ export class PigeonHeroBlock extends LitElement {
       bubbles: true,
       composed: true,
     }));
-  }
-
-  private _exit() {
-    const html = this._editor ? this._editor.getHTML() : this.block.values.content;
-    this._commit(html);
   }
 
   private _handleClick(e: Event) {
