@@ -158,6 +158,17 @@ describe('documentToMjml', () => {
       expect(mjml).toContain('&lt;/ mj-raw &gt;');
     });
 
+    it('escapes mj-raw tags in linear time when no > follows them', () => {
+      const doc = createDefaultDocument('Test');
+      const content = `</mj-raw>${'<mj-raw'.repeat(20_000)}`;
+      doc.body.rows = [createRow([createColumn([createBlock('html', { content })])])];
+
+      const start = performance.now();
+      const mjml = documentToMjml(doc);
+      expect(performance.now() - start).toBeLessThan(1000);
+      expect(mjml).toContain(`&lt;/mj-raw&gt;${'<mj-raw'.repeat(20_000)}</div>`);
+    });
+
     it('should preserve benign html content unchanged', () => {
       const doc = createDefaultDocument('Test');
       const htmlBlock = createBlock('html', {
