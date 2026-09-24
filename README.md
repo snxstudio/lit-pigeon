@@ -32,6 +32,21 @@
 
 ---
 
+## Documentation
+
+The **[developer guide](./docs/guide/README.md)** covers embedding the editor
+in a production application. Every code example in it is typechecked and
+tested against the packages in this repository.
+
+- [Getting started](./docs/guide/getting-started.md): web component, React, Vue, Svelte and Angular
+- [Angular](./docs/guide/angular.md): build settings, bundle budgets, change detection, Material dialogs and tabs
+- [Load and save](./docs/guide/load-and-save.md) · [Images and uploads](./docs/guide/images-and-uploads.md) · [Merge tags and personalisation](./docs/guide/merge-tags-and-personalisation.md)
+- [Configuration](./docs/guide/configuration.md) · [Events and API](./docs/guide/events-and-api.md) · [Theming and customisation](./docs/guide/theming-and-customisation.md) · [Custom blocks](./docs/guide/custom-blocks.md)
+- [Server-side rendering, REST and lint](./docs/guide/server-side.md) · [Security](./docs/guide/security.md) · [Troubleshooting](./docs/guide/troubleshooting.md)
+- Migrating from [Unlayer](./docs/guide/migrating-from-unlayer.md) or [GrapesJS](./docs/guide/migrating-from-grapesjs.md)
+
+---
+
 ## Why Lit Pigeon?
 
 There is no truly open-source, self-hosted, framework-agnostic drag-and-drop email editor. The current landscape:
@@ -253,6 +268,9 @@ const { html } = await renderer.render(doc);
 // html is email-client-safe with inline CSS
 ```
 
+In a browser bundle, alias `mjml` to `mjml-browser`; see
+[Getting started](./docs/guide/getting-started.md#bundling-the-renderer-for-the-browser).
+
 ---
 
 ## Asset manager / image upload
@@ -409,7 +427,7 @@ PigeonDocument
        +-- attributes (width, backgroundColor, fontFamily)
        +-- rows[]
             +-- columns[]
-                 +-- blocks[] (text, image, button, divider, spacer, social, html)
+                 +-- blocks[] (text, image, button, divider, spacer, social, html, hero, navbar)
 ```
 
 **State management** -- Immutable state via Immer. Every change produces a `Transaction` with invertible `Step` objects, enabling reliable undo/redo.
@@ -429,6 +447,12 @@ PigeonDocument
 | **Spacer** | Vertical spacing |
 | **Social** | Social media icon links (Facebook, Twitter, Instagram, LinkedIn, YouTube, TikTok) |
 | **HTML** | Raw HTML for custom content |
+| **Hero** | Background image with overlaid content (`mj-hero`) |
+| **Navbar** | Navigation links, with an optional mobile menu |
+
+More blocks (video, countdown, accordion, table, carousel) are available from
+[`@lit-pigeon/blocks`](./packages/blocks), and you can add your own; see
+[Custom blocks](./docs/guide/custom-blocks.md).
 
 ---
 

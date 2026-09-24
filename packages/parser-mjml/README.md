@@ -32,9 +32,17 @@ const { document, warnings } = mjmlToDocument(mjml);
 // `warnings` lists unsupported tags that were skipped or approximated.
 ```
 
-Pass `{ lenient: true }` to silently skip unknown elements instead of warning.
+`mjmlToDocument` never throws. Each warning is `{ message, tag? }`, for
+example for `mj-wrapper` styling, unknown elements such as `mj-carousel`, and
+`css-class` on elements that cannot keep it. Some things are dropped without a
+warning: `mj-column` widths (columns open with equal widths), `mj-font`,
+`mj-title`, inline `mj-style`, and attributes the document model has no field
+for. The full list is in
+[Load and save](../../docs/guide/load-and-save.md#what-the-parser-does-not-keep).
+
 The exported `ParseOptions`, `ParseResult`, and `ParseWarning` types describe
-the input and output shapes.
+the input and output shapes. In 0.1.7, `ParseOptions.lenient` has no effect and
+`ParseWarning.line` is never set.
 
 Part of [Lit Pigeon](https://github.com/snxstudio/lit-pigeon) — open-source drag-and-drop email editor.
 
