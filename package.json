@@ -9,7 +9,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint packages apps",
-    "typecheck": "pnpm -r --filter \"./packages/*\" exec tsc --noEmit",
+    "typecheck": "pnpm -r --filter \"./packages/*\" exec tsc --noEmit && pnpm --filter @lit-pigeon/docs-examples typecheck",
     "format": "prettier --write \"packages/*/src/**/*.ts\" \"apps/*/src/**/*.ts\"",
     "changeset": "changeset",
     "version-packages": "changeset version",

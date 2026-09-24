@@ -36,6 +36,12 @@ registerBlock(countdownBlock);
 The exported `standardBlocks` array is equivalent to the five named blocks
 together.
 
+The registry is global and the palette reads it when the editor connects, so
+register first. Documents that contain these blocks do not pass
+`validateDocument` (it accepts only built-in types), and the blocks do not
+survive an MJML round trip; store such templates as JSON. See
+[Custom blocks](../../docs/guide/custom-blocks.md).
+
 Part of [Lit Pigeon](https://github.com/snxstudio/lit-pigeon) — open-source drag-and-drop email editor.
 
 ## License
