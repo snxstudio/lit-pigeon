@@ -55,6 +55,8 @@ const mjml = documentToMjml(document);
 | `social` | `social` | Known platforms map by name; anything else becomes a `custom` icon. |
 | rows / `cells` | rows / `columnRatios` | Relative widths convert to the 12-column grid (`[1, 2]` → `[4, 8]`). |
 | body `values` | body attributes | Width, background, font family, alignment, preheader. |
+| `video` | `video` | From `@lit-pigeon/blocks`; carries the video URL and the poster image. |
+| `timer` | `countdown` | From `@lit-pigeon/blocks`; carries `endTime` as the fallback label. |
 
 ### Why colours end up in a `<span>`
 
@@ -82,12 +84,23 @@ what needs a second look.
 | Code | Meaning |
 | --- | --- |
 | `not-a-design` | Input was not valid JSON, or had no `body` key. |
-| `unsupported-block` | An Unlayer block with no Pigeon equivalent (`video`, `timer`, `form`). |
+| `unsupported-block` | An Unlayer block with no Pigeon equivalent (`form`). |
+| `plugin-block` | Converted to a block from `@lit-pigeon/blocks`, which is not registered. See below. |
 | `custom-tool` | A `custom#*` tool. Re-create it as a Lit Pigeon plugin block. |
 | `display-condition-dropped` | See below. |
 | `heading-level-clamped` | `h4`–`h6` imported as `h3`. |
 | `empty-row` | A row with no columns was skipped. |
 | `no-rows` | The design had no rows at all. |
+
+**`video` and `timer` need the standard catalog.** They convert to the `video`
+and `countdown` blocks from `@lit-pigeon/blocks`, which this package does not
+depend on — that would pull the whole catalog into every migration. The
+importer emits the block by type name, so if the host has not installed the
+package and called `registerStandardBlocks()`, the block shows as the
+registry's labelled placeholder rather than rendering, and a `plugin-block`
+warning says so. A timer's hosted countdown image is generated per open and is
+not in the design JSON, so the block arrives with Unlayer's `endTime` as its
+fallback label and a countdown image URL for you to paste in.
 
 **Display conditions are dropped deliberately.** Unlayer stores them as raw
 `before`/`after` template fragments, not as the boolean expression Pigeon's

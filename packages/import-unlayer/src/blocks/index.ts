@@ -1,5 +1,5 @@
 import type { ContentBlock } from '@lit-pigeon/core';
-import { generateId } from '@lit-pigeon/core';
+import { generateId, getBlockDefinition } from '@lit-pigeon/core';
 import type { UnlayerContent } from '../types.js';
 import type { ImportWarning } from '../warnings.js';
 import { align, color, dig, parseSpacing, px, str } from '../utils/values.js';
@@ -33,9 +33,71 @@ export function convertContent(
     case 'html': return htmlBlock(v);
     case 'menu': return menuBlock(v, inherited);
     case 'social': return socialBlock(v);
+    case 'video': return videoBlock(v, warnings);
+    case 'timer': return timerBlock(v, warnings);
     default:
       return null;
   }
+}
+
+/**
+ * Builds a block whose type comes from `@lit-pigeon/blocks` rather than the
+ * built-in set. The importer deliberately does not depend on that package —
+ * that would drag the whole standard catalog into every migration — so the
+ * values are written out by hand and have to match the definition's own
+ * defaults, and `ColumnNode.blocks` takes the block by cast until #19 opens
+ * the union up. Both renderers dispatch on the type string at runtime.
+ *
+ * If the host has not registered the catalog the block shows as the registry's
+ * labelled placeholder rather than disappearing, which is better than dropping
+ * it but not something to do silently.
+ */
+function pluginBlock(
+  type: string,
+  values: Record<string, unknown>,
+  contentType: string,
+  warnings: ImportWarning[],
+): ContentBlock {
+  if (!getBlockDefinition(type)) {
+    warnings.push({
+      code: 'plugin-block',
+      contentType,
+      message:
+        `Imported as a "${type}" block from @lit-pigeon/blocks, which is not registered. ` +
+        'Install the package and call registerStandardBlocks(), or the block renders as a placeholder.',
+    });
+  }
+  return { id: generateId(), type, values } as unknown as ContentBlock;
+}
+
+/**
+ * Unlayer stores the video's link and its poster image separately; the poster
+ * is what actually renders, because no email client plays video inline.
+ */
+function videoBlock(v: Record<string, unknown>, warnings: ImportWarning[]): ContentBlock {
+  const poster = str(dig(v, 'thumbnail', 'url')) || str(v.thumbnailUrl);
+  return pluginBlock('video', {
+    posterUrl: poster,
+    videoUrl: str(v.videoUrl, '#'),
+    alt: str(v.altText) || 'Watch the video',
+    width: px(dig(v, 'thumbnail', 'width'), 560) || 560,
+    playButtonColor: color(v.playIconColor) ?? '#ffffff',
+  }, 'video', warnings);
+}
+
+/**
+ * Unlayer's timer renders as a hosted per-open image; the design JSON keeps the
+ * end time rather than that URL, so the countdown block takes it as its
+ * fallback label and the user pastes their own countdown image.
+ */
+function timerBlock(v: Record<string, unknown>, warnings: ImportWarning[]): ContentBlock {
+  return pluginBlock('countdown', {
+    imageUrl: '',
+    alt: 'Countdown',
+    href: str(dig(v, 'href', 'values', 'href')),
+    width: 480,
+    endDateLabel: str(v.endTime),
+  }, 'timer', warnings);
 }
 
 function textBlock(v: Record<string, unknown>, inherited: InheritedStyle): ContentBlock {

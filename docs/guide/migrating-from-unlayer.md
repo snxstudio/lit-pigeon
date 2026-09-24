@@ -15,7 +15,8 @@ rely on. The ones that need attention are:
 |---|---|
 | Design JSON (`saveDesign`) | Converted by `unlayerToDocument`. |
 | Text, heading, image, button, divider, HTML, menu, social | Converted to built-in blocks. |
-| Video, timer, form tools | Not converted (`unsupported-block` warning). `@lit-pigeon/blocks` has video and countdown blocks you can rebuild them with. |
+| Video, timer tools | Converted to the `video` and `countdown` blocks from `@lit-pigeon/blocks`. Install it and call `registerStandardBlocks()`, or they render as placeholders and a `plugin-block` warning says so. |
+| Form tool | Not converted (`unsupported-block` warning). |
 | Custom tools (`custom#…`) | Not converted (`custom-tool` warning). Rebuild them as [custom blocks](./custom-blocks.md). |
 | Display conditions | Dropped (`display-condition-dropped` warning). Re-add as a row condition; see [Merge tags](./merge-tags-and-personalisation.md#row-display-conditions). Block-level conditions are coming in the next release ([#26](https://github.com/snxstudio/lit-pigeon/issues/26)). |
 | Hide on desktop or mobile, mobile overrides | Not mapped. Device visibility is coming in the next release ([#69](https://github.com/snxstudio/lit-pigeon/issues/69)). |
@@ -71,7 +72,8 @@ Each warning is `{ code, message, contentType? }`:
 | `not-a-design` | The input was not valid JSON or had no `body`. |
 | `no-rows` | The design had no rows. |
 | `empty-row` | A row with no columns was skipped. |
-| `unsupported-block` | A block with no equivalent (for example `video`, `timer`, `form`) was dropped. |
+| `unsupported-block` | A block with no equivalent (`form`) was dropped. |
+| `plugin-block` | A block was converted to a `@lit-pigeon/blocks` type that is not registered. |
 | `custom-tool` | A `custom#…` tool was dropped. |
 | `display-condition-dropped` | A row's display condition was dropped. |
 | `heading-level-clamped` | An `h4`–`h6` heading became `h3`. |

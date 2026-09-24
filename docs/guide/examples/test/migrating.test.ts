@@ -28,13 +28,25 @@ describe('migrating from Unlayer', () => {
           {
             cells: [1],
             values: { displayCondition: { label: 'VIP only', before: '{% if vip %}', after: '{% endif %}' } },
-            columns: [{ contents: [{ type: 'video', values: {} }, { type: 'custom#product', values: {} }] }],
+            columns: [{ contents: [{ type: 'form', values: {} }, { type: 'custom#product', values: {} }] }],
           },
         ],
       },
     };
     const [{ warnings }] = await migrateUnlayerDesigns([{ id: 't2', name: 'x', design }]);
     expect(warnings.map((w) => w.code)).toEqual(['display-condition-dropped', 'unsupported-block', 'custom-tool']);
+  });
+
+  it('converts a video, warning that the block catalog is not registered', async () => {
+    const design = {
+      body: {
+        values: {},
+        rows: [{ cells: [1], columns: [{ contents: [{ type: 'video', values: { videoUrl: 'https://youtu.be/a' } }] }] }],
+      },
+    };
+    const [{ document, warnings }] = await migrateUnlayerDesigns([{ id: 't3', name: 'x', design }]);
+    expect(document.body.rows[0].columns[0].blocks[0].type).toBe('video');
+    expect(warnings.map((w) => w.code)).toEqual(['plugin-block']);
   });
 
   it('maps merge tags, including groups', () => {
