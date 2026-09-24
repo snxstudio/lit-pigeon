@@ -123,6 +123,18 @@ describe('documentToPlainText', () => {
     expect(performance.now() - started).toBeLessThan(500);
   });
 
+  it('stays fast on many links, one after another or nested', () => {
+    const started = performance.now();
+    const text = documentToPlainText(
+      docWith(createBlock('html', { content: '<a href="https://x.test">t</a> '.repeat(25_000) })),
+    );
+    documentToPlainText(
+      docWith(createBlock('html', { content: '<a href="https://x.test">t'.repeat(25_000) + '</a>'.repeat(25_000) })),
+    );
+    expect(performance.now() - started).toBeLessThan(1000);
+    expect(text.startsWith('t (https://x.test) t (https://x.test) ')).toBe(true);
+  });
+
   it('renders social icons, navbar links and hero content', () => {
     const text = documentToPlainText(
       docWith(

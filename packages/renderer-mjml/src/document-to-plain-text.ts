@@ -45,12 +45,13 @@ function withLink(text: string, href?: string): string {
  */
 function htmlToText(html: string): string {
   const lists: { ordered: boolean; count: number }[] = [];
-  const links: { href: string; start: number }[] = [];
+  let link: { href: string; start: number } | undefined;
   let hidden = 0;
-  let out = '';
+  const out: string[] = [];
 
   // Comments are skipped by searching for their end rather than with a lazy
-  // `[\s\S]*?`, and tags stop at the next `<`, so the scan stays linear.
+  // `[\s\S]*?`, and tags stop at the next `<`, so the scan stays linear. The
+  // output is kept in parts so closing a link joins only the link's own text.
   const token = /<!--|<(\/?)([a-z][a-z0-9]*)\b([^<>]*)>|([^<]+)|</gi;
   const commentEnd = /--!?>/g;
   let match: RegExpExecArray | null;
@@ -62,7 +63,7 @@ function htmlToText(html: string): string {
       continue;
     }
     if (text !== undefined || raw === '<') {
-      if (!hidden) out += decodeEntities((text ?? raw).replace(/\s+/g, ' '));
+      if (!hidden) out.push(decodeEntities((text ?? raw).replace(/\s+/g, ' ')));
       continue;
     }
     if (!rawTag) continue;
@@ -73,33 +74,30 @@ function htmlToText(html: string): string {
     } else if (hidden) {
       continue;
     } else if (tag === 'br') {
-      out += '\n';
+      out.push('\n');
     } else if (tag === 'img' && !closing) {
-      out += readAttr(attrs, 'alt');
+      out.push(readAttr(attrs, 'alt'));
     } else if (tag === 'a') {
-      if (!closing) {
-        links.push({ href: readAttr(attrs, 'href'), start: out.length });
-      } else {
-        const link = links.pop();
-        if (link) {
-          const inner = out.slice(link.start);
-          const lead = /^\s*/.exec(inner)![0];
-          out = out.slice(0, link.start) + lead + withLink(inner.trim(), link.href);
-        }
+      // As in HTML, a link cannot contain another: a new `<a>` ends the open one.
+      if (link) {
+        const inner = out.splice(link.start).join('');
+        out.push(/^\s*/.exec(inner)![0], withLink(inner.trim(), link.href));
       }
+      link = closing ? undefined : { href: readAttr(attrs, 'href'), start: out.length };
     } else if (tag === 'li') {
       const list = lists[lists.length - 1];
-      if (!closing) out += `\n${list?.ordered ? `${++list.count}.` : '-'} `;
+      if (!closing) out.push(`\n${list?.ordered ? `${++list.count}.` : '-'} `);
     } else if (tag === 'ul' || tag === 'ol') {
       if (closing) lists.pop();
       else lists.push({ ordered: tag === 'ol', count: 0 });
-      out += '\n\n';
+      out.push('\n\n');
     } else if (BLOCK_TAG.test(tag) && !lists.length) {
-      out += '\n\n';
+      out.push('\n\n');
     }
   }
 
   return out
+    .join('')
     .split('\n')
     .map((line) => line.trim())
     .join('\n')
