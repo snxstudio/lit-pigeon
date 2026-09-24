@@ -16,6 +16,10 @@ export class PigeonToolbar extends LitElement {
   @property({ type: Boolean })
   fullscreen = false;
 
+  /** Hides the actions that change the document (undo, redo, templates). */
+  @property({ type: Boolean })
+  readonly = false;
+
   @state()
   private _exportMenuOpen = false;
 
@@ -161,7 +165,7 @@ export class PigeonToolbar extends LitElement {
   render() {
     return html`
       <!-- Undo/Redo -->
-      <button
+      ${this.readonly ? '' : html`<button
         class="icon-btn"
         part="toolbar-button toolbar-button-undo"
         title=${t('toolbar.undo')}
@@ -189,7 +193,7 @@ export class PigeonToolbar extends LitElement {
         </svg>
       </button>
 
-      <div class="separator"></div>
+      <div class="separator"></div>`}
 
       <!-- Device toggle -->
       <div class="device-group" role="group" aria-label=${t('toolbar.preview-device')}>
@@ -265,7 +269,7 @@ export class PigeonToolbar extends LitElement {
       <div class="separator"></div>
 
       <!-- Actions -->
-      <button
+      ${this.readonly ? '' : html`<button
         data-action="templates"
         part="toolbar-button toolbar-button-templates"
         title=${t('toolbar.templates')}
@@ -278,7 +282,7 @@ export class PigeonToolbar extends LitElement {
           <rect x="14" y="14" width="7" height="7" rx="1"/>
         </svg>
         ${t('toolbar.templates')}
-      </button>
+      </button>`}
 
       <button part="toolbar-button toolbar-button-preview" @click=${this._onPreview}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

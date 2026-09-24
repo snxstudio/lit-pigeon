@@ -18,10 +18,12 @@ import type { PigeonEditor } from '@lit-pigeon/editor';
 const PASSTHROUGH_INPUTS = [
   'renderer',
   'documentToMjml',
+  'documentToPlainText',
   'theme',
   'themeOverrides',
   'templateStorage',
   'assetStorage',
+  'readonly',
 ] as const;
 type PassthroughInput = (typeof PASSTHROUGH_INPUTS)[number];
 
@@ -50,10 +52,12 @@ export class PigeonEditorComponent implements AfterViewInit, OnChanges, OnDestro
   @Input() config?: Partial<EditorConfig>;
   @Input() renderer?: PigeonEditor['renderer'];
   @Input() documentToMjml?: PigeonEditor['documentToMjml'];
+  @Input() documentToPlainText?: PigeonEditor['documentToPlainText'];
   @Input() theme?: PigeonEditor['theme'];
   @Input() themeOverrides?: PigeonEditor['themeOverrides'];
   @Input() templateStorage?: PigeonEditor['templateStorage'];
   @Input() assetStorage?: PigeonEditor['assetStorage'];
+  @Input() readonly?: PigeonEditor['readonly'];
 
   @Output() pigeonChange = new EventEmitter<{ document: PigeonDocument }>();
   @Output() pigeonSelect = new EventEmitter<{ selection: Selection | null }>();
@@ -158,6 +162,11 @@ export class PigeonEditorComponent implements AfterViewInit, OnChanges, OnDestro
   /** Export the current document as MJML. Requires `documentToMjml`. */
   exportMjml(): string | null {
     return this.editorRef?.nativeElement?.exportMjml() ?? null;
+  }
+
+  /** Export the current document as plain text. Requires `documentToPlainText`. */
+  exportPlainText(): string | null {
+    return this.editorRef?.nativeElement?.exportPlainText() ?? null;
   }
 
   /** Export the current document as HTML. Requires `renderer`. */

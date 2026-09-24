@@ -56,6 +56,10 @@ export const PigeonEditor = defineComponent({
       type: Function as PropType<(doc: PigeonDocument) => string>,
       default: undefined,
     },
+    readonly: {
+      type: Boolean,
+      default: undefined,
+    },
   },
   emits: {
     change: (_payload: { document: PigeonDocument }) => true,
@@ -89,6 +93,7 @@ export const PigeonEditor = defineComponent({
       syncProp(el, 'config', props.config);
       syncProp(el, 'renderer', props.renderer);
       syncProp(el, 'documentToMjml', props.documentToMjml);
+      syncProp(el, 'readonly', props.readonly);
 
       for (const [domEvent, vueEvent] of EVENT_MAP) {
         const handler: EventListener = (e) => {
@@ -131,6 +136,15 @@ export const PigeonEditor = defineComponent({
       (value) => {
         if (elRef.value && value !== undefined) {
           elRef.value.documentToMjml = value;
+        }
+      },
+    );
+
+    watch(
+      () => props.readonly,
+      (value) => {
+        if (elRef.value && value !== undefined) {
+          elRef.value.readonly = value;
         }
       },
     );

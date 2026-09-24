@@ -17,26 +17,33 @@ npm install @lit-pigeon/core
 
 ```ts
 import {
-  createDefaultDocument,
   EditorState,
+  createBlock,
+  createColumn,
+  createDefaultDocument,
   createHistoryPlugin,
+  createRow,
+  getStarterTemplate,
+  insertRow,
+  undo,
   validateDocument,
-  getStarterTemplates,
 } from '@lit-pigeon/core';
 
-// Start from a blank document, or a starter template.
-const doc = createDefaultDocument();
-const [welcome] = getStarterTemplates(); // welcome / newsletter / transactional / promo
-// welcome.document is a PigeonDocument
+// Start from a blank document, or a starter template
+// (starter-welcome, starter-newsletter, starter-transactional, starter-promo).
+const doc = createDefaultDocument('Welcome email');
+const welcome = getStarterTemplate('starter-welcome')?.document;
 
-// Drive edits through immutable transactions (with undo/redo history).
+// Edits are commands that dispatch transactions; state is immutable.
 let state = EditorState.create({ doc, plugins: [createHistoryPlugin()] });
-const tr = state.createTransaction();
-// ...apply command steps to `tr`, then:
-state = state.apply(tr);
+const dispatch = (tr: Parameters<typeof state.apply>[0]) => {
+  state = state.apply(tr);
+};
+insertRow(createRow([createColumn([createBlock('text')])]), 0)(state, dispatch);
+undo(state, dispatch);
 
-// Validate before rendering / persisting.
-const errors = validateDocument(state.doc);
+// Validate untrusted input before rendering or storing it.
+const errors = validateDocument(welcome); // [] when valid; [{ path, message }] otherwise
 ```
 
 `PigeonDocument` is a plain JSON tree (`body → rows → columns → blocks`), so it
@@ -44,11 +51,31 @@ serialises anywhere. Render it to email HTML with
 [`@lit-pigeon/renderer-mjml`](../renderer-mjml) or
 [`@lit-pigeon/ssr`](../ssr).
 
-Also exported: the command set (`insertBlock`, `moveBlock`, `insertRow`,
-`resizeColumns`, …), `createBlock`/`createRow` factories, `undo`/`redo`, the
-block registry (`registerBlock`, `getBlockDefinition`), and in-memory storage
-adapters (`InMemoryTemplateStorage`, `InMemoryBrandKitStorage`,
-`InMemoryAssetStorage`, `InMemoryRowLibraryStorage`).
+## API summary
+
+- **Types**: `PigeonDocument`, `RowNode`, `ColumnNode`, the nine built-in block
+  types (`TextBlock`, `ImageBlock`, `ButtonBlock`, `DividerBlock`,
+  `SpacerBlock`, `SocialBlock`, `HtmlBlock`, `HeroBlock`, `NavBarBlock`),
+  `CustomBlock`/`AnyBlock`, `EditorConfig` and its parts (`AssetManagerConfig`,
+  `MergeTagConfig`, `FontDefinition`, `LinkType`), `PigeonPlugin`,
+  `BlockDefinition`, `Renderer`/`RenderOptions`/`RenderResult`.
+- **State**: `EditorState`, `Transaction`, `createDocStep`, selection helpers.
+- **Commands**: `insertBlock`, `deleteBlock`, `updateBlock`, `moveBlock`,
+  `duplicateBlock`, `insertRow`, `deleteRow`, `moveRow`, `duplicateRow`,
+  `updateRowAttributes`, `addColumn`, `removeColumn`, `resizeColumns`.
+- **History**: `createHistoryPlugin`, `undo`, `redo`, `canUndo`, `canRedo`.
+- **Factories and schema**: `createDefaultDocument`, `createBlock` (built-in or
+  registered types), `createRow`, `createColumn`, `validateDocument`,
+  `isValidDocument`. Validation accepts only the built-in block types.
+- **Block registry**: `registerBlock`, `getBlockDefinition`,
+  `getAllBlockDefinitions`, `isKnownBlockType`.
+- **Templates and storage**: `getStarterTemplates`, `getStarterTemplate`,
+  storage interfaces and in-memory implementations (`InMemoryTemplateStorage`,
+  `InMemoryBrandKitStorage`, `InMemoryAssetStorage`,
+  `InMemoryRowLibraryStorage`), `cloneRowWithNewIds`, `SYSTEM_LINK_TYPES`.
+
+See the [developer guide](../../docs/guide/README.md) for how these fit
+together.
 
 Part of [Lit Pigeon](https://github.com/snxstudio/lit-pigeon) — open-source drag-and-drop email editor.
 

@@ -1,0 +1,13 @@
+{
+  "projects": {
+    "my-app": {
+      "architect": {
+        "build": {
+          "options": {
+            "allowedCommonJsDependencies": ["mjml"]
+          }
+        }
+      }
+    }
+  }
+}

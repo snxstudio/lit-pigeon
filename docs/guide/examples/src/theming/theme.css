@@ -1,0 +1,38 @@
+/* Tokens must be set on the element itself: values on an ancestor are ignored. */
+pigeon-editor {
+  --pigeon-primary: #0f766e;
+  --pigeon-primary-hover: #115e59;
+  --pigeon-accent: #ccfbf1;
+  --pigeon-accent-foreground: #115e59;
+  --pigeon-ring: #14b8a6;
+  --pigeon-radius: 4px;
+  --pigeon-font: 'Inter', system-ui, sans-serif;
+  --pigeon-properties-width: 340px;
+}
+
+/* A rule on the element applies in every theme, so give dark mode its own values. */
+pigeon-editor[theme='dark'] {
+  --pigeon-primary: #2dd4bf;
+  --pigeon-primary-hover: #5eead4;
+  --pigeon-accent: #134e4a;
+  --pigeon-accent-foreground: #ccfbf1;
+}
+
+@media (prefers-color-scheme: dark) {
+  pigeon-editor[theme='auto'] {
+    --pigeon-primary: #2dd4bf;
+    --pigeon-primary-hover: #5eead4;
+    --pigeon-accent: #134e4a;
+    --pigeon-accent-foreground: #ccfbf1;
+  }
+}
+
+/* Parts: use them for shape and layout; use tokens for colours. */
+pigeon-editor::part(toolbar-button) {
+  border-radius: 0;
+}
+
+pigeon-editor::part(canvas-area) {
+  box-shadow: none;
+  outline: 1px solid #e2e8f0;
+}

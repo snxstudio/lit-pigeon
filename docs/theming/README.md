@@ -36,9 +36,12 @@ OS `prefers-color-scheme: dark`).
 
 ## 2. Token overrides
 
-All tokens are `--pigeon-*` custom properties defined on the editor host. They
-inherit through every internal shadow root, so overriding them anywhere above
-the editor re-skins the whole UI.
+All tokens are `--pigeon-*` custom properties defined on the editor host. Set
+them on the `pigeon-editor` element itself: the host declares its own values,
+so tokens set on an ancestor (such as `body` or a wrapper `div`) are ignored.
+From there they inherit through every internal shadow root. A rule on the
+element applies in every theme; scope dark values with
+`pigeon-editor[theme='dark']`.
 
 ### From plain CSS
 
@@ -66,12 +69,15 @@ editor.themeOverrides = {
 ```
 
 These are applied as inline custom properties on the host, on top of the active
-theme.
+theme. The editor never removes them: assigning `{}` later leaves the previous
+values in place, so clear a token with `editor.style.removeProperty(name)`.
 
 ### Token reference
 
 The full, authoritative list lives in
-[`packages/editor/src/themes/tokens.ts`](../../packages/editor/src/themes/tokens.ts).
+[`packages/editor/src/themes/tokens.ts`](../../packages/editor/src/themes/tokens.ts)
+and is tabulated in the
+[theming guide](../guide/theming-and-customisation.md#design-tokens).
 The most commonly overridden:
 
 | Token | Purpose |
@@ -98,15 +104,17 @@ The most commonly overridden:
 
 ## 3. `::part()` selectors
 
-When a token isn't enough (e.g. you want a square toolbar or a different active
-treatment), style the exposed parts. Parts are forwarded to the
-`<pigeon-editor>` boundary, so you target them from light DOM:
+When a token isn't enough (e.g. you want a square toolbar), style the exposed
+parts. Parts are forwarded to the `<pigeon-editor>` boundary, so you target
+them from light DOM. Use parts for shape and layout: in Chromium, a `::part()`
+rule does not override a colour the editor's own styles set on that element
+(for example the export button's background, which comes from
+`--pigeon-primary`), so change colours with tokens.
 
 ```css
-/* Square off the export button and recolour it */
+/* Square off the export button (recolour it with --pigeon-primary) */
 pigeon-editor::part(toolbar-button-export) {
   border-radius: 0;
-  background: #111827;
 }
 
 /* Tighten the property-panel padding */

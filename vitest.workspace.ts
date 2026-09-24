@@ -15,4 +15,5 @@ export default defineWorkspace([
   'packages/mcp-server',
   'packages/svelte',
   'packages/vue',
+  'docs/guide/examples',
 ]);

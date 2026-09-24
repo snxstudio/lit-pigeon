@@ -40,13 +40,30 @@ npx lit-pigeon-rest        # honours PORT / HOST / LIT_PIGEON_REST_TOKEN
 
 ### Endpoints
 
-`GET /health`, plus POST `/render`, `/render/mjml`, `/render/thumbnail`,
-`/validate`, `/parse`, `/lint`, and `/lint/async`. Each POST takes
-`{ document, options? }` JSON. A lower-level pure router,
+`GET /health`, plus POST `/render`, `/render/mjml`, `/render/text`,
+`/render/thumbnail`, `/validate`, `/parse`, `/lint`, and `/lint/async`. Each
+POST takes `{ document, options? }` JSON. A lower-level pure router,
 `handleRequest(jsonRequest, ctx)`, is also exported for custom transports.
 
 Rendering, parsing, and linting are powered by [`@lit-pigeon/ssr`](../ssr) and
 [`@lit-pigeon/lint`](../lint).
+
+Request bodies: `/render`, `/render/mjml`, `/render/text` and
+`/render/thumbnail` take `{ document, options? }`;
+`/validate`, `/lint` and `/lint/async` take `{ document }`; `/parse` takes
+`{ mjml }`. With `brandKitStorage` or `assetStorage` passed to
+`createHandler`, the handler also serves `GET`/`POST /brand-kits`,
+`GET`/`DELETE /brand-kits/:id`, `GET`/`POST /assets` (filtered with `folder`,
+`search`, `tags`, `limit`, `offset`), `GET`/`DELETE /assets/:id` and
+`GET /asset-folders`; without them those routes return 503. Documents with
+custom block types fail validation (400).
+
+`createHandler` options: `bearerToken` (required on every request, including
+`/health`), `maxBodyBytes` (default 5 MB), `cors` (default `'*'`; pass your
+origin or `false`), `brandKitStorage`, `assetStorage`, `thumbnailRenderer`. Mount the handler under
+a path prefix and behind your own authentication; `/lint/async` fetches every
+URL in the submitted document. See
+[Server-side](../../docs/guide/server-side.md#rest-api).
 
 `/render/thumbnail` needs a rasteriser injected, so this package pulls in no
 headless browser to serve everything else. Pass `thumbnailRenderer:
