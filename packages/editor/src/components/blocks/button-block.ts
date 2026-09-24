@@ -4,6 +4,7 @@ import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import type { ButtonBlock } from '@lit-pigeon/core';
 import type { Editor } from '@tiptap/core';
 import { loadRichTextEditor } from '../../rich-text/loader.js';
+import { sanitizeCanvasHTML } from './canvas-html.js';
 
 @customElement('pigeon-button-block')
 export class PigeonButtonBlock extends LitElement {
@@ -102,7 +103,7 @@ export class PigeonButtonBlock extends LitElement {
           href="${v.href}"
           style="${btnStyle}"
           @click=${this._preventNav}
-        >${this.editing ? html`` : unsafeHTML(inner)}</a>
+        >${this.editing ? html`` : unsafeHTML(sanitizeCanvasHTML(inner))}</a>
       </div>
     `;
   }

@@ -3,6 +3,7 @@ import { customElement, property } from 'lit/decorators.js';
 import type { HeroBlock } from '@lit-pigeon/core';
 import type { Editor } from '@tiptap/core';
 import { loadRichTextEditor } from '../../rich-text/loader.js';
+import { sanitizeCanvasHTML } from './canvas-html.js';
 
 @customElement('pigeon-hero-block')
 export class PigeonHeroBlock extends LitElement {
@@ -110,7 +111,7 @@ export class PigeonHeroBlock extends LitElement {
         ${editingHere
           ? html`<div class="content" style="${innerPadStyle}"></div>`
           : hasContent
-            ? html`<div class="content" style="${innerPadStyle}" .innerHTML=${v.content}></div>`
+            ? html`<div class="content" style="${innerPadStyle}" .innerHTML=${sanitizeCanvasHTML(v.content)}></div>`
             : html`
               <div class="empty-state">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
