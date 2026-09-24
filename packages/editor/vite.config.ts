@@ -15,7 +15,7 @@ export default defineConfig({
       output: {
         // Give the lazy-loaded rich-text bundle a stable name so size-limit
         // can target it predictably.
-        manualChunks(id) {
+        manualChunks(id, { getModuleInfo }) {
           // loader/controller/types are shared between the main entry and
           // the lazy rich-text graph (they only touch TipTap via type-only
           // imports). Pin them to a tiny bridge chunk: if Rollup places
@@ -27,6 +27,12 @@ export default defineConfig({
           }
           if (id.includes('/src/rich-text/') || id.includes('/@tiptap/')) {
             return 'rich-text';
+          }
+          // Main-graph modules the rich-text graph also imports (e.g. the
+          // link-type picker in the bubble menu) go to the bridge too, or
+          // Rollup pulls them into the lazy chunk with the same eager result.
+          if (id.includes('/src/') && getModuleInfo(id)?.importers.some((i) => i.includes('/src/rich-text/'))) {
+            return 'rich-text-bridge';
           }
           if (id.includes('/src/components/templates/')) {
             return 'templates';

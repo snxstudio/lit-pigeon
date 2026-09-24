@@ -21,5 +21,5 @@ export function renderHtmlBlock(block: HtmlBlock): string {
   const paddingStr = spacingToMjml(padding);
   const safeContent = escapeMjRawTags(content);
 
-  return `<mj-raw><div style="padding: ${paddingStr};">${safeContent}</div></mj-raw>`;
+  return `<mj-raw><div class="lp-html" style="padding: ${paddingStr};">${safeContent}</div></mj-raw>`;
 }
