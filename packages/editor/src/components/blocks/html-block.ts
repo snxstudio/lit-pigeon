@@ -84,7 +84,9 @@ export class PigeonHtmlBlock extends LitElement {
     const frame = e.target as HTMLIFrameElement;
     this._resizer?.disconnect();
     this._resizer = new ResizeObserver(() => {
-      frame.style.height = `${frame.contentDocument!.body.scrollHeight}px`;
+      // A replaced document detaches the frame, and its contentDocument goes null.
+      const body = frame.contentDocument?.body;
+      if (body) frame.style.height = `${body.scrollHeight}px`;
     });
     this._resizer.observe(frame);
   }

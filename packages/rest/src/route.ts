@@ -8,6 +8,7 @@ import {
   parseMjml,
   renderDocument,
   renderDocumentToMjml,
+  renderDocumentToText,
   validateDocumentSafe,
   type RenderDocumentOptions,
 } from '@lit-pigeon/ssr';
@@ -73,6 +74,8 @@ export async function handleRequest(req: JsonRequest, ctx: RouteContext = {}): P
       return handleRender(req.body);
     case '/render/mjml':
       return handleRenderMjml(req.body);
+    case '/render/text':
+      return handleRenderText(req.body);
     case '/validate':
       return handleValidate(req.body);
     case '/parse':
@@ -106,6 +109,15 @@ async function handleRenderMjml(body: unknown): Promise<JsonResponse> {
     outlookWorkarounds: parsed.options.outlookWorkarounds,
   });
   return { status: 200, body: mjml, contentType: 'text/plain; charset=utf-8' };
+}
+
+async function handleRenderText(body: unknown): Promise<JsonResponse> {
+  const parsed = readDocAndOptions(body);
+  if ('error' in parsed) return json(400, { error: parsed.error });
+  const v = validateDocumentSafe(parsed.document);
+  if (!v.valid) return json(400, { error: 'Invalid document', validationErrors: v.errors });
+  const text = renderDocumentToText(parsed.document, parsed.options);
+  return { status: 200, body: text, contentType: 'text/plain; charset=utf-8' };
 }
 
 async function handleValidate(body: unknown): Promise<JsonResponse> {

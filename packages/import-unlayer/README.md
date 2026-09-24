@@ -96,6 +96,14 @@ who receives the content, so the importer reports the condition by name and
 leaves the row unconditional for you to re-add.
 
 Mobile `_override` values and `hideDesktop` / `hideMobile` are not yet mapped.
+Rows Unlayer marks as locked are imported with `locked: true`, but the editor
+does not enforce locking yet
+([#65](https://github.com/snxstudio/lit-pigeon/issues/65)). HTML blocks are
+passed through verbatim, so review imported designs before loading them into
+the editor; see [Security](../../docs/guide/security.md).
+
+A step-by-step migration, including mapping Unlayer's API calls and merge
+tags, is in [Migrating from Unlayer](../../docs/guide/migrating-from-unlayer.md).
 
 ## Licence
 

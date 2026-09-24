@@ -7,7 +7,12 @@ import {
   getStarterTemplate,
   type PigeonDocument,
 } from '@lit-pigeon/core';
-import { renderDocument, renderDocumentToMjml, renderTemplate } from '../src/index.js';
+import {
+  renderDocument,
+  renderDocumentToMjml,
+  renderDocumentToText,
+  renderTemplate,
+} from '../src/index.js';
 
 function docWithText(content: string): PigeonDocument {
   const doc = createDefaultDocument('Test');
@@ -56,5 +61,22 @@ describe('renderTemplate', () => {
     const result = await renderTemplate(tpl!);
     expect(result.errors).toEqual([]);
     expect(result.html).toContain('<!doctype html');
+  });
+});
+
+describe('renderDocumentToText', () => {
+  it('renders the plain-text part with merge tags left for the ESP', () => {
+    const doc = docWithText('<p>Hello {{name}}, <a href="https://example.com">visit us</a></p>');
+    expect(renderDocumentToText(doc)).toBe('Hello {{name}}, visit us (https://example.com)\n');
+  });
+
+  it('substitutes merge-tag values without HTML-escaping them', () => {
+    const doc = docWithText('<p>Hello {{name}} {{missing}}</p>');
+    expect(renderDocumentToText(doc, { mergeTags: { name: 'Tom & Jerry' } })).toBe(
+      'Hello Tom & Jerry {{missing}}\n',
+    );
+    expect(
+      renderDocumentToText(doc, { mergeTags: { name: 'A' }, mergeTagFallback: '' }),
+    ).toBe('Hello A \n');
   });
 });
