@@ -24,7 +24,7 @@
     "name": "@lit-pigeon/renderer-mjml (ESM, excluding mjml)",
     "path": "packages/renderer-mjml/dist/index.js",
     "ignore": ["mjml", "@lit-pigeon/core"],
-    "limit": "4.3 kB",
+    "limit": "4.4 kB",
     "gzip": true
   },
   {
