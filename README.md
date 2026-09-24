@@ -511,12 +511,32 @@ A separate track that any AI tool — Cursor, Windsurf, custom agents, raw LLM p
 - `ContentBlock` remains a `type` union rather than an interface map, so consumers still widen with `AppBlock = ContentBlock | CustomBlock` rather than declaration-merging new kinds. An interface-map shape is a possible v1.0 (breaking) change.
 - Property-panel CSS is shared via `panel-styles.ts` across all 12 property panels — each composes the common field/label/input/select/textarea rules and keeps only its panel-specific styles alongside. This was a maintainability win, **not** a size one — gzip already dedupes the repeated CSS, so the editor's size budget reflects genuine feature growth (tokens, device frame, parts, custom panel), not duplication.
 
+### v0.6 -- Competitive parity (gap analysis 2026-09-23)
+
+Ranked by adoption impact for a team choosing an embeddable email editor, against Unlayer, Beefree, Stripo, Topol, Chamaileon, GrapesJS, Easy Email, EmailBuilder.js, Maily, React Email and Templatical.
+
+- [ ] Canvas sanitisation for text, hero and button blocks ([#95](https://github.com/snxstudio/lit-pigeon/issues/95)) (security; preview and html blocks are already sandboxed)
+- [ ] Proof of inbox rendering: fill the compatibility matrix with real screenshots ([#100](https://github.com/snxstudio/lit-pigeon/issues/100), [#9](https://github.com/snxstudio/lit-pigeon/issues/9), [#17](https://github.com/snxstudio/lit-pigeon/issues/17))
+- [ ] Block-level display conditions ([#26](https://github.com/snxstudio/lit-pigeon/issues/26)), then loops / repeat blocks with ESP syntax adapters ([#99](https://github.com/snxstudio/lit-pigeon/issues/99))
+- [ ] Hide on mobile / desktop per block and column ([#69](https://github.com/snxstudio/lit-pigeon/issues/69), [#25](https://github.com/snxstudio/lit-pigeon/issues/25))
+- [ ] Read-only mode and enforced row locking ([#66](https://github.com/snxstudio/lit-pigeon/issues/66), [#65](https://github.com/snxstudio/lit-pigeon/issues/65), [#31](https://github.com/snxstudio/lit-pigeon/issues/31))
+- [ ] Plain-text export ([#67](https://github.com/snxstudio/lit-pigeon/issues/67))
+- [ ] Faithful MJML defaults on import ([#96](https://github.com/snxstudio/lit-pigeon/issues/96)); keep comments and wrappers through inline edits ([#97](https://github.com/snxstudio/lit-pigeon/issues/97))
+- [ ] `/migrate-from-unlayer` playground page ([#70](https://github.com/snxstudio/lit-pigeon/issues/70))
+- [ ] Version history / autosave through a storage provider ([#30](https://github.com/snxstudio/lit-pigeon/issues/30))
+- [ ] UI locale files beyond English (i18n/RTL infrastructure shipped in ([#21](https://github.com/snxstudio/lit-pigeon/issues/21))) ([#98](https://github.com/snxstudio/lit-pigeon/issues/98))
+- [ ] Template gallery depth ([#29](https://github.com/snxstudio/lit-pigeon/issues/29))
+- [ ] In-editor AI assistant with a bring-your-own endpoint ([#27](https://github.com/snxstudio/lit-pigeon/issues/27))
+- [ ] Size and feature benchmark page ([#101](https://github.com/snxstudio/lit-pigeon/issues/101))
+- [ ] Thumbnail export ([#68](https://github.com/snxstudio/lit-pigeon/issues/68), [#32](https://github.com/snxstudio/lit-pigeon/issues/32))
+- [ ] Comments, then real-time collaboration ([#18](https://github.com/snxstudio/lit-pigeon/issues/18))
+
 ### Future
-- [ ] AI-powered content suggestions
-- [ ] Email client preview (Gmail, Outlook, Apple Mail rendering)
 - [ ] A/B testing block variants
 - [ ] Analytics integration (open/click tracking placeholders)
-- [ ] Internationalization (i18n)
+- [ ] Image editor (crop / resize)
+- [ ] Synced blocks (edit once, update everywhere)
+- [ ] AMP for email ([#33](https://github.com/snxstudio/lit-pigeon/issues/33))
 
 ---
 

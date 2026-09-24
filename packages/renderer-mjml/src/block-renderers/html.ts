@@ -9,8 +9,11 @@ import { spacingToMjml } from '../utils/spacing.js';
 // forms accept exactly the same strings.
 const MJ_RAW_TAG = /<(\s*(?:\/\s*)?mj-raw\b[^>]*)>/gi;
 
+// Every match ends at a `>`, so only the content up to the last one is
+// searched: otherwise each `<mj-raw` with no `>` after it scans to the end.
 function escapeMjRawTags(content: string): string {
-  return content.replace(MJ_RAW_TAG, '&lt;$1&gt;');
+  const end = content.lastIndexOf('>') + 1;
+  return content.slice(0, end).replace(MJ_RAW_TAG, '&lt;$1&gt;') + content.slice(end);
 }
 
 export function renderHtmlBlock(block: HtmlBlock): string {
@@ -18,5 +21,5 @@ export function renderHtmlBlock(block: HtmlBlock): string {
   const paddingStr = spacingToMjml(padding);
   const safeContent = escapeMjRawTags(content);
 
-  return `<mj-raw><div style="padding: ${paddingStr};">${safeContent}</div></mj-raw>`;
+  return `<mj-raw><div class="lp-html" style="padding: ${paddingStr};">${safeContent}</div></mj-raw>`;
 }
