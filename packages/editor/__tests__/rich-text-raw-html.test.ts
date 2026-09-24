@@ -86,7 +86,7 @@ describe('editing a block that contains scaffolding', () => {
     document.body.innerHTML = '';
   });
 
-  async function editAndCommit(initialHTML: string, edit: (editor: import('@tiptap/core').Editor) => void) {
+  async function editAndCommit(initialHTML: string, edit: (editor: import('@tiptap/core').Editor) => void | Promise<void>) {
     const mod = await loadRichTextEditor();
     const host = document.createElement('div');
     document.body.appendChild(host);
@@ -98,7 +98,7 @@ describe('editing a block that contains scaffolding', () => {
         committed = html;
       },
     });
-    edit(editor);
+    await edit(editor);
     editor.destroy();
     host.remove();
     return committed;
@@ -118,6 +118,18 @@ describe('editing a block that contains scaffolding', () => {
     });
     expect(out).toContain('New Headline');
     expect(out).toContain(HERO_BUTTON);
+  });
+
+  it.each([
+    ['an Outlook conditional', `<p>Hi</p>${MSO}`, MSO],
+    ['a hero button', `<p>Headline</p>${HERO_BUTTON}`, HERO_BUTTON.slice(HERO_BUTTON.indexOf('<table'), HERO_BUTTON.indexOf('</div>'))],
+  ])('keeps %s that ends the block when the user types at the autofocus position', async (_, html, kept) => {
+    const out = await editAndCommit(html, async (editor) => {
+      await new Promise((r) => editor.on('create', r));
+      editor.commands.insertContent('!');
+    });
+    expect(out).toContain(kept);
+    expect(out).toContain('!');
   });
 
   it('keeps an inline comment after the user types', async () => {

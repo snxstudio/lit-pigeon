@@ -1,4 +1,6 @@
 import { Editor } from '@tiptap/core';
+import { NodeSelection } from '@tiptap/pm/state';
+import { GapCursor } from '@tiptap/pm/gapcursor';
 import { buildBaseExtensions } from './extensions/base.js';
 import { sanitizeHTML } from './serialization.js';
 import { preprocessForEditor } from './preprocess.js';
@@ -15,6 +17,14 @@ export function createEditor(opts: CreateEditorOptions): Editor {
     extensions: buildBaseExtensions(store),
     content: preprocessForEditor(holdRawFragments(opts.initialHTML || '<p></p>', store)),
     autofocus: 'end',
+    onCreate: ({ editor: e }) => {
+      // `autofocus: 'end'` selects a held fragment that ends the block, so the
+      // first keystroke would replace it. Put the cursor after it instead.
+      const { selection, tr } = e.state;
+      if (selection instanceof NodeSelection) {
+        e.view.dispatch(tr.setSelection(new GapCursor(tr.doc.resolve(selection.to))));
+      }
+    },
     editorProps: {
       handleKeyDown: (_view, event) => {
         if (event.key === 'Escape') {
