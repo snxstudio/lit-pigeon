@@ -152,6 +152,13 @@ const messages: Record<string, string> = {
   'panel.button.fontWeight.medium': 'متوسط (500)',
   'panel.button.fontWeight.semibold': 'شبه عريض (600)',
   'panel.button.fontWeight.bold': 'عريض (700)',
+  'panel.button.border': 'الحدود',
+  'panel.button.borderNone': 'بلا',
+  'panel.button.borderSolid': 'متصل',
+  'panel.button.borderDashed': 'متقطع',
+  'panel.button.borderDotted': 'منقط',
+  'panel.button.borderWidth': 'عرض الحدود',
+  'panel.button.borderColor': 'لون الحدود',
   'panel.button.fullWidth': 'العرض الكامل',
 
   // property panels — image

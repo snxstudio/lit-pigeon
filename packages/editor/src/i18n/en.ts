@@ -154,6 +154,13 @@ export const EN_MESSAGES: Record<string, string> = {
   'panel.button.fontWeight.medium': 'Medium (500)',
   'panel.button.fontWeight.semibold': 'Semibold (600)',
   'panel.button.fontWeight.bold': 'Bold (700)',
+  'panel.button.border': 'Border',
+  'panel.button.borderNone': 'None',
+  'panel.button.borderSolid': 'Solid',
+  'panel.button.borderDashed': 'Dashed',
+  'panel.button.borderDotted': 'Dotted',
+  'panel.button.borderWidth': 'Border Width',
+  'panel.button.borderColor': 'Border Color',
   'panel.button.fullWidth': 'Full Width',
 
   // property panels — image

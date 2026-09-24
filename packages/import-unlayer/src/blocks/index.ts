@@ -1,4 +1,4 @@
-import type { ContentBlock } from '@lit-pigeon/core';
+import type { Border, ContentBlock } from '@lit-pigeon/core';
 import { generateId } from '@lit-pigeon/core';
 import type { UnlayerContent } from '../types.js';
 import type { ImportWarning } from '../warnings.js';
@@ -111,7 +111,25 @@ function imageBlock(v: Record<string, unknown>): ContentBlock {
   };
 }
 
+/**
+ * Unlayer stores a button border per side (`borderTopWidth` and friends) and
+ * writes `"none"` on every side when there is none. The document model has one
+ * border for all four, so the top side is what comes across — the same side
+ * `dividerBlock` reads.
+ */
+function buttonBorder(value: unknown): Border | undefined {
+  const width = px(dig(value, 'borderTopWidth'), 0);
+  const style = str(dig(value, 'borderTopStyle'), 'solid');
+  if (width <= 0 || style === 'none' || style === 'hidden') return undefined;
+  return {
+    width,
+    style: style === 'dashed' || style === 'dotted' ? style : 'solid',
+    color: color(dig(value, 'borderTopColor')) ?? '#000000',
+  };
+}
+
 function buttonBlock(v: Record<string, unknown>): ContentBlock {
+  const border = buttonBorder(v.border);
   return {
     id: generateId(),
     type: 'button',
@@ -121,6 +139,7 @@ function buttonBlock(v: Record<string, unknown>): ContentBlock {
       backgroundColor: color(dig(v, 'buttonColors', 'backgroundColor')) ?? '#3b82f6',
       textColor: color(dig(v, 'buttonColors', 'color')) ?? '#ffffff',
       borderRadius: px(v.borderRadius, 4),
+      ...(border ? { border } : {}),
       padding: parseSpacing(v.containerPadding, 10),
       innerPadding: parseSpacing(v.padding, 12),
       fontSize: px(v.fontSize, 16),

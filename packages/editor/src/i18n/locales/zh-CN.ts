@@ -152,6 +152,13 @@ const messages: Record<string, string> = {
   'panel.button.fontWeight.medium': '中等 (500)',
   'panel.button.fontWeight.semibold': '半粗 (600)',
   'panel.button.fontWeight.bold': '粗体 (700)',
+  'panel.button.border': '边框',
+  'panel.button.borderNone': '无',
+  'panel.button.borderSolid': '实线',
+  'panel.button.borderDashed': '虚线',
+  'panel.button.borderDotted': '点线',
+  'panel.button.borderWidth': '边框宽度',
+  'panel.button.borderColor': '边框颜色',
   'panel.button.fullWidth': '全宽',
 
   // property panels — image

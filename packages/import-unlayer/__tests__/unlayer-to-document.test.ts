@@ -161,6 +161,43 @@ describe('block conversion', () => {
     });
   });
 
+  it('maps an outline button\'s border from the top side Unlayer writes', () => {
+    const { document } = unlayerToDocument(
+      design([
+        row([
+          {
+            type: 'button',
+            values: {
+              text: 'Read more',
+              border: {
+                borderTopWidth: '2px',
+                borderTopStyle: 'dashed',
+                borderTopColor: '#e8590c',
+                borderRightWidth: '2px',
+                borderRightStyle: 'dashed',
+                borderRightColor: '#e8590c',
+              },
+            },
+          },
+        ]),
+      ]),
+    );
+    expect(document.body.rows[0].columns[0].blocks[0].values).toMatchObject({
+      border: { width: 2, style: 'dashed', color: '#e8590c' },
+    });
+  });
+
+  it.each([
+    ['no border key', {}],
+    ['a border Unlayer has switched off', { border: { borderTopWidth: '0px', borderTopStyle: 'none' } }],
+    ['a zero-width border', { border: { borderTopWidth: '0px', borderTopStyle: 'solid', borderTopColor: '#000' } }],
+  ])('imports a button with %s as borderless', (_name, values) => {
+    const { document } = unlayerToDocument(
+      design([row([{ type: 'button', values: { text: 'Buy', ...values } }])]),
+    );
+    expect(document.body.rows[0].columns[0].blocks[0].values).not.toHaveProperty('border');
+  });
+
   it.each([
     ['a keyword weight', { fontWeight: 'normal' }, 'normal'],
     ['a numeric weight', { fontWeight: 400 }, '400'],

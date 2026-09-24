@@ -1,6 +1,6 @@
 import { LitElement, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import type { BrandColor, ButtonBlock, LinkType, Spacing } from '@lit-pigeon/core';
+import type { Border, BrandColor, ButtonBlock, LinkType, Spacing } from '@lit-pigeon/core';
 import { panelStyles } from './panel-styles.js';
 import '../controls/alignment-picker.js';
 import '../controls/spacing-input.js';
@@ -81,6 +81,35 @@ export class PigeonButtonPanel extends LitElement {
         step=${1}
         @slider-change=${this._onBorderRadiusChange}
       ></pigeon-slider-input>
+
+      <div class="field">
+        <label>${t('panel.button.border')}</label>
+        <select @change=${this._onBorderStyleChange}>
+          <option value="none" ?selected=${!v.border}>${t('panel.button.borderNone')}</option>
+          <option value="solid" ?selected=${v.border?.style === 'solid'}>${t('panel.button.borderSolid')}</option>
+          <option value="dashed" ?selected=${v.border?.style === 'dashed'}>${t('panel.button.borderDashed')}</option>
+          <option value="dotted" ?selected=${v.border?.style === 'dotted'}>${t('panel.button.borderDotted')}</option>
+        </select>
+      </div>
+
+      ${v.border ? html`
+        <pigeon-slider-input
+          label=${t('panel.button.borderWidth')}
+          .value=${v.border.width}
+          min=${1}
+          max=${10}
+          step=${1}
+          unit="px"
+          @slider-change=${this._onBorderWidthChange}
+        ></pigeon-slider-input>
+
+        <pigeon-color-picker
+          label=${t('panel.button.borderColor')}
+          .value=${v.border.color}
+          .swatches=${this.swatches}
+          @color-change=${this._onBorderColorChange}
+        ></pigeon-color-picker>
+      ` : ''}
 
       <pigeon-slider-input
         label=${t('panel.common.fontSize')}
@@ -187,6 +216,38 @@ export class PigeonButtonPanel extends LitElement {
 
   private _onBorderRadiusChange(e: CustomEvent<{ value: number }>) {
     this._emit({ borderRadius: e.detail.value });
+  }
+
+  /**
+   * "None" clears the border rather than storing a zero-width one, so the
+   * renderer leaves the attribute off and MJML's own `border: none` stands.
+   * Turning one on starts from the text colour, which is the edge an outline
+   * button almost always wants.
+   */
+  private _onBorderStyleChange(e: Event) {
+    const style = (e.target as HTMLSelectElement).value as Border['style'] | 'none';
+    if (style === 'none') {
+      this._emit({ border: undefined });
+      return;
+    }
+    const current = this.block.values.border;
+    this._emit({
+      border: {
+        width: current?.width ?? 1,
+        style,
+        color: current?.color ?? this.block.values.textColor,
+      },
+    });
+  }
+
+  private _onBorderWidthChange(e: CustomEvent<{ value: number }>) {
+    const border = this.block.values.border;
+    if (border) this._emit({ border: { ...border, width: e.detail.value } });
+  }
+
+  private _onBorderColorChange(e: CustomEvent<{ value: string }>) {
+    const border = this.block.values.border;
+    if (border) this._emit({ border: { ...border, color: e.detail.value } });
   }
 
   private _onFontSizeChange(e: CustomEvent<{ value: number }>) {
