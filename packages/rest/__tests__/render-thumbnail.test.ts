@@ -88,6 +88,31 @@ describe('POST /render/thumbnail', () => {
     expect((res.body as { error: string }).error).toBe('something else broke');
   });
 
+  it.each([
+    ['width', 4001],
+    ['height', 8001],
+    ['deviceScaleFactor', 5],
+    ['width', 0],
+    ['height', -1],
+    ['deviceScaleFactor', 'big'],
+  ])('rejects an out-of-range %s (%p) with 400 before rendering', async (key, value) => {
+    const renderer = vi.fn<ThumbnailRenderer>(ok);
+    const res = await post({ document: document(), options: { [key]: value } }, renderer);
+    expect(res.status).toBe(400);
+    expect((res.body as { error: string }).error).toContain(key);
+    expect(renderer).not.toHaveBeenCalled();
+  });
+
+  it('allows dimensions at the bounds', async () => {
+    const renderer = vi.fn<ThumbnailRenderer>(ok);
+    const res = await post(
+      { document: document(), options: { width: 4000, height: 8000, deviceScaleFactor: 4 } },
+      renderer,
+    );
+    expect(res.status).toBe(200);
+    expect(renderer).toHaveBeenCalled();
+  });
+
   it('is POST-only', async () => {
     const res = await handleRequest(
       { method: 'GET', path: '/render/thumbnail', body: null },

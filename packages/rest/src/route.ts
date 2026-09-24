@@ -131,6 +131,27 @@ async function handleRenderMjml(body: unknown): Promise<JsonResponse> {
 
 const SERVER_ONLY_THUMBNAIL_OPTIONS = ['executablePath', 'browserArgs', 'launch'];
 
+// The capture is allocated at width x height x scale^2 pixels, so an
+// unbounded request can exhaust the server's memory without ever tripping the
+// time budget. These cover any thumbnail worth rendering; past them the
+// caller wants a full-page render, not a preview.
+const THUMBNAIL_BOUNDS = {
+  width: 4000,
+  height: 8000,
+  deviceScaleFactor: 4,
+} as const;
+
+function outOfBoundsThumbnailOption(options: Record<string, unknown>): string | null {
+  for (const [key, max] of Object.entries(THUMBNAIL_BOUNDS)) {
+    const value = options[key];
+    if (value === undefined) continue;
+    if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0 || value > max) {
+      return `\`${key}\` must be a number between 1 and ${max}.`;
+    }
+  }
+  return null;
+}
+
 async function handleRenderThumbnail(body: unknown, ctx: RouteContext): Promise<JsonResponse> {
   if (!ctx.thumbnailRenderer) {
     return json(503, {
@@ -145,6 +166,8 @@ async function handleRenderThumbnail(body: unknown, ctx: RouteContext): Promise<
   if (!v.valid) return json(400, { error: 'Invalid document', validationErrors: v.errors });
   const options: Record<string, unknown> = { ...parsed.options };
   for (const key of SERVER_ONLY_THUMBNAIL_OPTIONS) delete options[key];
+  const outOfBounds = outOfBoundsThumbnailOption(options);
+  if (outOfBounds) return json(400, { error: outOfBounds });
   try {
     return json(200, await ctx.thumbnailRenderer(parsed.document, options));
   } catch (err) {
