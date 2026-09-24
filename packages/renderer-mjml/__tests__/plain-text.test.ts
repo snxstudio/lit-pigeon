@@ -49,6 +49,17 @@ describe('documentToPlainText', () => {
     expect(text).toBe('https://example.com here\n');
   });
 
+  it('reads href and alt, not attributes that end in those names', () => {
+    const text = documentToPlainText(
+      docWith(
+        createBlock('html', {
+          content: '<a data-href="https://other.test" href="https://x.test">Go</a> <img data-alt="no" alt="Logo">',
+        }),
+      ),
+    );
+    expect(text).toBe('Go (https://x.test) Logo\n');
+  });
+
   it('renders buttons as "LABEL: url"', () => {
     const text = documentToPlainText(
       docWith(createBlock('button', { content: '<p>Shop now</p>', href: 'https://shop.example.com' })),

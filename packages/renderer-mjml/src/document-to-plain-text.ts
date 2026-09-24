@@ -24,7 +24,7 @@ function decodeEntities(value: string): string {
 }
 
 function readAttr(attrs: string, name: string): string {
-  const match = new RegExp(`\\b${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`, 'i').exec(attrs);
+  const match = new RegExp(`(?:^|\\s)${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`, 'i').exec(attrs);
   return match ? decodeEntities(match[1] ?? match[2] ?? match[3]) : '';
 }
 
