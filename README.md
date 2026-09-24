@@ -11,6 +11,7 @@
 
 <p align="center">
   <a href="https://lit-pigeon.wearesnx.studio/">Live Demo</a> &middot;
+  <a href="https://lit-pigeon.wearesnx.studio/migrate-from-unlayer/">Migrate from Unlayer</a> &middot;
   <a href="#quick-start">Quick Start</a> &middot;
   <a href="#packages">Packages</a> &middot;
   <a href="#usage">Usage</a> &middot;
@@ -59,6 +60,8 @@ There is no truly open-source, self-hosted, framework-agnostic drag-and-drop ema
 | **Stripo, Chamaileon, Beefree** | Proprietary, vendor lock-in |
 
 **Lit Pigeon** fills this gap: a fully open-source (MIT), framework-agnostic, high-performance email editor that works in React, Vue, Angular, Svelte, and vanilla JS with a single codebase.
+
+Measured bundle sizes and a sourced feature matrix are in [docs/comparison.md](docs/comparison.md).
 
 ### Design Principles
 

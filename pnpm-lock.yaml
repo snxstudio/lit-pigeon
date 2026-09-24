@@ -80,6 +80,9 @@ importers:
       '@lit-pigeon/editor':
         specifier: workspace:*
         version: link:../../packages/editor
+      '@lit-pigeon/import-unlayer':
+        specifier: workspace:*
+        version: link:../../packages/import-unlayer
       '@lit-pigeon/renderer-mjml':
         specifier: workspace:*
         version: link:../../packages/renderer-mjml
