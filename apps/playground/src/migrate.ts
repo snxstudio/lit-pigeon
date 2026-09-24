@@ -128,7 +128,7 @@ document.getElementById('coverage-blocks')!.innerHTML = BLOCK_TYPES.map((type) =
   const block = doc.body.rows[0]?.columns[0]?.blocks[0];
   const result = block
     ? `<span class="yes">✓</span> <code>${esc(block.type)}</code> block`
-    : `<span class="no">✗</span> dropped, with a <code>${esc(warnings[0]?.code ?? 'warning')}</code> warning`;
+    : `<span class="no">✗</span> dropped, with the <code>${esc(warnings[0]?.code ?? 'warning')}</code> warning`;
   return `<tr><td><code>${esc(type)}</code></td><td>${result}</td></tr>`;
 }).join('');
 

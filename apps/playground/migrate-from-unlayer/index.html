@@ -342,7 +342,7 @@
       <div class="container">
         <span class="kicker">Change of address · Unlayer → Lit Pigeon</span>
         <h1>Bring your Unlayer templates.<br><em>Leave the lock-in.</em></h1>
-        <p class="lede">Paste the design JSON that Unlayer's <code>editor.saveDesign()</code> returns. It opens in the Lit Pigeon editor, with a list of anything that did not convert, and you can download it as MJML, HTML or Lit Pigeon JSON.</p>
+        <p class="lede">Paste the design JSON that Unlayer's <code>editor.saveDesign()</code> passes to its callback (<a href="https://github.com/unlayer/react-email-editor#readme" target="_blank" rel="noopener">documented in the react-email-editor README</a>). It opens in the Lit Pigeon editor, with a list of anything that did not convert, and you can download it as MJML, HTML or Lit Pigeon JSON.</p>
         <p class="privacy"><strong>Stays on your machine.</strong> The conversion runs in this page. Your design is not uploaded anywhere, and there is no sign-up.</p>
       </div>
     </section>
@@ -432,6 +432,7 @@ const { document, warnings } = unlayerToDocument(design);</code></pre>
       <li><a href="https://github.com/snxstudio/lit-pigeon" target="_blank" rel="noopener">GitHub</a></li>
       <li><a href="https://www.npmjs.com/package/@lit-pigeon/import-unlayer" target="_blank" rel="noopener">npm</a></li>
     </ul>
+    <p class="note">Unlayer is a trademark of its owner. Lit Pigeon is an independent project and is not affiliated with or endorsed by Unlayer.</p>
   </footer>
 
   <div class="airmail airmail--thin" aria-hidden="true"></div>
