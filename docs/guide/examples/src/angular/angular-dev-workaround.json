@@ -1,0 +1,20 @@
+{
+  "projects": {
+    "my-app": {
+      "architect": {
+        "build": {
+          "configurations": {
+            "development": {
+              "conditions": ["module", "production"]
+            }
+          }
+        },
+        "serve": {
+          "options": {
+            "prebundle": false
+          }
+        }
+      }
+    }
+  }
+}

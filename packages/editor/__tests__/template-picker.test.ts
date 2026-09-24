@@ -63,11 +63,12 @@ describe('pigeon-template-picker', () => {
 
   it('renders one card per template from storage.list()', async () => {
     const storage = new InMemoryTemplateStorage();
+    const templates = await storage.list(); // resolves the lazily loaded gallery first
     const el = await mountPicker(storage);
 
     const cards = el.shadowRoot!.querySelectorAll('.template-card');
     const starters = getStarterTemplates();
-    expect(cards.length).toBe(starters.length);
+    expect(cards.length).toBe(templates.length);
     // Card displays template name
     const firstCardText = (cards[0] as HTMLElement).textContent ?? '';
     expect(firstCardText).toContain(starters[0].name);

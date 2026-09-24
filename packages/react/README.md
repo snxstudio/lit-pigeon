@@ -40,9 +40,21 @@ function App() {
 | `onPreview` | `pigeon:preview` | `void` |
 | `onExport` | `pigeon:export` | `void` |
 
-Set the initial document and config as props (they are assigned as live DOM
-properties, never stringified). Core types — `PigeonDocument`, `EditorConfig`,
-`Selection`, `ContentBlock`, and friends — are re-exported for convenience.
+Every element property is also a prop (`document`, `config`, `renderer`,
+`documentToMjml`, `theme`, `themeOverrides`, `templateStorage`,
+`assetStorage`), assigned as a DOM property rather than an attribute. Keep
+object props stable between renders; a new `document` object reloads the
+editor and resets undo history.
+
+There are no props for the export, merge-tag or storage-error events, and no
+methods on the component. Attach a `ref` (typed as `PigeonEditor` from
+`@lit-pigeon/editor`) to call `exportHtml()`, `exportMjml()`,
+`loadDocument()` and the rest, or to add other listeners. `pigeon:change` also
+fires when a document is loaded and when only the selection changes.
+
+Core types (`PigeonDocument`, `EditorConfig`, `Selection`, `ContentBlock`,
+`RowNode`, `ColumnNode`, `BlockType`, `Spacing`) are re-exported. A full
+example is in [Getting started](../../docs/guide/getting-started.md#react).
 
 Part of [Lit Pigeon](https://github.com/snxstudio/lit-pigeon) — open-source drag-and-drop email editor.
 

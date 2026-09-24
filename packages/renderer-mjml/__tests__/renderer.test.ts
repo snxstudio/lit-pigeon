@@ -140,6 +140,35 @@ describe('documentToMjml', () => {
       expect(rawOpen).toBe(rawClose);
     });
 
+    it('escapes mj-raw tags in linear time, whatever whitespace precedes them', () => {
+      // `<` followed by a long run of spaces is the worst case for the escape
+      // pattern: it used to backtrack quadratically before failing to match.
+      const doc = createDefaultDocument('Test');
+      const content = `<${' '.repeat(50_000)}</ mj-raw >`;
+      doc.body.rows = [createRow([createColumn([createBlock('html', { content })])])];
+
+      const start = performance.now();
+      const mjml = documentToMjml(doc);
+      const elapsed = performance.now() - start;
+
+      // Quadratic backtracking puts this in the minutes; linear is a few ms.
+      // One second leaves room for a loaded CI runner without letting a
+      // regression through.
+      expect(elapsed).toBeLessThan(1000);
+      expect(mjml).toContain('&lt;/ mj-raw &gt;');
+    });
+
+    it('escapes mj-raw tags in linear time when no > follows them', () => {
+      const doc = createDefaultDocument('Test');
+      const content = `</mj-raw>${'<mj-raw'.repeat(20_000)}`;
+      doc.body.rows = [createRow([createColumn([createBlock('html', { content })])])];
+
+      const start = performance.now();
+      const mjml = documentToMjml(doc);
+      expect(performance.now() - start).toBeLessThan(1000);
+      expect(mjml).toContain(`&lt;/mj-raw&gt;${'<mj-raw'.repeat(20_000)}</div>`);
+    });
+
     it('should preserve benign html content unchanged', () => {
       const doc = createDefaultDocument('Test');
       const htmlBlock = createBlock('html', {
