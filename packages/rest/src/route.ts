@@ -35,8 +35,10 @@ export interface JsonResponse {
  * package satisfies it.
  *
  * Only the render options common to every endpoint are named here; the
- * request's `options` object is forwarded whole, so thumbnail-specific keys
- * such as `width` or `timeoutMs` reach the renderer untouched.
+ * request's `options` object is forwarded, so thumbnail-specific keys such as
+ * `width` or `timeoutMs` reach the renderer untouched. The keys that choose
+ * which binary runs and with which flags are dropped first: they belong to
+ * whoever configured the server, not to the caller.
  */
 export type ThumbnailRenderer = (
   doc: PigeonDocument,
@@ -127,6 +129,8 @@ async function handleRenderMjml(body: unknown): Promise<JsonResponse> {
   return { status: 200, body: mjml, contentType: 'text/plain; charset=utf-8' };
 }
 
+const SERVER_ONLY_THUMBNAIL_OPTIONS = ['executablePath', 'browserArgs', 'launch'];
+
 async function handleRenderThumbnail(body: unknown, ctx: RouteContext): Promise<JsonResponse> {
   if (!ctx.thumbnailRenderer) {
     return json(503, {
@@ -139,8 +143,10 @@ async function handleRenderThumbnail(body: unknown, ctx: RouteContext): Promise<
   if ('error' in parsed) return json(400, { error: parsed.error });
   const v = validateDocumentSafe(parsed.document);
   if (!v.valid) return json(400, { error: 'Invalid document', validationErrors: v.errors });
+  const options: Record<string, unknown> = { ...parsed.options };
+  for (const key of SERVER_ONLY_THUMBNAIL_OPTIONS) delete options[key];
   try {
-    return json(200, await ctx.thumbnailRenderer(parsed.document, parsed.options));
+    return json(200, await ctx.thumbnailRenderer(parsed.document, options));
   } catch (err) {
     // A missing browser or a blown time budget is the server's configuration
     // failing, not the caller's document — keep 503 distinct from a 500.

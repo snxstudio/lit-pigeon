@@ -40,6 +40,23 @@ describe('POST /render/thumbnail', () => {
     expect(renderer.mock.calls[0][1]).toEqual({ width: 320, mergeTags: { name: 'Sam' } });
   });
 
+  it('does not let the caller choose the browser binary or its flags', async () => {
+    const renderer = vi.fn<ThumbnailRenderer>(ok);
+    await post(
+      {
+        document: document(),
+        options: {
+          width: 320,
+          executablePath: '/bin/sh',
+          browserArgs: ['--no-sandbox', '--gpu-launcher=/bin/sh'],
+          launch: 'x',
+        },
+      },
+      renderer,
+    );
+    expect(renderer.mock.calls[0][1]).toEqual({ width: 320 });
+  });
+
   it('rejects a missing document with 400 before touching the renderer', async () => {
     const renderer = vi.fn<ThumbnailRenderer>(ok);
     const res = await post({}, renderer);
