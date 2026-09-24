@@ -18,6 +18,7 @@ export type {
   NavBarBlock,
   NavLink,
   Spacing,
+  Border,
   DeviceVisibility,
   SocialIcon,
 } from './types/document.js';

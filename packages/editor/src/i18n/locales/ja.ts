@@ -152,6 +152,13 @@ const messages: Record<string, string> = {
   'panel.button.fontWeight.medium': 'ミディアム (500)',
   'panel.button.fontWeight.semibold': 'セミボールド (600)',
   'panel.button.fontWeight.bold': '太字 (700)',
+  'panel.button.border': '枠線',
+  'panel.button.borderNone': 'なし',
+  'panel.button.borderSolid': '実線',
+  'panel.button.borderDashed': '破線',
+  'panel.button.borderDotted': '点線',
+  'panel.button.borderWidth': '枠線の太さ',
+  'panel.button.borderColor': '枠線の色',
   'panel.button.fullWidth': '全幅',
 
   // property panels — image

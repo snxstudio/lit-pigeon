@@ -96,6 +96,16 @@
         "left":   { "type": "integer", "minimum": 0 }
       }
     },
+    "Border": {
+      "type": "object",
+      "description": "A border on all four sides. Omit the field entirely for no border.",
+      "required": ["width", "style", "color"],
+      "properties": {
+        "width": { "type": "integer", "minimum": 1 },
+        "style": { "enum": ["solid", "dashed", "dotted"] },
+        "color": { "type": "string" }
+      }
+    },
     "Block": {
       "oneOf": [
         { "$ref": "#/$defs/TextBlock" },
@@ -163,6 +173,7 @@
             "backgroundColor": { "type": "string" },
             "textColor": { "type": "string" },
             "borderRadius": { "type": "integer", "minimum": 0 },
+            "border": { "$ref": "#/$defs/Border" },
             "padding": { "$ref": "#/$defs/Spacing" },
             "innerPadding": { "$ref": "#/$defs/Spacing" },
             "fontSize": { "type": "integer", "minimum": 8 },

@@ -152,6 +152,13 @@ const messages: Record<string, string> = {
   'panel.button.fontWeight.medium': 'Medium (500)',
   'panel.button.fontWeight.semibold': 'Halfvet (600)',
   'panel.button.fontWeight.bold': 'Vet (700)',
+  'panel.button.border': 'Rand',
+  'panel.button.borderNone': 'Geen',
+  'panel.button.borderSolid': 'Doorgetrokken',
+  'panel.button.borderDashed': 'Gestreept',
+  'panel.button.borderDotted': 'Gestippeld',
+  'panel.button.borderWidth': 'Randbreedte',
+  'panel.button.borderColor': 'Randkleur',
   'panel.button.fullWidth': 'Volledige breedte',
 
   // property panels — image

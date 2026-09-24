@@ -152,6 +152,13 @@ const messages: Record<string, string> = {
   'panel.button.fontWeight.medium': 'मध्यम (500)',
   'panel.button.fontWeight.semibold': 'अर्ध-बोल्ड (600)',
   'panel.button.fontWeight.bold': 'बोल्ड (700)',
+  'panel.button.border': 'बॉर्डर',
+  'panel.button.borderNone': 'कोई नहीं',
+  'panel.button.borderSolid': 'ठोस',
+  'panel.button.borderDashed': 'डैश वाली',
+  'panel.button.borderDotted': 'बिंदुदार',
+  'panel.button.borderWidth': 'बॉर्डर चौड़ाई',
+  'panel.button.borderColor': 'बॉर्डर रंग',
   'panel.button.fullWidth': 'पूरी चौड़ाई',
 
   // property panels — image
