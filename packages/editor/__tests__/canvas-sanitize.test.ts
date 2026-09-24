@@ -53,6 +53,22 @@ describe('sanitizeCanvasHTML', () => {
     },
   );
 
+  // Browsers let a form's named controls shadow its own properties
+  // (`<input name="remove">`); happy-dom does not, so shadow them by hand.
+  it.each(['remove', 'localName', 'replaceWith', 'childNodes', 'attributes'])(
+    'removes a <form> whose %s is clobbered by a named control',
+    (name) => {
+      const proto = HTMLFormElement.prototype;
+      Object.defineProperty(proto, name, { configurable: true, get: () => document.createElement('input') });
+      try {
+        const out = sanitizeCanvasHTML(`<p>a</p><form><input name="${name}"><img src="x" onerror="x()"></form><p>b</p>`);
+        expect(out).toBe('<p>a</p><p>b</p>');
+      } finally {
+        delete (proto as unknown as Record<string, unknown>)[name];
+      }
+    },
+  );
+
   it('unwraps unknown elements but keeps their text', () => {
     expect(sanitizeCanvasHTML('<custom-thing onclick="x()">hello</custom-thing>')).toBe('hello');
   });

@@ -39,6 +39,8 @@ export function sanitizeCanvasHTML(input: string): string {
   if (typeof DOMParser === 'undefined' || !input.includes('<')) return input;
   // DOMParser documents are inert: nothing in them runs or loads.
   const body = new DOMParser().parseFromString(`<body>${input}`, 'text/html').body;
+  // A form's named controls shadow its own properties (`<input name="remove">`).
+  for (const form of Array.from(body.getElementsByTagName('form'))) Element.prototype.remove.call(form);
   for (const el of Array.from(body.querySelectorAll('*'))) {
     const tag = el.localName;
     if (DROPPED_TAGS.has(tag)) {
