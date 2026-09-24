@@ -29,7 +29,7 @@ describe('head styling round trip', () => {
 
   it('keeps mj-text colours and font size from mj-attributes, mj-class and the element', () => {
     expect(html).toMatch(/<span style="color: #333333; font-size: 16px">Hi,<br>track <a href="https:\/\/track.example.com">here<\/a>.<\/span>/);
-    expect(html).toContain('<p><span style="color: #6a1b9a">Accent</span></p>');
+    expect(html).toContain('<p><span style="color: #6a1b9a; font-size: 13px">Accent</span></p>');
   });
 
   it('keeps the mj-style CSS and the css-class it targets', () => {

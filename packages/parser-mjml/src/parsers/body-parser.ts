@@ -17,7 +17,7 @@ export interface BodyData {
  */
 export function parseBody(bodyNode: MjmlNode, warnings: ParseWarning[]): BodyData {
   const width = getNumericAttr(bodyNode.attrs, 'width', 600);
-  const backgroundColor = getAttr(bodyNode.attrs, 'background-color', '#f4f4f5');
+  const backgroundColor = getAttr(bodyNode.attrs, 'background-color');
 
   const rows: RowNode[] = [];
 

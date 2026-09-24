@@ -11,7 +11,7 @@ function firstBlock(inner: string) {
 describe('void elements inside raw content', () => {
   it('serialises <br/> in mj-text without a closing tag', () => {
     const block = firstBlock('<mj-text>a<br/>b</mj-text>');
-    expect(block.type === 'text' && block.values.content).toBe('a<br>b');
+    expect(block.type === 'text' && block.values.content).toBe('<span style="font-size: 13px">a<br>b</span>');
   });
 
   it('serialises every void element without a closing tag', () => {
@@ -25,6 +25,8 @@ describe('void elements inside raw content', () => {
 
   it('keeps the raw tag open after a void element so later content is captured', () => {
     const block = firstBlock('<mj-text><p>one<br/>two</p><p>three</p></mj-text>');
-    expect(block.type === 'text' && block.values.content).toBe('<p>one<br>two</p><p>three</p>');
+    expect(block.type === 'text' && block.values.content).toBe(
+      '<p><span style="font-size: 13px">one<br>two</span></p><p><span style="font-size: 13px">three</span></p>',
+    );
   });
 });
