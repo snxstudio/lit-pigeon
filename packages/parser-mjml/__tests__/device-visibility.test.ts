@@ -57,9 +57,44 @@ describe('device visibility on import', () => {
     expect(column.attributes).toMatchObject({ hideOnDesktop: true, cssClass: 'col' });
   });
 
-  it('leaves hide classes on a section in its cssClass', () => {
-    const row = mjmlToDocument('<mjml><mj-body><mj-section css-class="pigeon-hide-mobile"><mj-column><mj-text>Hi</mj-text></mj-column></mj-section></mj-body></mjml>').document.body.rows[0];
-    expect(row.attributes.cssClass).toBe('pigeon-hide-mobile');
+  it('separates hide classes from other css classes on a section', () => {
+    const row = mjmlToDocument('<mjml><mj-body><mj-section css-class="promo pigeon-hide-mobile"><mj-column><mj-text>Hi</mj-text></mj-column></mj-section></mj-body></mjml>').document.body.rows[0];
+    expect(row.attributes).toMatchObject({ hideOnMobile: true, cssClass: 'promo' });
+    expect(row.attributes.hideOnDesktop).toBeUndefined();
+  });
+
+  it('round-trips hide flags on a row, full-width and not', () => {
+    for (const fullWidth of [false, true]) {
+      const doc = createDefaultDocument('Row RT');
+      const row = createRow([createColumn([createBlock('text')])]);
+      Object.assign(row.attributes, { fullWidth, hideOnMobile: true, hideOnDesktop: true });
+      doc.body.rows = [row];
+      const parsed = mjmlToDocument(documentToMjml(doc)).document.body.rows[0];
+      expect(parsed.attributes).toMatchObject({ fullWidth, hideOnMobile: true, hideOnDesktop: true });
+      expect(parsed.attributes.cssClass).toBeUndefined();
+    }
+  });
+
+  it('keeps row flags separate from column and block flags', () => {
+    const doc = createDefaultDocument('Levels');
+    const column = createColumn([createBlock('text', { hideOnDesktop: true })]);
+    column.attributes.hideOnMobile = true;
+    const row = createRow([column]);
+    row.attributes.hideOnDesktop = true;
+    doc.body.rows = [row];
+
+    const parsed = mjmlToDocument(documentToMjml(doc)).document.body.rows[0];
+    expect(parsed.attributes).toMatchObject({ hideOnDesktop: true });
+    expect(parsed.attributes.hideOnMobile).toBeUndefined();
+    expect(parsed.columns[0].attributes).toMatchObject({ hideOnMobile: true });
+    expect(parsed.columns[0].attributes.hideOnDesktop).toBeUndefined();
+    expect(parsed.columns[0].blocks[0].values).toMatchObject({ hideOnDesktop: true });
+  });
+
+  it('adds no visibility fields to a row without hide classes', () => {
+    const row = mjmlToDocument('<mjml><mj-body><mj-section><mj-column><mj-text>Hi</mj-text></mj-column></mj-section></mj-body></mjml>').document.body.rows[0];
+    expect(row.attributes).not.toHaveProperty('hideOnMobile');
+    expect(row.attributes).not.toHaveProperty('hideOnDesktop');
   });
 
   it('adds no visibility fields to elements without hide classes', () => {

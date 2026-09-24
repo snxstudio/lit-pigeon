@@ -54,6 +54,7 @@ export function parseSection(sectionNode: MjmlNode, warnings: ParseWarning[]): R
     id: generateId(),
     type: 'row',
     attributes: {
+      ...sectionNode.visibility,
       backgroundColor: getAttr(attrs, 'background-color') || undefined,
       backgroundImage: getAttr(attrs, 'background-url') || undefined,
       padding: parseSpacing(getAttr(attrs, 'padding'), 0),
