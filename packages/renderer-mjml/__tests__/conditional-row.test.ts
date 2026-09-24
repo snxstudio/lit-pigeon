@@ -57,3 +57,52 @@ describe('conditional rows → MJML', () => {
     expect(contentIdx).toBeLessThan(endIdx);
   });
 });
+
+describe('conditional blocks → MJML', () => {
+  function docWithBlocks(...blocks: ReturnType<typeof createBlock>[]) {
+    const doc = createDefaultDocument('Test');
+    doc.body.rows = [createRow([createColumn(blocks)])];
+    return doc;
+  }
+
+  it('wraps only the conditional block, inside its column', () => {
+    const vip = createBlock('text', { content: '<p>VIP</p>', condition: 'user.vip' });
+    const all = createBlock('text', { content: '<p>Everyone</p>' });
+    const mjml = documentToMjml(docWithBlocks(vip, all));
+
+    expect(mjml).toMatch(
+      /<mj-column[^>]*>\s*<mj-raw>\{\{#if user\.vip\}\}<\/mj-raw>\s*<mj-text[^>]*>\s*<p>VIP<\/p>\s*<\/mj-text>\s*<mj-raw>\{\{\/if\}\}<\/mj-raw>\s*<mj-text/,
+    );
+    expect(mjml.match(/\{\{#if/g)).toHaveLength(1);
+  });
+
+  it('ignores an empty/whitespace block condition', () => {
+    const mjml = documentToMjml(docWithBlocks(createBlock('button', { condition: '  ' })));
+    expect(mjml).not.toContain('{{#if');
+  });
+
+  it('nests a hero block condition inside the row condition', () => {
+    const doc = docWithBlocks(createBlock('hero', { condition: 'user.vip' }));
+    doc.body.rows[0].attributes.condition = 'user.active';
+    const mjml = documentToMjml(doc);
+    const order = ['{{#if user.active}}', '{{#if user.vip}}', '<mj-hero', '{{/if}}'].map((s) =>
+      mjml.indexOf(s),
+    );
+    expect(order.every((i) => i >= 0)).toBe(true);
+    expect([...order].sort((a, b) => a - b)).toEqual(order);
+    expect(mjml.match(/\{\{\/if\}\}/g)).toHaveLength(2);
+  });
+
+  it('survives mjml2html with the block content between the markers', async () => {
+    const doc = docWithBlocks(
+      createBlock('text', { content: '<p>BEFORE</p>' }),
+      createBlock('image', { src: 'https://example.com/vip.png', alt: 'VIP', condition: 'user.vip' }),
+      createBlock('text', { content: '<p>AFTER</p>' }),
+    );
+    const { html, errors } = await new MjmlRenderer().render(doc);
+    expect(errors ?? []).toHaveLength(0);
+    const idx = ['BEFORE', '{{#if user.vip}}', 'vip.png', '{{/if}}', 'AFTER'].map((s) => html.indexOf(s));
+    expect(idx.every((i) => i >= 0)).toBe(true);
+    expect([...idx].sort((a, b) => a - b)).toEqual(idx);
+  });
+});

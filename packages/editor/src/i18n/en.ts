@@ -124,6 +124,7 @@ export const EN_MESSAGES: Record<string, string> = {
   'panel.common.linkUrl': 'Link URL',
   'panel.common.urlPlaceholder': 'https://example.com',
   'panel.common.contentHtml': 'Content (HTML)',
+  'panel.common.displayCondition': 'Display condition',
   'panel.common.insertMergeTag': 'Insert merge tag',
   'panel.common.tagBtn': '{ } Tag',
   'panel.common.uploadImage': 'Upload Image',
@@ -234,6 +235,7 @@ export const EN_MESSAGES: Record<string, string> = {
   'panel.row.backgroundImageUrl': 'Background Image URL',
   'panel.row.fullWidth': 'Full Width',
   'panel.row.displayCondition': 'Display condition',
+  'panel.row.repeat': 'Repeat for each',
 
   // controls — color picker
   'control.color.label': 'Color',

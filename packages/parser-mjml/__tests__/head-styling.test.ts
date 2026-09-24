@@ -68,7 +68,7 @@ describe('mj-text colour, font size and font family', () => {
       '<mj-attributes><mj-text color="#444444" font-family="Georgia, serif" /></mj-attributes>',
       '<mj-text><h1>Title</h1><p>One</p><ul><li>Two</li></ul></mj-text>',
     );
-    const style = 'color: #444444; font-family: Georgia, serif';
+    const style = 'color: #444444; font-size: 13px; font-family: Georgia, serif';
     expect(blocks[0].type === 'text' && blocks[0].values.content).toBe(
       `<h1><span style="${style}">Title</span></h1><p><span style="${style}">One</span></p>` +
         `<ul><li><span style="${style}">Two</span></li></ul>`,
