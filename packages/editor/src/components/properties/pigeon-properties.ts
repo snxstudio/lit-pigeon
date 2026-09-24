@@ -151,6 +151,20 @@ export class PigeonProperties extends LitElement {
       gap: 6px;
     }
 
+    .locked-note {
+      margin: 0 0 12px;
+      padding: 8px 10px;
+      border-radius: var(--pigeon-radius-sm, 4px);
+      background: var(--pigeon-surface, #f8fafc);
+      color: var(--pigeon-text-secondary, #64748b);
+      font-family: var(--pigeon-font);
+      font-size: 12px;
+    }
+
+    .locked {
+      opacity: 0.6;
+    }
+
     .empty-state {
       display: flex;
       flex-direction: column;
@@ -200,7 +214,7 @@ export class PigeonProperties extends LitElement {
       if (row) {
         return html`
           <div class="panel-wrapper" part="panel">
-            <pigeon-row-panel .row=${row}></pigeon-row-panel>
+            ${this._lockGuard(row.id, html`<pigeon-row-panel .row=${row}></pigeon-row-panel>`)}
           </div>
         `;
       }
@@ -212,14 +226,17 @@ export class PigeonProperties extends LitElement {
         return html`
           <div class="panel-wrapper" part="panel">
             ${this._renderBreadcrumb(this.selection.rowId, this.selection.columnId, this._blockLabel(block))}
-            ${this._renderBlockPanel(block, this.selection.rowId, this.selection.columnId)}
-            ${this._renderVisibility(block.values, (values) =>
-              this._emit('property-change', {
-                rowId: this.selection!.rowId,
-                columnId: this.selection!.columnId,
-                blockId: block.id,
-                values,
-              }),
+            ${this._lockGuard(
+              this.selection.rowId,
+              html`${this._renderBlockPanel(block, this.selection.rowId, this.selection.columnId)}
+              ${this._renderVisibility(block.values, (values) =>
+                this._emit('property-change', {
+                  rowId: this.selection!.rowId,
+                  columnId: this.selection!.columnId,
+                  blockId: block.id,
+                  values,
+                }),
+              )}`,
             )}
           </div>
         `;
@@ -235,9 +252,12 @@ export class PigeonProperties extends LitElement {
           <div class="empty-state">
             <p>Column selected. Select a block within the column to edit its properties.</p>
           </div>
-          ${column
-            ? this._renderVisibility(column.attributes, (attributes) =>
-                this._emit('column-property-change', { rowId, columnId, attributes }),
+          ${column && rowId
+            ? this._lockGuard(
+                rowId,
+                this._renderVisibility(column.attributes, (attributes) =>
+                  this._emit('column-property-change', { rowId, columnId, attributes }),
+                ),
               )
             : ''}
         </div>
@@ -287,6 +307,15 @@ export class PigeonProperties extends LitElement {
               <span class="crumb current">${current}</span>`
           : ''}
       </nav>
+    `;
+  }
+
+  /** A locked row's panels stay readable but inert, with a note saying why. */
+  private _lockGuard(rowId: string, panel: unknown) {
+    if (!this._findRow(rowId)?.locked) return panel;
+    return html`
+      <p class="locked-note" role="note">This row is locked, so it can't be moved, deleted or edited.</p>
+      <div class="locked" inert>${panel}</div>
     `;
   }
 

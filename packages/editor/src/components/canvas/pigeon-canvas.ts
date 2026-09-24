@@ -27,6 +27,9 @@ export class PigeonCanvas extends LitElement {
   @property({ type: String })
   device: 'desktop' | 'tablet' | 'mobile' = 'desktop';
 
+  @property({ type: Boolean })
+  readonly = false;
+
   @state()
   private _rowDropIndex = -1;
 
@@ -250,6 +253,7 @@ export class PigeonCanvas extends LitElement {
                       .selection=${this.selection}
                       .editingBlockId=${this.editingBlockId}
                       .device=${this.device}
+                      ?readonly=${this.readonly}
                       ?show-actions=${this._hoveredRowId === row.id ||
                       (this._hoveredRowId === null && selectedRowId === row.id)}
                     ></pigeon-row>
@@ -298,7 +302,7 @@ export class PigeonCanvas extends LitElement {
 
   private _onDragOver(e: DragEvent) {
     const dragData = getDragData();
-    if (!dragData) return;
+    if (!dragData || this.readonly) return;
 
     e.preventDefault();
 

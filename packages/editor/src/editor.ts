@@ -165,6 +165,15 @@ export class PigeonEditor extends LitElement {
   @property({ type: Object })
   config: Partial<EditorConfig> = {};
 
+  /**
+   * Render-only mode (`<pigeon-editor readonly>`). Hides the palette,
+   * properties panel and editing affordances, and drops every document change
+   * at the central dispatch, so keyboard shortcuts and events can't edit
+   * either. Preview, export, device and fullscreen still work.
+   */
+  @property({ type: Boolean, reflect: true })
+  readonly = false;
+
   /** Optional renderer for preview mode. */
   @property({ type: Object })
   renderer?: Renderer;
@@ -355,12 +364,12 @@ export class PigeonEditor extends LitElement {
 
   /** Undo the last change. */
   undo(): boolean {
-    return coreUndo(this._state, this._dispatch);
+    return !this.readonly && coreUndo(this._state, this._dispatch);
   }
 
   /** Redo the last undone change. */
   redo(): boolean {
-    return coreRedo(this._state, this._dispatch);
+    return !this.readonly && coreRedo(this._state, this._dispatch);
   }
 
   /** Export the document as JSON. */
@@ -409,6 +418,7 @@ export class PigeonEditor extends LitElement {
       <pigeon-toolbar
         part="toolbar"
         exportparts="toolbar-button, toolbar-button-undo, toolbar-button-redo, toolbar-button-fullscreen, toolbar-button-templates, toolbar-button-preview, toolbar-button-export"
+        ?readonly=${this.readonly}
         ?can-undo=${this._canUndo}
         ?can-redo=${this._canRedo}
         .device=${this._device}
@@ -426,7 +436,7 @@ export class PigeonEditor extends LitElement {
       ></pigeon-toolbar>
 
       <div class="editor-body">
-        <pigeon-palette
+        ${this.readonly ? '' : html`<pigeon-palette
           part="palette"
           role="complementary"
           aria-label="Content blocks and layers"
@@ -440,7 +450,7 @@ export class PigeonEditor extends LitElement {
           @palette-item-activate=${this._handlePaletteActivate}
           @library-delete=${this._handleLibraryDelete}
           @library-insert=${this._handleLibraryInsert}
-        ></pigeon-palette>
+        ></pigeon-palette>`}
 
         <pigeon-canvas
           part="canvas"
@@ -452,6 +462,7 @@ export class PigeonEditor extends LitElement {
           .editingBlockId=${this._editingBlockId}
           .device=${this._device}
           .previewWidth=${previewWidth}
+          ?readonly=${this.readonly}
           @block-select=${this._handleBlockSelect}
           @row-select=${this._handleRowSelect}
           @canvas-select-body=${this._handleBodySelect}
@@ -467,7 +478,7 @@ export class PigeonEditor extends LitElement {
           @block-exit-edit=${this._handleBlockExitEdit}
         ></pigeon-canvas>
 
-        <pigeon-properties
+        ${this.readonly ? '' : html`<pigeon-properties
           part="properties"
           role="complementary"
           aria-label="Element properties"
@@ -488,7 +499,7 @@ export class PigeonEditor extends LitElement {
           @body-property-change=${this._handleBodyPropertyChange}
           @row-select=${this._handleRowSelect}
           @column-select=${this._handleColumnSelect}
-        ></pigeon-properties>
+        ></pigeon-properties>`}
       </div>
 
       <pigeon-preview
@@ -732,6 +743,7 @@ export class PigeonEditor extends LitElement {
 
   /** Central dispatch -- every mutation flows through here. */
   private _dispatch = (tr: TransactionSnapshot) => {
+    if (this.readonly && tr.steps.length) return;
     this._state = this._state.apply(tr);
     this._syncHistoryFlags();
     this.requestUpdate();
@@ -851,7 +863,7 @@ export class PigeonEditor extends LitElement {
           const tr = this._state.createTransaction();
           tr.setSelection(createBlockSelection(row.id, col.id, blockId));
           this._dispatch(tr);
-          this._editingBlockId = blockId;
+          if (!this.readonly && !row.locked) this._editingBlockId = blockId;
           return;
         }
       }
