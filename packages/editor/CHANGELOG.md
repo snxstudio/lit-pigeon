@@ -1,5 +1,12 @@
 # @lit-pigeon/editor
 
+## 0.3.4
+
+### Patch Changes
+
+- 0fc684b: Stop bundling `lit/directives/ref.js` (and with it lit's directive base classes) into the editor. Every `lit`, `lit-html` and `@lit/*` import is now external. The bundled copy was built in lit's production mode, so hosts that load lit's development build (e.g. `ng serve` / `nx serve`) crashed with `currentDirective._$initialize is not a function`.
+- 92a495b: Load the TipTap rich-text chunk lazily again. A component shared by the properties panel and the bubble menu (the link-type picker) was bundled into `rich-text.js`, so `index.js` imported that chunk statically and every consumer downloaded TipTap up front. Initial JS for an npm consumer drops from 168.9 kB to 64.8 kB gzipped; TipTap (~142 kB gz) now loads on first text edit, as designed.
+
 ## 0.3.3
 
 ### Patch Changes
