@@ -15,6 +15,14 @@ describe('parsing repeat rows', () => {
     expect(document.body.rows[0].attributes.condition).toBeUndefined();
   });
 
+  it('does not treat a raw block containing a whole loop as a repeat marker', () => {
+    const { document } = mjmlToDocument(`<mjml><mj-body>
+      <mj-raw><ul>{{#each tags}}<li>{{this}}</li>{{/each}}</ul></mj-raw>
+      <mj-section><mj-column><mj-text>Total</mj-text></mj-column></mj-section>
+    </mj-body></mjml>`);
+    expect(document.body.rows[0].attributes.repeat).toBeUndefined();
+  });
+
   it('reads a condition and a repeat on the same row', () => {
     const { document } = mjmlToDocument(`<mjml><mj-body>
       <mj-raw>{{#if order.items}}</mj-raw>

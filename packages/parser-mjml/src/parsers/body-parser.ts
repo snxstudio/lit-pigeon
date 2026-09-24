@@ -45,7 +45,7 @@ export function parseBody(bodyNode: MjmlNode, warnings: ParseWarning[]): BodyDat
         // markers arm the following section; closing markers are noise.
         const match = /\{\{#if\s+([^}]+?)\s*\}\}/.exec(child.text ?? '');
         if (match) pendingCondition = match[1].trim();
-        const each = /\{\{#each\s+([^}]+?)\s*\}\}/.exec(child.text ?? '');
+        const each = /^\s*\{\{#each\s+([^}]+?)\s*\}\}\s*$/.exec(child.text ?? '');
         if (each) pendingRepeat = each[1].trim();
         break;
       }
