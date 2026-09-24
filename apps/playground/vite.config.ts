@@ -22,6 +22,7 @@ export default defineConfig({
       '@lit-pigeon/editor': resolve(__dirname, '../../packages/editor/src/index.ts'),
       '@lit-pigeon/renderer-mjml': resolve(__dirname, '../../packages/renderer-mjml/src/index.ts'),
       '@lit-pigeon/parser-mjml': resolve(__dirname, '../../packages/parser-mjml/src/index.ts'),
+      '@lit-pigeon/import-unlayer': resolve(__dirname, '../../packages/import-unlayer/src/index.ts'),
     },
   },
   build: {
@@ -29,6 +30,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         playground: resolve(__dirname, 'playground/index.html'),
+        migrate: resolve(__dirname, 'migrate-from-unlayer/index.html'),
       },
     },
   },
