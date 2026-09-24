@@ -40,9 +40,9 @@ npx lit-pigeon-rest        # honours PORT / HOST / LIT_PIGEON_REST_TOKEN
 
 ### Endpoints
 
-`GET /health`, plus POST `/render`, `/render/mjml`, `/render/thumbnail`,
-`/validate`, `/parse`, `/lint`, and `/lint/async`. Each POST takes
-`{ document, options? }` JSON. A lower-level pure router,
+`GET /health`, plus POST `/render`, `/render/mjml`, `/render/text`,
+`/render/thumbnail`, `/validate`, `/parse`, `/lint`, and `/lint/async`. Each
+POST takes `{ document, options? }` JSON. A lower-level pure router,
 `handleRequest(jsonRequest, ctx)`, is also exported for custom transports.
 
 Rendering, parsing, and linting are powered by [`@lit-pigeon/ssr`](../ssr) and

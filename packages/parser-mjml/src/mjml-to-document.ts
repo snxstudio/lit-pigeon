@@ -1,5 +1,5 @@
 import { Parser } from 'htmlparser2';
-import type { PigeonDocument } from '@lit-pigeon/core';
+import type { PigeonDocument, DeviceVisibility } from '@lit-pigeon/core';
 import { parseHead, type HeadData } from './parsers/head-parser.js';
 import { parseBody } from './parsers/body-parser.js';
 import { resolveAttributes } from './utils/resolve-attributes.js';
@@ -30,6 +30,8 @@ export interface MjmlNode {
   children: MjmlNode[];
   /** Direct text content of this node (text not in child elements). */
   text: string;
+  /** Hide flags taken off `css-class` while resolving attributes. */
+  visibility?: DeviceVisibility;
 }
 
 /**

@@ -1,3 +1,5 @@
+import type { DeviceVisibility } from '@lit-pigeon/core';
+
 /**
  * Safely gets an attribute value from an attributes object.
  */
@@ -21,4 +23,24 @@ export function getNumericAttr(attrs: Record<string, string>, name: string, fall
 export function getBoolAttr(attrs: Record<string, string>, name: string): boolean {
   const val = attrs[name];
   return val !== undefined && val !== 'false' && val !== '';
+}
+
+/**
+ * Moves the renderer's `pigeon-hide-mobile` / `pigeon-hide-desktop` classes
+ * out of `css-class` into visibility flags, leaving any other classes. Only
+ * flags that are set appear in the result.
+ */
+export function takeVisibility(attrs: Record<string, string>): DeviceVisibility {
+  const flags: DeviceVisibility = {};
+  const cls = attrs['css-class'];
+  if (!cls) return flags;
+  const rest = cls
+    .replace(/(^|\s)pigeon-hide-(mobile|desktop)(?=\s|$)/g, (_, _s, device) => {
+      flags[device === 'mobile' ? 'hideOnMobile' : 'hideOnDesktop'] = true;
+      return '';
+    })
+    .trim();
+  if (rest) attrs['css-class'] = rest;
+  else delete attrs['css-class'];
+  return flags;
 }

@@ -69,6 +69,30 @@ describe('handleRequest', () => {
     expect(res.body as string).toContain('<mjml>');
   });
 
+  it('POST /render/text returns the text/plain part', async () => {
+    const document = createDefaultDocument('T');
+    document.body.rows = [
+      createRow([createColumn([createBlock('text', { content: '<p>Hi {{name}}</p>' })])]),
+    ];
+    const res = await handleRequest({
+      method: 'POST',
+      path: '/render/text',
+      body: { document, options: { mergeTags: { name: 'Ada' } } },
+    });
+    expect(res.status).toBe(200);
+    expect(res.contentType).toContain('text/plain');
+    expect(res.body).toBe('Hi Ada\n');
+  });
+
+  it('POST /render/text rejects an invalid document', async () => {
+    const res = await handleRequest({
+      method: 'POST',
+      path: '/render/text',
+      body: { document: { version: '1.0' } },
+    });
+    expect(res.status).toBe(400);
+  });
+
   it('POST /validate returns the validation verdict', async () => {
     const res = await handleRequest({
       method: 'POST',

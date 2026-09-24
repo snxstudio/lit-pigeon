@@ -5,12 +5,13 @@ import { createBlockSelection } from '../state/selection.js';
 import { generateId } from '../utils/id.js';
 
 function findRowAndColumn(
-  doc: { body: { rows: Array<{ id: string; columns: Array<{ id: string; blocks: ContentBlock[] }> }> } },
+  doc: { body: { rows: Array<{ id: string; locked: boolean; columns: Array<{ id: string; blocks: ContentBlock[] }> }> } },
   rowId: string,
   columnId: string,
 ): { rowIndex: number; columnIndex: number } | null {
   const rowIndex = doc.body.rows.findIndex((r) => r.id === rowId);
-  if (rowIndex === -1) return null;
+  // A locked row's blocks can't be added, changed, moved or removed.
+  if (rowIndex === -1 || doc.body.rows[rowIndex].locked) return null;
   const columnIndex = doc.body.rows[rowIndex].columns.findIndex((c) => c.id === columnId);
   if (columnIndex === -1) return null;
   return { rowIndex, columnIndex };

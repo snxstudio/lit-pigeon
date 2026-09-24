@@ -31,6 +31,15 @@ describe('PigeonEditor (Vue)', () => {
     expect(el.hasAttribute('document')).toBe(false);
   });
 
+  it('passes `readonly` through to the element and keeps it in sync', async () => {
+    const wrapper = mount(PigeonEditor, { props: { readonly: true } });
+    await nextTick();
+    const el = wrapper.element as HTMLElement & { readonly?: boolean };
+    expect(el.readonly).toBe(true);
+    await wrapper.setProps({ readonly: false });
+    expect(el.readonly).toBe(false);
+  });
+
   it('forwards `pigeon:change` DOM events as Vue `change` emits with detail payload', async () => {
     const wrapper = mount(PigeonEditor);
     await nextTick();
