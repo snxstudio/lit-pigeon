@@ -51,4 +51,21 @@ describe('parsing repeat rows', () => {
       [undefined, undefined],
     ]);
   });
+
+  it('keeps block conditions inside a repeated row, including a hero block', () => {
+    const doc = createDefaultDocument('Loop');
+    const items = createRow([createColumn([createBlock('text', { condition: 'discounted' })])]);
+    items.attributes.repeat = 'order.items';
+    const hero = createRow([createColumn([createBlock('hero', { condition: 'image' })])]);
+    hero.attributes.repeat = 'slides';
+    doc.body.rows = [items, hero];
+
+    const { document } = mjmlToDocument(documentToMjml(doc));
+    const [parsedItems, parsedHero] = document.body.rows;
+    expect(parsedItems.attributes.repeat).toBe('order.items');
+    expect(parsedItems.columns[0].blocks[0].values.condition).toBe('discounted');
+    expect(parsedHero.attributes).toMatchObject({ repeat: 'slides' });
+    expect(parsedHero.attributes.condition).toBeUndefined();
+    expect(parsedHero.columns[0].blocks[0].values.condition).toBe('image');
+  });
 });

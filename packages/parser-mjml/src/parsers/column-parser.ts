@@ -20,8 +20,22 @@ export function parseColumn(columnNode: MjmlNode, warnings: ParseWarning[]): Col
   const attrs = columnNode.attrs;
   const blocks: ContentBlock[] = [];
 
-  for (const child of columnNode.children) {
-    const block = parseBlockElement(child, warnings);
+  const children = columnNode.children;
+  for (let i = 0; i < children.length; i++) {
+    // A block the renderer wrapped in `{{#if}}` / `{{/if}}` markers. Only an
+    // exact open-block-close triple counts, so hand-written raw HTML that
+    // spans several blocks is kept as html blocks.
+    const condition = conditionMarker(children[i]);
+    if (condition && isEndMarker(children[i + 2])) {
+      const block = parseBlockElement(children[i + 1], warnings);
+      if (block) {
+        block.values.condition = condition;
+        blocks.push(block);
+        i += 2;
+        continue;
+      }
+    }
+    const block = parseBlockElement(children[i], warnings);
     if (block) {
       blocks.push(block);
     }
@@ -39,6 +53,15 @@ export function parseColumn(columnNode: MjmlNode, warnings: ParseWarning[]): Col
     },
     blocks,
   };
+}
+
+function conditionMarker(node: MjmlNode): string | undefined {
+  if (node.tag !== 'mj-raw') return undefined;
+  return /^\s*\{\{#if\s+([^}]+?)\s*\}\}\s*$/.exec(node.text ?? '')?.[1];
+}
+
+function isEndMarker(node: MjmlNode | undefined): boolean {
+  return node?.tag === 'mj-raw' && /^\s*\{\{\/if\}\}\s*$/.test(node.text ?? '');
 }
 
 /**

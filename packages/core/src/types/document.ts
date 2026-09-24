@@ -16,6 +16,8 @@ export interface TextBlock {
   id: string;
   type: 'text';
   values: {
+    /** Display condition; see {@link RowNode} `condition`. Wraps just this block. */
+    condition?: string;
     content: string;
     padding: Spacing;
     lineHeight: string;
@@ -29,6 +31,8 @@ export interface ImageBlock {
   id: string;
   type: 'image';
   values: {
+    /** Display condition; see {@link RowNode} `condition`. Wraps just this block. */
+    condition?: string;
     src: string;
     alt: string;
     width: number | 'auto';
@@ -45,6 +49,8 @@ export interface ButtonBlock {
   id: string;
   type: 'button';
   values: {
+    /** Display condition; see {@link RowNode} `condition`. Wraps just this block. */
+    condition?: string;
     content: string;
     href: string;
     backgroundColor: string;
@@ -65,6 +71,8 @@ export interface DividerBlock {
   id: string;
   type: 'divider';
   values: {
+    /** Display condition; see {@link RowNode} `condition`. Wraps just this block. */
+    condition?: string;
     borderColor: string;
     borderWidth: number;
     borderStyle: 'solid' | 'dashed' | 'dotted';
@@ -77,6 +85,8 @@ export interface SpacerBlock {
   id: string;
   type: 'spacer';
   values: {
+    /** Display condition; see {@link RowNode} `condition`. Wraps just this block. */
+    condition?: string;
     height: number;
   };
 }
@@ -85,6 +95,8 @@ export interface SocialBlock {
   id: string;
   type: 'social';
   values: {
+    /** Display condition; see {@link RowNode} `condition`. Wraps just this block. */
+    condition?: string;
     icons: SocialIcon[];
     iconSize: number;
     spacing: number;
@@ -97,6 +109,8 @@ export interface HtmlBlock {
   id: string;
   type: 'html';
   values: {
+    /** Display condition; see {@link RowNode} `condition`. Wraps just this block. */
+    condition?: string;
     content: string;
     padding: Spacing;
   };
@@ -106,6 +120,8 @@ export interface HeroBlock {
   id: string;
   type: 'hero';
   values: {
+    /** Display condition; see {@link RowNode} `condition`. Wraps just this block. */
+    condition?: string;
     backgroundUrl: string;
     backgroundPosition: 'center center' | 'top center' | 'bottom center' | 'left center' | 'right center';
     mode: 'fixed-height' | 'fluid-height';
@@ -132,6 +148,8 @@ export interface NavBarBlock {
   id: string;
   type: 'navbar';
   values: {
+    /** Display condition; see {@link RowNode} `condition`. Wraps just this block. */
+    condition?: string;
     links: NavLink[];
     hamburger: 'hamburger' | 'none';
     alignment: 'left' | 'center' | 'right';

@@ -88,7 +88,9 @@ function renderColumn(column: ColumnNode, widthPercent: string): string {
     attrs.push(`css-class="${escapeAttr(cssClass)}"`);
   }
 
-  const blocksMarkup = column.blocks.map((block) => `      ${renderBlock(block)}`).join('\n');
+  const blocksMarkup = column.blocks
+    .map((block) => wrapConditional(`      ${renderBlock(block)}`, block.values.condition, '      '))
+    .join('\n');
 
   return `    <mj-column ${attrs.join(' ')}>
 ${blocksMarkup}
@@ -107,8 +109,9 @@ function renderRow(row: RowNode): string {
     row.columns[0].blocks.length === 1 &&
     row.columns[0].blocks[0].type === 'hero'
   ) {
+    const hero = row.columns[0].blocks[0] as HeroBlock;
     return wrapConditional(
-      wrapRepeat(renderHeroSection(row.columns[0].blocks[0] as HeroBlock), row.attributes.repeat),
+      wrapRepeat(wrapConditional(renderHeroSection(hero), hero.values.condition), row.attributes.repeat),
       row.attributes.condition,
     );
   }
@@ -160,17 +163,18 @@ ${columnsMarkup}
 }
 
 /**
- * Wrap a section's MJML in a template-engine conditional when the row has a
- * display `condition`. The `{{#if}}` / `{{/if}}` markers are emitted inside
- * `<mj-raw>` so mjml2html passes them through verbatim into the final HTML,
- * where the sending platform (Handlebars, Liquid, etc.) evaluates them.
+ * Wrap a section's (or a block's) MJML in a template-engine conditional when
+ * the row or block has a display `condition`. The `{{#if}}` / `{{/if}}`
+ * markers are emitted inside `<mj-raw>` so mjml2html passes them through
+ * verbatim into the final HTML, where the sending platform (Handlebars,
+ * Liquid, etc.) evaluates them.
  */
-function wrapConditional(sectionMarkup: string, condition?: string): string {
+function wrapConditional(markup: string, condition?: string, indent = '  '): string {
   const expr = condition?.trim();
-  if (!expr) return sectionMarkup;
-  return `  <mj-raw>{{#if ${expr}}}</mj-raw>
-${sectionMarkup}
-  <mj-raw>{{/if}}</mj-raw>`;
+  if (!expr) return markup;
+  return `${indent}<mj-raw>{{#if ${expr}}}</mj-raw>
+${markup}
+${indent}<mj-raw>{{/if}}</mj-raw>`;
 }
 
 /**

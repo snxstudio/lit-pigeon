@@ -124,6 +124,7 @@ export const EN_MESSAGES: Record<string, string> = {
   'panel.common.linkUrl': 'Link URL',
   'panel.common.urlPlaceholder': 'https://example.com',
   'panel.common.contentHtml': 'Content (HTML)',
+  'panel.common.displayCondition': 'Display condition',
   'panel.common.insertMergeTag': 'Insert merge tag',
   'panel.common.tagBtn': '{ } Tag',
   'panel.common.uploadImage': 'Upload Image',

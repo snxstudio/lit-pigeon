@@ -44,6 +44,13 @@ describe('repeat rows → MJML', () => {
     expect(inOrder(mjml, ['{{#each slides}}', '<mj-hero', '</mj-hero>', '{{/each}}'])).toBe(true);
   });
 
+  it('evaluates a hero block condition per item, inside the loop', () => {
+    const doc = docWithRow('slides', 'user.active', 'hero');
+    doc.body.rows[0].columns[0].blocks[0].values.condition = 'image';
+    const mjml = documentToMjml(doc);
+    expect(inOrder(mjml, ['{{#if user.active}}', '{{#each slides}}', '{{#if image}}', '<mj-hero', '{{/each}}'])).toBe(true);
+  });
+
   it('survives mjml2html with the item merge tags inside the loop', async () => {
     const { html, errors } = await new MjmlRenderer().render(docWithRow('order.items'));
     expect(errors ?? []).toHaveLength(0);
