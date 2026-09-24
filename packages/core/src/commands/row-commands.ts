@@ -34,7 +34,7 @@ export function insertRow(row: RowNode, index?: number): Command {
 export function deleteRow(rowId: string): Command {
   return (state, dispatch) => {
     const rowIndex = state.doc.body.rows.findIndex((r) => r.id === rowId);
-    if (rowIndex === -1) return false;
+    if (rowIndex === -1 || state.doc.body.rows[rowIndex].locked) return false;
 
     if (dispatch) {
       const deletedRow: RowNode = structuredClone(state.doc.body.rows[rowIndex]);
@@ -63,7 +63,7 @@ export function deleteRow(rowId: string): Command {
 export function moveRow(rowId: string, toIndex: number): Command {
   return (state, dispatch) => {
     const fromIndex = state.doc.body.rows.findIndex((r) => r.id === rowId);
-    if (fromIndex === -1) return false;
+    if (fromIndex === -1 || state.doc.body.rows[fromIndex].locked) return false;
     if (fromIndex === toIndex) return false;
 
     if (dispatch) {
@@ -94,7 +94,7 @@ export function moveRow(rowId: string, toIndex: number): Command {
 export function duplicateRow(rowId: string): Command {
   return (state, dispatch) => {
     const rowIndex = state.doc.body.rows.findIndex((r) => r.id === rowId);
-    if (rowIndex === -1) return false;
+    if (rowIndex === -1 || state.doc.body.rows[rowIndex].locked) return false;
 
     if (dispatch) {
       const original = state.doc.body.rows[rowIndex];
@@ -137,7 +137,7 @@ export function updateRowAttributes(
 ): Command {
   return (state, dispatch) => {
     const rowIndex = state.doc.body.rows.findIndex((r) => r.id === rowId);
-    if (rowIndex === -1) return false;
+    if (rowIndex === -1 || state.doc.body.rows[rowIndex].locked) return false;
 
     if (dispatch) {
       const oldAttrs: RowNode['attributes'] = { ...state.doc.body.rows[rowIndex].attributes };

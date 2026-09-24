@@ -19,6 +19,8 @@
   export let documentToMjml:
     | ((doc: PigeonDocument) => string)
     | undefined = undefined;
+  /** Render-only mode: no editing affordances, document changes are ignored. */
+  export let readonly: boolean | undefined = undefined;
 
   /**
    * Typed Svelte event map. Each DOM event from `<pigeon-editor>` is
@@ -68,6 +70,7 @@
   $: if (el && config !== undefined) el.config = config;
   $: if (el && renderer !== undefined) el.renderer = renderer;
   $: if (el && documentToMjml !== undefined) el.documentToMjml = documentToMjml;
+  $: if (el && readonly !== undefined) el.readonly = readonly;
 
   onMount(() => {
     if (!el) return;
@@ -76,6 +79,7 @@
     syncProp(el, 'config', config);
     syncProp(el, 'renderer', renderer);
     syncProp(el, 'documentToMjml', documentToMjml);
+    syncProp(el, 'readonly', readonly);
 
     for (const [domEvent, svelteEvent] of EVENT_MAP) {
       const handler: EventListener = (e) => {

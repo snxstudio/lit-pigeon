@@ -4,6 +4,7 @@ import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import type { ButtonBlock } from '@lit-pigeon/core';
 import type { Editor } from '@tiptap/core';
 import { loadRichTextEditor } from '../../rich-text/loader.js';
+import { sanitizeCanvasHTML } from './canvas-html.js';
 
 @customElement('pigeon-button-block')
 export class PigeonButtonBlock extends LitElement {
@@ -102,7 +103,7 @@ export class PigeonButtonBlock extends LitElement {
           href="${v.href}"
           style="${btnStyle}"
           @click=${this._preventNav}
-        >${this.editing ? html`` : unsafeHTML(inner)}</a>
+        >${this.editing ? html`` : unsafeHTML(sanitizeCanvasHTML(inner))}</a>
       </div>
     `;
   }
@@ -130,7 +131,7 @@ export class PigeonButtonBlock extends LitElement {
       element: this._editorHost,
       initialHTML: this.block.values.content,
       onBlur: (html) => this._commit(html),
-      onEscape: () => this._exit(),
+      onEscape: (html) => this._commit(html),
     });
   }
 
@@ -148,11 +149,6 @@ export class PigeonButtonBlock extends LitElement {
       bubbles: true,
       composed: true,
     }));
-  }
-
-  private _exit() {
-    const html = this._editor ? this._editor.getHTML() : this.block.values.content;
-    this._commit(html);
   }
 
   private _preventNav(e: Event) {
