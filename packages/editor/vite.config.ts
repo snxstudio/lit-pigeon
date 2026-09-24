@@ -11,7 +11,9 @@ export default defineConfig({
       fileName: 'index',
     },
     rollupOptions: {
-      external: ['lit', 'lit/decorators.js', 'lit/directives/class-map.js', 'lit/directives/style-map.js', 'lit/directives/unsafe-html.js', '@lit-pigeon/core'],
+      // Every lit module stays a peer import: a bundled copy (e.g. of a
+      // directive) breaks hosts whose lit build differs from ours.
+      external: (id) => /^(lit|lit-html)(\/|$)|^@lit\//.test(id) || id === '@lit-pigeon/core',
       output: {
         // Give the lazy-loaded rich-text bundle a stable name so size-limit
         // can target it predictably.
