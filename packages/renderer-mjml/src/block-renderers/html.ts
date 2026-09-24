@@ -1,5 +1,6 @@
 import type { HtmlBlock } from '@lit-pigeon/core';
 import { spacingToMjml } from '../utils/spacing.js';
+import { visibilityClass } from '../utils/visibility.js';
 
 const MJ_RAW_TAG = /<(\s*\/?\s*mj-raw\b[^>]*)>/gi;
 
@@ -11,6 +12,7 @@ export function renderHtmlBlock(block: HtmlBlock): string {
   const { content, padding } = block.values;
   const paddingStr = spacingToMjml(padding);
   const safeContent = escapeMjRawTags(content);
+  const cls = visibilityClass(block.values);
 
-  return `<mj-raw><div class="lp-html" style="padding: ${paddingStr};">${safeContent}</div></mj-raw>`;
+  return `<mj-raw><div class="lp-html${cls ? ` ${cls}` : ''}" style="padding: ${paddingStr};">${safeContent}</div></mj-raw>`;
 }

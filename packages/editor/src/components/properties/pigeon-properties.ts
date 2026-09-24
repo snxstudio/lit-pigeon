@@ -12,6 +12,7 @@ import type {
   BrandColor,
   FontDefinition,
   LinkType,
+  DeviceVisibility,
 } from '@lit-pigeon/core';
 import { getBlockDefinition } from '@lit-pigeon/core';
 import './panels/text-panel.js';
@@ -124,6 +125,46 @@ export class PigeonProperties extends LitElement {
       font-size: 10px;
     }
 
+    .visibility {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin: 16px 0 0;
+      padding: 12px 0 0;
+      border: none;
+      border-top: 1px solid var(--pigeon-border, #e2e8f0);
+      font-family: var(--pigeon-font);
+      font-size: 12px;
+      color: var(--pigeon-text, #1e293b);
+    }
+
+    .visibility legend {
+      float: left;
+      margin-bottom: 4px;
+      padding: 0;
+      font-weight: 600;
+    }
+
+    .visibility label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .locked-note {
+      margin: 0 0 12px;
+      padding: 8px 10px;
+      border-radius: var(--pigeon-radius-sm, 4px);
+      background: var(--pigeon-surface, #f8fafc);
+      color: var(--pigeon-text-secondary, #64748b);
+      font-family: var(--pigeon-font);
+      font-size: 12px;
+    }
+
+    .locked {
+      opacity: 0.6;
+    }
+
     .empty-state {
       display: flex;
       flex-direction: column;
@@ -173,7 +214,7 @@ export class PigeonProperties extends LitElement {
       if (row) {
         return html`
           <div class="panel-wrapper" part="panel">
-            <pigeon-row-panel .row=${row}></pigeon-row-panel>
+            ${this._lockGuard(row.id, html`<pigeon-row-panel .row=${row}></pigeon-row-panel>`)}
           </div>
         `;
       }
@@ -185,21 +226,40 @@ export class PigeonProperties extends LitElement {
         return html`
           <div class="panel-wrapper" part="panel">
             ${this._renderBreadcrumb(this.selection.rowId, this.selection.columnId, this._blockLabel(block))}
-            ${this._renderBlockPanel(block, this.selection.rowId, this.selection.columnId)}
+            ${this._lockGuard(
+              this.selection.rowId,
+              html`${this._renderBlockPanel(block, this.selection.rowId, this.selection.columnId)}
+              ${this._renderVisibility(block.values, (values) =>
+                this._emit('property-change', {
+                  rowId: this.selection!.rowId,
+                  columnId: this.selection!.columnId,
+                  blockId: block.id,
+                  values,
+                }),
+              )}`,
+            )}
           </div>
         `;
       }
     }
 
     if (this.selection.type === 'column') {
+      const { rowId, columnId } = this.selection;
+      const column = this._findRow(rowId ?? '')?.columns.find((c) => c.id === columnId);
       return html`
         <div class="panel-wrapper" part="panel">
-          ${this.selection.rowId && this.selection.columnId
-            ? this._renderBreadcrumb(this.selection.rowId, this.selection.columnId)
-            : ''}
+          ${rowId && columnId ? this._renderBreadcrumb(rowId, columnId) : ''}
           <div class="empty-state">
             <p>Column selected. Select a block within the column to edit its properties.</p>
           </div>
+          ${column && rowId
+            ? this._lockGuard(
+                rowId,
+                this._renderVisibility(column.attributes, (attributes) =>
+                  this._emit('column-property-change', { rowId, columnId, attributes }),
+                ),
+              )
+            : ''}
         </div>
       `;
     }
@@ -250,8 +310,41 @@ export class PigeonProperties extends LitElement {
     `;
   }
 
+  /** A locked row's panels stay readable but inert, with a note saying why. */
+  private _lockGuard(rowId: string, panel: unknown) {
+    if (!this._findRow(rowId)?.locked) return panel;
+    return html`
+      <p class="locked-note" role="note">This row is locked, so it can't be moved, deleted or edited.</p>
+      <div class="locked" inert>${panel}</div>
+    `;
+  }
+
   private _select(type: 'row-select' | 'column-select', detail: Record<string, string>) {
+    this._emit(type, detail);
+  }
+
+  private _emit(type: string, detail: unknown) {
     this.dispatchEvent(new CustomEvent(type, { detail, bubbles: true, composed: true }));
+  }
+
+  /** Hide-on-mobile / hide-on-desktop toggles shared by every block and column. */
+  private _renderVisibility(v: DeviceVisibility, change: (flags: DeviceVisibility) => void) {
+    const toggle = (key: keyof DeviceVisibility, label: string) => html`
+      <label>
+        <input
+          type="checkbox"
+          .checked=${!!v[key]}
+          @change=${(e: Event) => change({ [key]: (e.target as HTMLInputElement).checked })}
+        />
+        ${label}
+      </label>
+    `;
+    return html`
+      <fieldset class="visibility">
+        <legend>Visibility</legend>
+        ${toggle('hideOnMobile', 'Hide on mobile')} ${toggle('hideOnDesktop', 'Hide on desktop')}
+      </fieldset>
+    `;
   }
 
   private _blockLabel(block: ContentBlock): string {

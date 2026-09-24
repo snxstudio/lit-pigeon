@@ -18,6 +18,7 @@ export type {
   NavBarBlock,
   NavLink,
   Spacing,
+  DeviceVisibility,
   SocialIcon,
 } from './types/document.js';
 
@@ -71,6 +72,7 @@ export {
   addColumn,
   removeColumn,
   resizeColumns,
+  updateColumnAttributes,
 } from './commands/index.js';
 
 // Schema & Defaults

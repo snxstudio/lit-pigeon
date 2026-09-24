@@ -23,6 +23,7 @@ const PASSTHROUGH_INPUTS = [
   'themeOverrides',
   'templateStorage',
   'assetStorage',
+  'readonly',
 ] as const;
 type PassthroughInput = (typeof PASSTHROUGH_INPUTS)[number];
 
@@ -56,6 +57,7 @@ export class PigeonEditorComponent implements AfterViewInit, OnChanges, OnDestro
   @Input() themeOverrides?: PigeonEditor['themeOverrides'];
   @Input() templateStorage?: PigeonEditor['templateStorage'];
   @Input() assetStorage?: PigeonEditor['assetStorage'];
+  @Input() readonly?: PigeonEditor['readonly'];
 
   @Output() pigeonChange = new EventEmitter<{ document: PigeonDocument }>();
   @Output() pigeonSelect = new EventEmitter<{ selection: Selection | null }>();
