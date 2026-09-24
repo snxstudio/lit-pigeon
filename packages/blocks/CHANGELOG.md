@@ -1,5 +1,16 @@
 # @lit-pigeon/blocks
 
+## 0.1.6
+
+### Patch Changes
+
+- Updated dependencies [c532903]
+- Updated dependencies [e2f6771]
+- Updated dependencies [cb51c66]
+- Updated dependencies [6c35111]
+- Updated dependencies [519cec3]
+  - @lit-pigeon/core@0.4.0
+
 ## 0.1.5
 
 ### Patch Changes

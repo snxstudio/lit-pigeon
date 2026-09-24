@@ -1,5 +1,30 @@
 # @lit-pigeon/angular
 
+## 0.3.0
+
+### Minor Changes
+
+- 11e5465: Add plain-text export for the `text/plain` alternative part. `documentToPlainText(doc)` in `@lit-pigeon/renderer-mjml` renders headings and paragraphs, lists, links as `text (url)`, buttons as `label: url`, images as their alt text and dividers as a rule, and keeps merge tags and row conditions verbatim. `@lit-pigeon/ssr` adds `renderDocumentToText(doc, { mergeTags })`, `@lit-pigeon/rest` adds `POST /render/text`, and the editor (and the Angular wrapper) gain a `documentToPlainText` property and `exportPlainText()`.
+- 6c35111: Add a read-only mode and enforce `RowNode.locked`.
+
+  - `<pigeon-editor readonly>` (reflected `readonly` property) renders the canvas without the palette, properties panel, row actions, drag handles, inline editing, undo/redo or templates. Every document change is dropped at the editor's central dispatch, so keyboard shortcuts and stray events can't edit either. Preview, export, device and fullscreen still work. The Vue, Svelte and Angular wrappers take a `readonly` prop/input, and the React wrapper forwards it as an element property.
+  - A locked row can no longer be moved, duplicated, deleted, resized or restyled, and its blocks can't be added, edited, moved or removed. The core row, column and block commands now refuse those changes. In the editor, the row shows a "Locked" badge, keeps only "Save to library", has no block drag handles and does not open inline editing. Its properties panel is shown but disabled, with a note explaining why.
+
+### Patch Changes
+
+- Updated dependencies [c532903]
+- Updated dependencies [706526a]
+- Updated dependencies [e2f6771]
+- Updated dependencies [cb51c66]
+- Updated dependencies [59ea2d5]
+- Updated dependencies [d8062d1]
+- Updated dependencies [11e5465]
+- Updated dependencies [0616ae2]
+- Updated dependencies [6c35111]
+- Updated dependencies [519cec3]
+  - @lit-pigeon/core@0.4.0
+  - @lit-pigeon/editor@0.4.0
+
 ## 0.2.0
 
 ### Minor Changes
