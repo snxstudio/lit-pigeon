@@ -35,9 +35,9 @@ export function parseNavBarBlock(
     type: 'navbar',
     values: {
       links,
-      hamburger: (getAttr(attrs, 'hamburger', 'hamburger') as 'hamburger' | 'none'),
+      hamburger: (getAttr(attrs, 'hamburger', 'none') as 'hamburger' | 'none'),
       alignment: (getAttr(attrs, 'align', 'center') as 'left' | 'center' | 'right'),
-      padding: parseSpacing(getAttr(attrs, 'padding'), 10),
+      padding: parseSpacing(getAttr(attrs, 'padding'), 0),
       linkColor: getAttr(attrs, 'ico-color', '#000000'),
       linkFontSize: getNumericAttr(attrs, 'font-size', 14),
       linkPadding: getAttr(attrs, 'link-padding', '10px 15px'),

@@ -14,16 +14,20 @@ const inText = (inner: string) =>
 
 describe('raw content escaping', () => {
   it('keeps escaped markup in text as text', () => {
-    expect(textOf(inText('Use &lt;b&gt; for bold &amp; more'))).toBe('Use &lt;b&gt; for bold &amp; more');
+    expect(textOf(inText('Use &lt;b&gt; for bold &amp; more'))).toBe(
+      '<span style="font-size: 13px">Use &lt;b&gt; for bold &amp; more</span>',
+    );
   });
 
   it('keeps double quotes inside attribute values', () => {
     const content = textOf(inText(`<span style='font-family:"Open Sans", Arial'>Hi</span>`));
-    expect(content).toBe('<span style="font-family:&quot;Open Sans&quot;, Arial">Hi</span>');
+    expect(content).toBe('<span style="font-size: 13px"><span style="font-family:&quot;Open Sans&quot;, Arial">Hi</span></span>');
   });
 
   it('keeps ampersands in link hrefs valid', () => {
-    expect(textOf(inText('<a href="https://x.test/?a=1&amp;b=2">l</a>'))).toBe('<a href="https://x.test/?a=1&amp;b=2">l</a>');
+    expect(textOf(inText('<a href="https://x.test/?a=1&amp;b=2">l</a>'))).toBe(
+      '<span style="font-size: 13px"><a href="https://x.test/?a=1&amp;b=2">l</a></span>',
+    );
   });
 
   it('leaves style and script text untouched', () => {

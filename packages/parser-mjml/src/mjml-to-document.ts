@@ -4,6 +4,7 @@ import { parseHead, type HeadData } from './parsers/head-parser.js';
 import { parseBody } from './parsers/body-parser.js';
 import { resolveAttributes } from './utils/resolve-attributes.js';
 import { inlineTextStyles } from './utils/inline-text-style.js';
+import { MJML_FONT_FAMILY } from './utils/mjml-defaults.js';
 
 export interface ParseOptions {
   /** If true, lenient parsing will skip unknown elements instead of warning. */
@@ -230,7 +231,7 @@ export function mjmlToDocument(mjml: string, _options?: ParseOptions): ParseResu
     };
   }
 
-  const fontFamily = headData.fontFamily ?? 'Arial, Helvetica, sans-serif';
+  const fontFamily = headData.fontFamily ?? MJML_FONT_FAMILY;
   resolveAttributes(bodyNode, headData.attributeDefaults, warnings);
   inlineTextStyles(bodyNode, fontFamily);
 

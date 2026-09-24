@@ -164,6 +164,21 @@ export class PigeonRowPanel extends LitElement {
           <code>{{#if …}}</code> for your sending platform.
         </p>
       </div>
+
+      <div class="field">
+        <label for="row-repeat">${t('panel.row.repeat')}</label>
+        <input
+          id="row-repeat"
+          type="text"
+          .value=${a.repeat ?? ''}
+          placeholder="e.g. order.items"
+          @change=${this._onRepeatChange}
+        />
+        <p class="hint">
+          Repeat this row once per item of an array merge tag. Exported as
+          <code>{{#each …}}</code>; inside the row, merge tags read from the item.
+        </p>
+      </div>
     `;
   }
 
@@ -210,6 +225,11 @@ export class PigeonRowPanel extends LitElement {
     const value = (e.target as HTMLInputElement).value.trim();
     // Store undefined (not "") when cleared so the renderer skips the wrapper.
     this._emitRowUpdate({ condition: value || undefined });
+  }
+
+  private _onRepeatChange(e: Event) {
+    const value = (e.target as HTMLInputElement).value.trim();
+    this._emitRowUpdate({ repeat: value || undefined });
   }
 }
 

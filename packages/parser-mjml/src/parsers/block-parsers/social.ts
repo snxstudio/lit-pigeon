@@ -42,7 +42,7 @@ export function parseSocialBlock(
     values: {
       icons,
       iconSize: getNumericAttr(attrs, 'icon-size', 32),
-      spacing: getNumericAttr(attrs, 'icon-padding', 8),
+      spacing: getNumericAttr(attrs, 'icon-padding', 0),
       alignment: (getAttr(attrs, 'align', 'center') as 'left' | 'center' | 'right'),
       padding: parseSpacing(getAttr(attrs, 'padding'), 10),
     },

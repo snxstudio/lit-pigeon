@@ -25,6 +25,8 @@ export interface TextBlock {
   id: string;
   type: 'text';
   values: DeviceVisibility & {
+    /** Display condition; see {@link RowNode} `condition`. Wraps just this block. */
+    condition?: string;
     content: string;
     padding: Spacing;
     lineHeight: string;
@@ -38,6 +40,8 @@ export interface ImageBlock {
   id: string;
   type: 'image';
   values: DeviceVisibility & {
+    /** Display condition; see {@link RowNode} `condition`. Wraps just this block. */
+    condition?: string;
     src: string;
     alt: string;
     width: number | 'auto';
@@ -54,6 +58,8 @@ export interface ButtonBlock {
   id: string;
   type: 'button';
   values: DeviceVisibility & {
+    /** Display condition; see {@link RowNode} `condition`. Wraps just this block. */
+    condition?: string;
     content: string;
     href: string;
     backgroundColor: string;
@@ -74,6 +80,8 @@ export interface DividerBlock {
   id: string;
   type: 'divider';
   values: DeviceVisibility & {
+    /** Display condition; see {@link RowNode} `condition`. Wraps just this block. */
+    condition?: string;
     borderColor: string;
     borderWidth: number;
     borderStyle: 'solid' | 'dashed' | 'dotted';
@@ -86,6 +94,8 @@ export interface SpacerBlock {
   id: string;
   type: 'spacer';
   values: DeviceVisibility & {
+    /** Display condition; see {@link RowNode} `condition`. Wraps just this block. */
+    condition?: string;
     height: number;
   };
 }
@@ -94,6 +104,8 @@ export interface SocialBlock {
   id: string;
   type: 'social';
   values: DeviceVisibility & {
+    /** Display condition; see {@link RowNode} `condition`. Wraps just this block. */
+    condition?: string;
     icons: SocialIcon[];
     iconSize: number;
     spacing: number;
@@ -106,6 +118,8 @@ export interface HtmlBlock {
   id: string;
   type: 'html';
   values: DeviceVisibility & {
+    /** Display condition; see {@link RowNode} `condition`. Wraps just this block. */
+    condition?: string;
     content: string;
     padding: Spacing;
   };
@@ -115,6 +129,8 @@ export interface HeroBlock {
   id: string;
   type: 'hero';
   values: DeviceVisibility & {
+    /** Display condition; see {@link RowNode} `condition`. Wraps just this block. */
+    condition?: string;
     backgroundUrl: string;
     backgroundPosition: 'center center' | 'top center' | 'bottom center' | 'left center' | 'right center';
     mode: 'fixed-height' | 'fluid-height';
@@ -141,6 +157,8 @@ export interface NavBarBlock {
   id: string;
   type: 'navbar';
   values: DeviceVisibility & {
+    /** Display condition; see {@link RowNode} `condition`. Wraps just this block. */
+    condition?: string;
     links: NavLink[];
     hamburger: 'hamburger' | 'none';
     alignment: 'left' | 'center' | 'right';
@@ -212,6 +230,13 @@ export interface RowNode {
      * / Liquid-style, passed through verbatim), e.g. `condition: "user.premium"`.
      */
     condition?: string;
+    /**
+     * Optional array merge-tag path. When set, the row repeats once per item:
+     * the renderer wraps the section in `{{#each <repeat>}} … {{/each}}`
+     * (Handlebars), inside any `condition`, e.g. `repeat: "order.items"`.
+     * Merge tags inside the row then resolve against the item (`{{name}}`).
+     */
+    repeat?: string;
     /** Written out as MJML `css-class`. */
     cssClass?: string;
   };

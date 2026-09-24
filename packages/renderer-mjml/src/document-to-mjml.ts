@@ -91,7 +91,13 @@ function renderColumn(column: ColumnNode, widthPercent: string): string {
   }
 
   const blocksMarkup = column.blocks
-    .map((block) => `      ${withCssClass(renderBlock(block), visibilityClass(block.values))}`)
+    .map((block) =>
+      wrapConditional(
+        `      ${withCssClass(renderBlock(block), visibilityClass(block.values))}`,
+        block.values.condition,
+        '      ',
+      ),
+    )
     .join('\n');
 
   return `    <mj-column ${attrs.join(' ')}>
@@ -113,7 +119,13 @@ function renderRow(row: RowNode): string {
   ) {
     const hero = row.columns[0].blocks[0] as HeroBlock;
     return wrapConditional(
-      withCssClass(renderHeroSection(hero), visibilityClass(hero.values)),
+      wrapRepeat(
+        wrapConditional(
+          withCssClass(renderHeroSection(hero), visibilityClass(hero.values)),
+          hero.values.condition,
+        ),
+        row.attributes.repeat,
+      ),
       row.attributes.condition,
     );
   }
@@ -154,25 +166,42 @@ function renderRow(row: RowNode): string {
     .join('\n');
 
   return wrapConditional(
-    `  <mj-section ${attrs.join(' ')}>
+    wrapRepeat(
+      `  <mj-section ${attrs.join(' ')}>
 ${columnsMarkup}
   </mj-section>`,
+      row.attributes.repeat,
+    ),
     row.attributes.condition,
   );
 }
 
 /**
- * Wrap a section's MJML in a template-engine conditional when the row has a
- * display `condition`. The `{{#if}}` / `{{/if}}` markers are emitted inside
- * `<mj-raw>` so mjml2html passes them through verbatim into the final HTML,
- * where the sending platform (Handlebars, Liquid, etc.) evaluates them.
+ * Wrap a section's (or a block's) MJML in a template-engine conditional when
+ * the row or block has a display `condition`. The `{{#if}}` / `{{/if}}`
+ * markers are emitted inside `<mj-raw>` so mjml2html passes them through
+ * verbatim into the final HTML, where the sending platform (Handlebars,
+ * Liquid, etc.) evaluates them.
  */
-function wrapConditional(sectionMarkup: string, condition?: string): string {
+function wrapConditional(markup: string, condition?: string, indent = '  '): string {
   const expr = condition?.trim();
-  if (!expr) return sectionMarkup;
-  return `  <mj-raw>{{#if ${expr}}}</mj-raw>
+  if (!expr) return markup;
+  return `${indent}<mj-raw>{{#if ${expr}}}</mj-raw>
+${markup}
+${indent}<mj-raw>{{/if}}</mj-raw>`;
+}
+
+/**
+ * Wrap a section's MJML in a Handlebars `{{#each}}` loop when the row has a
+ * `repeat` path, using the same pass-through `<mj-raw>` markers as
+ * {@link wrapConditional}.
+ */
+function wrapRepeat(sectionMarkup: string, repeat?: string): string {
+  const path = repeat?.trim();
+  if (!path) return sectionMarkup;
+  return `  <mj-raw>{{#each ${path}}}</mj-raw>
 ${sectionMarkup}
-  <mj-raw>{{/if}}</mj-raw>`;
+  <mj-raw>{{/each}}</mj-raw>`;
 }
 
 /**

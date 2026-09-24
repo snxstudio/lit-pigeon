@@ -67,4 +67,15 @@ describe('device visibility on import', () => {
     expect(block.values).not.toHaveProperty('hideOnMobile');
     expect(block.values).not.toHaveProperty('hideOnDesktop');
   });
+
+  it('round-trips hide flags together with a block condition', () => {
+    const doc = createDefaultDocument('Both');
+    doc.body.rows = [
+      createRow([createColumn([createBlock('text', { hideOnMobile: true, condition: 'user.vip' })])]),
+      createRow([createColumn([createBlock('hero', { hideOnDesktop: true, condition: 'banner' })])]),
+    ];
+    const rows = mjmlToDocument(documentToMjml(doc)).document.body.rows;
+    expect(rows[0].columns[0].blocks[0].values).toMatchObject({ hideOnMobile: true, condition: 'user.vip' });
+    expect(rows[1].columns[0].blocks[0].values).toMatchObject({ hideOnDesktop: true });
+  });
 });
