@@ -114,6 +114,7 @@ screenshot verification is in progress; the matrix below tracks capture status.
 | [`@lit-pigeon/figma-import`](./packages/figma-import) | Convert a Figma frame into a `PigeonDocument` via the Figma REST API | Node.js |
 | [`@lit-pigeon/ssr`](./packages/ssr) | Server-side rendering API — render, parse, validate, and merge-tag-substitute documents from Node (transactional pipelines) | ~0.7 kB |
 | [`@lit-pigeon/rest`](./packages/rest) | Framework-agnostic Node REST adapter — render/parse/validate over HTTP, ships a `lit-pigeon-rest` CLI binary | ~1.6 kB |
+| [`@lit-pigeon/thumbnail`](./packages/thumbnail) | Optional preview-image rasteriser — screenshots a rendered document in a headless browser to fill `Template.thumbnail` | ~1.3 kB + optional `playwright-core` |
 | [`@lit-pigeon/blocks`](./packages/blocks) | Optional standard block catalog — video, countdown, accordion, table, carousel — shipped as plugin `BlockDefinition`s | ~2 kB |
 | [`@lit-pigeon/lint`](./packages/lint) | Pre-flight QA — alt text, contrast, link, merge-tag, spam-score, image-weight, link-reachability rules. Sync + async; exposed as REST endpoints | ~2 kB |
 
@@ -581,6 +582,7 @@ lit-pigeon/
     rest/              # Framework-agnostic REST adapter + CLI
     mcp-server/        # Model Context Protocol server for AI clients
     figma-import/      # Figma frame -> PigeonDocument importer
+    thumbnail/         # Optional preview-image rasteriser (headless browser)
     blocks/            # Optional standard block catalog (plugins)
     lint/              # Pre-flight QA rules (alt-text, contrast, ...)
   apps/
