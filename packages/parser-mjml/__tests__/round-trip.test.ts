@@ -28,3 +28,32 @@ describe('MJML → document → MJML → HTML', () => {
     expect(html).toContain('<img src="https://example.com/a.png" alt="a"><hr>');
   });
 });
+
+describe('block display conditions round-trip', () => {
+  it('keeps each block condition through document → MJML → document', async () => {
+    const { createDefaultDocument, createRow, createColumn, createBlock } = await import('@lit-pigeon/core');
+    const doc = createDefaultDocument('Conditions');
+    const row = createRow([
+      createColumn([
+        createBlock('text', { content: '<p>Hi</p>', condition: 'user.first_name' }),
+        createBlock('image', { src: 'https://example.com/a.png', alt: 'a' }),
+        createBlock('button', { condition: 'cart.items' }),
+      ]),
+      createColumn([createBlock('divider', { condition: 'show_rule' })]),
+    ]);
+    row.attributes.condition = 'user.active';
+    doc.body.rows = [row];
+
+    const { document } = mjmlToDocument(documentToMjml(doc));
+    const [parsed] = document.body.rows;
+    expect(parsed.attributes.condition).toBe('user.active');
+    expect(parsed.columns[0].blocks.map((b) => b.values.condition)).toEqual([
+      'user.first_name',
+      undefined,
+      'cart.items',
+    ]);
+    expect(parsed.columns[1].blocks.map((b) => [b.type, b.values.condition])).toEqual([
+      ['divider', 'show_rule'],
+    ]);
+  });
+});

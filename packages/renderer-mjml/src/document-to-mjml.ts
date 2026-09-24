@@ -9,6 +9,7 @@ import type {
 } from '@lit-pigeon/core';
 import { getBlockDefinition } from '@lit-pigeon/core';
 import { spacingToMjml } from './utils/spacing.js';
+import { visibilityClass, withCssClass, VISIBILITY_STYLE } from './utils/visibility.js';
 import { renderTextBlock } from './block-renderers/text.js';
 import { renderImageBlock } from './block-renderers/image.js';
 import { renderButtonBlock } from './block-renderers/button.js';
@@ -84,11 +85,20 @@ function renderColumn(column: ColumnNode, widthPercent: string): string {
     attrs.push(`border-radius="${borderRadius}px"`);
   }
 
-  if (cssClass) {
-    attrs.push(`css-class="${escapeAttr(cssClass)}"`);
+  const columnClass = [cssClass && escapeAttr(cssClass), visibilityClass(column.attributes)].filter(Boolean).join(' ');
+  if (columnClass) {
+    attrs.push(`css-class="${columnClass}"`);
   }
 
-  const blocksMarkup = column.blocks.map((block) => `      ${renderBlock(block)}`).join('\n');
+  const blocksMarkup = column.blocks
+    .map((block) =>
+      wrapConditional(
+        `      ${withCssClass(renderBlock(block), visibilityClass(block.values))}`,
+        block.values.condition,
+        '      ',
+      ),
+    )
+    .join('\n');
 
   return `    <mj-column ${attrs.join(' ')}>
 ${blocksMarkup}
@@ -107,8 +117,15 @@ function renderRow(row: RowNode): string {
     row.columns[0].blocks.length === 1 &&
     row.columns[0].blocks[0].type === 'hero'
   ) {
+    const hero = row.columns[0].blocks[0] as HeroBlock;
     return wrapConditional(
-      renderHeroSection(row.columns[0].blocks[0] as HeroBlock),
+      wrapRepeat(
+        wrapConditional(
+          withCssClass(renderHeroSection(hero), visibilityClass(hero.values)),
+          hero.values.condition,
+        ),
+        row.attributes.repeat,
+      ),
       row.attributes.condition,
     );
   }
@@ -149,25 +166,42 @@ function renderRow(row: RowNode): string {
     .join('\n');
 
   return wrapConditional(
-    `  <mj-section ${attrs.join(' ')}>
+    wrapRepeat(
+      `  <mj-section ${attrs.join(' ')}>
 ${columnsMarkup}
   </mj-section>`,
+      row.attributes.repeat,
+    ),
     row.attributes.condition,
   );
 }
 
 /**
- * Wrap a section's MJML in a template-engine conditional when the row has a
- * display `condition`. The `{{#if}}` / `{{/if}}` markers are emitted inside
- * `<mj-raw>` so mjml2html passes them through verbatim into the final HTML,
- * where the sending platform (Handlebars, Liquid, etc.) evaluates them.
+ * Wrap a section's (or a block's) MJML in a template-engine conditional when
+ * the row or block has a display `condition`. The `{{#if}}` / `{{/if}}`
+ * markers are emitted inside `<mj-raw>` so mjml2html passes them through
+ * verbatim into the final HTML, where the sending platform (Handlebars,
+ * Liquid, etc.) evaluates them.
  */
-function wrapConditional(sectionMarkup: string, condition?: string): string {
+function wrapConditional(markup: string, condition?: string, indent = '  '): string {
   const expr = condition?.trim();
-  if (!expr) return sectionMarkup;
-  return `  <mj-raw>{{#if ${expr}}}</mj-raw>
+  if (!expr) return markup;
+  return `${indent}<mj-raw>{{#if ${expr}}}</mj-raw>
+${markup}
+${indent}<mj-raw>{{/if}}</mj-raw>`;
+}
+
+/**
+ * Wrap a section's MJML in a Handlebars `{{#each}}` loop when the row has a
+ * `repeat` path, using the same pass-through `<mj-raw>` markers as
+ * {@link wrapConditional}.
+ */
+function wrapRepeat(sectionMarkup: string, repeat?: string): string {
+  const path = repeat?.trim();
+  if (!path) return sectionMarkup;
+  return `  <mj-raw>{{#each ${path}}}</mj-raw>
 ${sectionMarkup}
-  <mj-raw>{{/if}}</mj-raw>`;
+  <mj-raw>{{/each}}</mj-raw>`;
 }
 
 /**
@@ -281,6 +315,20 @@ function renderHead(doc: PigeonDocument, options: Required<DocumentToMjmlOptions
       <mj-text font-size="14px" line-height="1.5" />
       <mj-button font-size="14px" />
     </mj-attributes>`);
+
+  // mj-raw gets neither mj-all nor mj-text defaults, and sits in a column td
+  // with font-size:0px, so unstyled html-block text would be invisible.
+  const hasHtmlBlock = doc.body.rows.some((row) => row.columns.some((col) => col.blocks.some((b) => b.type === 'html')));
+  if (hasHtmlBlock) {
+    headParts.push(`    <mj-style inline="inline">
+      .lp-html { font-size: 14px; line-height: 1.5; font-family: ${fontFamily.replace(/[<>{};]/g, '')}; }
+    </mj-style>`);
+  }
+
+  const hidesOnDevice = doc.body.rows.some((row) =>
+    row.columns.some((col) => visibilityClass(col.attributes) || col.blocks.some((b) => visibilityClass(b.values))),
+  );
+  if (hidesOnDevice) headParts.push(VISIBILITY_STYLE);
 
   if (css) {
     // A literal </mj-style would end the element early; <\/ means the same in CSS

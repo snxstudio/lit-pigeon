@@ -1,4 +1,5 @@
 import type { ParseWarning, MjmlNode } from '../mjml-to-document.js';
+import { takeVisibility } from './parse-attributes.js';
 
 type Attrs = Record<string, string>;
 
@@ -32,6 +33,8 @@ export function resolveAttributes(
   }, {});
 
   node.attrs = { ...defaults.all, ...defaults.tags[node.tag], ...classAttrs, ...own };
+  // Rows have no visibility flags, so a section keeps its classes as they are.
+  if (node.tag !== 'mj-section') node.visibility = takeVisibility(node.attrs);
 
   const cssClass = node.attrs['css-class'];
   if (cssClass && !CSS_CLASS_TAGS.has(node.tag)) {

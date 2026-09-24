@@ -5,6 +5,15 @@ export interface Spacing {
   left: number;
 }
 
+/**
+ * Hides a block or column at one breakpoint. Rendered as an MJML `css-class`
+ * (`pigeon-hide-mobile` / `pigeon-hide-desktop`) plus a media query.
+ */
+export type DeviceVisibility = {
+  hideOnMobile?: boolean;
+  hideOnDesktop?: boolean;
+};
+
 export interface SocialIcon {
   type: 'facebook' | 'twitter' | 'instagram' | 'linkedin' | 'youtube' | 'tiktok' | 'custom';
   href: string;
@@ -15,7 +24,9 @@ export interface SocialIcon {
 export interface TextBlock {
   id: string;
   type: 'text';
-  values: {
+  values: DeviceVisibility & {
+    /** Display condition; see {@link RowNode} `condition`. Wraps just this block. */
+    condition?: string;
     content: string;
     padding: Spacing;
     lineHeight: string;
@@ -28,7 +39,9 @@ export interface TextBlock {
 export interface ImageBlock {
   id: string;
   type: 'image';
-  values: {
+  values: DeviceVisibility & {
+    /** Display condition; see {@link RowNode} `condition`. Wraps just this block. */
+    condition?: string;
     src: string;
     alt: string;
     width: number | 'auto';
@@ -44,7 +57,9 @@ export interface ImageBlock {
 export interface ButtonBlock {
   id: string;
   type: 'button';
-  values: {
+  values: DeviceVisibility & {
+    /** Display condition; see {@link RowNode} `condition`. Wraps just this block. */
+    condition?: string;
     content: string;
     href: string;
     backgroundColor: string;
@@ -64,7 +79,9 @@ export interface ButtonBlock {
 export interface DividerBlock {
   id: string;
   type: 'divider';
-  values: {
+  values: DeviceVisibility & {
+    /** Display condition; see {@link RowNode} `condition`. Wraps just this block. */
+    condition?: string;
     borderColor: string;
     borderWidth: number;
     borderStyle: 'solid' | 'dashed' | 'dotted';
@@ -76,7 +93,9 @@ export interface DividerBlock {
 export interface SpacerBlock {
   id: string;
   type: 'spacer';
-  values: {
+  values: DeviceVisibility & {
+    /** Display condition; see {@link RowNode} `condition`. Wraps just this block. */
+    condition?: string;
     height: number;
   };
 }
@@ -84,7 +103,9 @@ export interface SpacerBlock {
 export interface SocialBlock {
   id: string;
   type: 'social';
-  values: {
+  values: DeviceVisibility & {
+    /** Display condition; see {@link RowNode} `condition`. Wraps just this block. */
+    condition?: string;
     icons: SocialIcon[];
     iconSize: number;
     spacing: number;
@@ -96,7 +117,9 @@ export interface SocialBlock {
 export interface HtmlBlock {
   id: string;
   type: 'html';
-  values: {
+  values: DeviceVisibility & {
+    /** Display condition; see {@link RowNode} `condition`. Wraps just this block. */
+    condition?: string;
     content: string;
     padding: Spacing;
   };
@@ -105,7 +128,9 @@ export interface HtmlBlock {
 export interface HeroBlock {
   id: string;
   type: 'hero';
-  values: {
+  values: DeviceVisibility & {
+    /** Display condition; see {@link RowNode} `condition`. Wraps just this block. */
+    condition?: string;
     backgroundUrl: string;
     backgroundPosition: 'center center' | 'top center' | 'bottom center' | 'left center' | 'right center';
     mode: 'fixed-height' | 'fluid-height';
@@ -131,7 +156,9 @@ export interface NavLink {
 export interface NavBarBlock {
   id: string;
   type: 'navbar';
-  values: {
+  values: DeviceVisibility & {
+    /** Display condition; see {@link RowNode} `condition`. Wraps just this block. */
+    condition?: string;
     links: NavLink[];
     hamburger: 'hamburger' | 'none';
     alignment: 'left' | 'center' | 'right';
@@ -177,7 +204,7 @@ export type AnyBlock = ContentBlock | CustomBlock;
 export interface ColumnNode {
   id: string;
   type: 'column';
-  attributes: {
+  attributes: DeviceVisibility & {
     backgroundColor?: string;
     padding: Spacing;
     borderRadius?: number;
@@ -203,6 +230,13 @@ export interface RowNode {
      * / Liquid-style, passed through verbatim), e.g. `condition: "user.premium"`.
      */
     condition?: string;
+    /**
+     * Optional array merge-tag path. When set, the row repeats once per item:
+     * the renderer wraps the section in `{{#each <repeat>}} … {{/each}}`
+     * (Handlebars), inside any `condition`, e.g. `repeat: "order.items"`.
+     * Merge tags inside the row then resolve against the item (`{{name}}`).
+     */
+    repeat?: string;
     /** Written out as MJML `css-class`. */
     cssClass?: string;
   };

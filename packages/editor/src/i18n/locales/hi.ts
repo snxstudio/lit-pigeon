@@ -122,6 +122,7 @@ const messages: Record<string, string> = {
   'panel.common.linkUrl': 'लिंक URL',
   'panel.common.urlPlaceholder': 'https://example.com',
   'panel.common.contentHtml': 'सामग्री (HTML)',
+  'panel.common.displayCondition': 'प्रदर्शन शर्त',
   'panel.common.insertMergeTag': 'मर्ज टैग डालें',
   'panel.common.tagBtn': '{ } टैग',
   'panel.common.uploadImage': 'इमेज अपलोड करें',
@@ -232,6 +233,7 @@ const messages: Record<string, string> = {
   'panel.row.backgroundImageUrl': 'बैकग्राउंड इमेज URL',
   'panel.row.fullWidth': 'पूरी चौड़ाई',
   'panel.row.displayCondition': 'प्रदर्शन शर्त',
+  'panel.row.repeat': 'प्रत्येक के लिए दोहराएँ',
 
   // controls — color picker
   'control.color.label': 'रंग',

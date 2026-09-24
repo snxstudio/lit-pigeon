@@ -17,6 +17,7 @@ beforeAll(() => {
       config?: unknown;
       renderer?: unknown;
       documentToMjml?: unknown;
+      readonly?: boolean;
     }
     customElements.define('pigeon-editor', StubPigeonEditor);
   }
@@ -55,6 +56,14 @@ describe('PigeonEditor Svelte wrapper', () => {
     expect(el.document).toBe(SAMPLE_DOC);
     // Attribute is *not* a JSON-stringified clone — same object identity rule.
     expect(el.getAttribute('document')).toBeNull();
+  });
+
+  it('sets `readonly` as a DOM property and keeps it in sync', async () => {
+    const { container, rerender } = render(PigeonEditor, { props: { readonly: true } });
+    const el = container.querySelector('pigeon-editor') as HTMLElement & { readonly?: boolean };
+    expect(el.readonly).toBe(true);
+    await rerender({ readonly: false });
+    expect(el.readonly).toBe(false);
   });
 
   it('sets `config` as a DOM property', () => {

@@ -122,6 +122,7 @@ const messages: Record<string, string> = {
   'panel.common.linkUrl': 'リンク URL',
   'panel.common.urlPlaceholder': 'https://example.com',
   'panel.common.contentHtml': 'コンテンツ (HTML)',
+  'panel.common.displayCondition': '表示条件',
   'panel.common.insertMergeTag': '差し込みタグを挿入',
   'panel.common.tagBtn': '{ } タグ',
   'panel.common.uploadImage': '画像をアップロード',
@@ -232,6 +233,7 @@ const messages: Record<string, string> = {
   'panel.row.backgroundImageUrl': '背景画像 URL',
   'panel.row.fullWidth': '全幅',
   'panel.row.displayCondition': '表示条件',
+  'panel.row.repeat': '各項目で繰り返す',
 
   // controls — color picker
   'control.color.label': '色',

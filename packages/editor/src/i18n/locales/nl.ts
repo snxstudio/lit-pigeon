@@ -122,6 +122,7 @@ const messages: Record<string, string> = {
   'panel.common.linkUrl': 'Link-URL',
   'panel.common.urlPlaceholder': 'https://example.com',
   'panel.common.contentHtml': 'Inhoud (HTML)',
+  'panel.common.displayCondition': 'Weergavevoorwaarde',
   'panel.common.insertMergeTag': 'Samenvoegtag invoegen',
   'panel.common.tagBtn': '{ } Tag',
   'panel.common.uploadImage': 'Afbeelding uploaden',
@@ -232,6 +233,7 @@ const messages: Record<string, string> = {
   'panel.row.backgroundImageUrl': 'URL achtergrondafbeelding',
   'panel.row.fullWidth': 'Volledige breedte',
   'panel.row.displayCondition': 'Weergavevoorwaarde',
+  'panel.row.repeat': 'Herhalen voor elk',
 
   // controls — color picker
   'control.color.label': 'Kleur',

@@ -122,6 +122,7 @@ const messages: Record<string, string> = {
   'panel.common.linkUrl': 'URL del enlace',
   'panel.common.urlPlaceholder': 'https://example.com',
   'panel.common.contentHtml': 'Contenido (HTML)',
+  'panel.common.displayCondition': 'Condición de visualización',
   'panel.common.insertMergeTag': 'Insertar etiqueta de combinación',
   'panel.common.tagBtn': '{ } Etiqueta',
   'panel.common.uploadImage': 'Subir imagen',
@@ -232,6 +233,7 @@ const messages: Record<string, string> = {
   'panel.row.backgroundImageUrl': 'URL de la imagen de fondo',
   'panel.row.fullWidth': 'Ancho completo',
   'panel.row.displayCondition': 'Condición de visualización',
+  'panel.row.repeat': 'Repetir para cada',
 
   // controls — color picker
   'control.color.label': 'Color',

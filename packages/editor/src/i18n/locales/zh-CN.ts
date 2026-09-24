@@ -122,6 +122,7 @@ const messages: Record<string, string> = {
   'panel.common.linkUrl': '链接 URL',
   'panel.common.urlPlaceholder': 'https://example.com',
   'panel.common.contentHtml': '内容 (HTML)',
+  'panel.common.displayCondition': '显示条件',
   'panel.common.insertMergeTag': '插入合并标签',
   'panel.common.tagBtn': '{ } 标签',
   'panel.common.uploadImage': '上传图片',
@@ -232,6 +233,7 @@ const messages: Record<string, string> = {
   'panel.row.backgroundImageUrl': '背景图片 URL',
   'panel.row.fullWidth': '全宽',
   'panel.row.displayCondition': '显示条件',
+  'panel.row.repeat': '为每一项重复',
 
   // controls — color picker
   'control.color.label': '颜色',
