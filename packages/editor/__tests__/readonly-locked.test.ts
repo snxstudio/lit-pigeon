@@ -202,6 +202,18 @@ describe('locked rows in the editor UI', () => {
     await ($(editor, 'pigeon-properties') as HTMLElement & { updateComplete: Promise<unknown> }).updateComplete;
     expect(props().querySelector('.locked-note')!.textContent).toMatch(/locked/i);
     expect(props().querySelector('pigeon-text-panel')!.closest('[inert]')).not.toBeNull();
+    expect(props().querySelector('.visibility')!.closest('[inert]')).not.toBeNull();
+
+    $(editor, 'pigeon-properties')!.dispatchEvent(
+      new CustomEvent('column-select', {
+        detail: { rowId: lockedRow.id, columnId: lockedRow.columns[0].id },
+        bubbles: true,
+        composed: true,
+      }),
+    );
+    await editor.updateComplete;
+    await ($(editor, 'pigeon-properties') as HTMLElement & { updateComplete: Promise<unknown> }).updateComplete;
+    expect(props().querySelector('.visibility')!.closest('[inert]')).not.toBeNull();
 
     fire(editor, 'row-select', { rowId: lockedRow.id });
     await editor.updateComplete;

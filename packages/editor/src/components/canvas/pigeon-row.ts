@@ -3,6 +3,7 @@ import { customElement, property, state } from 'lit/decorators.js';
 import type { RowNode, Selection } from '@lit-pigeon/core';
 import { writeDragTransfer, clearDragData } from '../../dnd/drag-manager.js';
 import './pigeon-column.js';
+import { hiddenOnDevice, visibilityBadge, visibilityStyles } from './visibility.js';
 
 @customElement('pigeon-row')
 export class PigeonRow extends LitElement {
@@ -25,6 +26,9 @@ export class PigeonRow extends LitElement {
    *  that only one row shows its bar at a time (see pigeon-canvas). */
   @property({ type: Boolean, attribute: 'show-actions', reflect: true })
   showActions = false;
+
+  @property({ type: String })
+  device = 'desktop';
 
   @property({ type: Boolean })
   readonly = false;
@@ -71,6 +75,7 @@ export class PigeonRow extends LitElement {
     }
 
     .column-wrapper {
+      position: relative;
       box-sizing: border-box;
     }
 
@@ -162,6 +167,8 @@ export class PigeonRow extends LitElement {
     .row-wrapper.selected .row-label {
       opacity: 1;
     }
+
+    ${visibilityStyles}
   `;
 
   render() {
@@ -187,12 +194,17 @@ export class PigeonRow extends LitElement {
             const ratio = this.row.columnRatios[i] ?? 1;
             const widthPercent = (ratio / 12) * 100;
             return html`
-              <div class="column-wrapper" style="width: ${widthPercent}%;">
+              <div
+                class="column-wrapper ${hiddenOnDevice(col.attributes, this.device) ? 'device-hidden' : ''}"
+                style="width: ${widthPercent}%;"
+              >
+                ${visibilityBadge(col.attributes)}
                 <pigeon-column
                   .column=${col}
                   row-id="${this.row.id}"
                   .selection=${this.selection}
                   .editingBlockId=${this.editingBlockId}
+                  .device=${this.device}
                   ?locked=${locked || this.readonly}
                 ></pigeon-column>
               </div>

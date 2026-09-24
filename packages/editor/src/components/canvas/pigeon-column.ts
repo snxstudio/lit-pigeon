@@ -21,6 +21,7 @@ import '../blocks/html-block.js';
 import '../blocks/hero-block.js';
 import '../blocks/navbar-block.js';
 import { sanitizeCanvasHTML } from '../blocks/canvas-html.js';
+import { hiddenOnDevice, visibilityBadge, visibilityStyles } from './visibility.js';
 
 @customElement('pigeon-column')
 export class PigeonColumn extends LitElement {
@@ -35,6 +36,9 @@ export class PigeonColumn extends LitElement {
 
   @property({ type: String, attribute: 'editing-block-id' })
   editingBlockId: string | null = null;
+
+  @property({ type: String })
+  device = 'desktop';
 
   /** Set for a locked row or a readonly editor: no block drags in or out. */
   @property({ type: Boolean })
@@ -166,6 +170,8 @@ export class PigeonColumn extends LitElement {
       font-size: 12px;
       text-align: center;
     }
+
+    ${visibilityStyles}
   `;
 
   render() {
@@ -194,7 +200,10 @@ export class PigeonColumn extends LitElement {
               <pigeon-drop-indicator
                 ?visible=${this._isDragOver && this._dropIndex === index}
               ></pigeon-drop-indicator>
-              <div class="block-wrapper ${this._draggingBlockId === block.id ? 'dragging' : ''}">
+              <div
+                class="block-wrapper ${this._draggingBlockId === block.id ? 'dragging' : ''} ${hiddenOnDevice(block.values, this.device) ? 'device-hidden' : ''}"
+              >
+                ${visibilityBadge(block.values)}
                 ${this.locked ? '' : html`<button
                   class="block-drag-handle"
                   title="Drag to reorder"

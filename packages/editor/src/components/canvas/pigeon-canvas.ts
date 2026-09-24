@@ -252,6 +252,7 @@ export class PigeonCanvas extends LitElement {
                       .totalRows=${rows.length}
                       .selection=${this.selection}
                       .editingBlockId=${this.editingBlockId}
+                      .device=${this.device}
                       ?readonly=${this.readonly}
                       ?show-actions=${this._hoveredRowId === row.id ||
                       (this._hoveredRowId === null && selectedRowId === row.id)}
