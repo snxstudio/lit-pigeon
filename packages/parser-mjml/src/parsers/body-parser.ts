@@ -24,23 +24,35 @@ export function parseBody(bodyNode: MjmlNode, warnings: ParseWarning[]): BodyDat
   // Tracks `{{#if …}}` display conditions emitted as mj-raw markers before
   // a section, applied to the next parsed row to round-trip conditional rows.
   // A hero row can carry two: the row's, then the hero block's.
-  let pendingConditions: string[] = [];
+  let pendingConditions: (string | undefined)[] = [];
+  // Same for a `{{#each …}}` marker, which round-trips repeat rows.
+  let pendingRepeat: string | undefined;
   const applyCondition = (row: RowNode): RowNode => {
     const [rowCondition, blockCondition] = pendingConditions;
     if (rowCondition) row.attributes.condition = rowCondition;
     const [block] = row.columns[0]?.blocks ?? [];
     if (blockCondition && block?.type === 'hero') block.values.condition = blockCondition;
     pendingConditions = [];
+    if (pendingRepeat) {
+      row.attributes.repeat = pendingRepeat;
+      pendingRepeat = undefined;
+    }
     return row;
   };
 
   for (const child of bodyNode.children) {
     switch (child.tag) {
       case 'mj-raw': {
-        // Detect the conditional wrappers the renderer emits. Opening markers
-        // arm a condition for the following section; closing markers are noise.
+        // Detect the conditional and loop wrappers the renderer emits. Opening
+        // markers arm the following section; closing markers are noise.
         const match = /\{\{#if\s+([^}]+?)\s*\}\}/.exec(child.text ?? '');
         if (match) pendingConditions.push(match[1].trim());
+        const each = /^\s*\{\{#each\s+([^}]+?)\s*\}\}\s*$/.exec(child.text ?? '');
+        if (each) {
+          pendingRepeat = each[1].trim();
+          // The row condition sits outside the loop, so a later `{{#if}}` is the hero block's.
+          pendingConditions = [pendingConditions[0]];
+        }
         break;
       }
       case 'mj-section':
