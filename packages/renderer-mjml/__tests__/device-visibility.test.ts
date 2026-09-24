@@ -28,7 +28,7 @@ const ROOT_TAG: Record<string, RegExp> = {
   social: /<mj-social [^>]*css-class="pigeon-hide-mobile"/,
   navbar: /<mj-navbar [^>]*css-class="pigeon-hide-mobile"/,
   hero: /<mj-text [^>]*css-class="pigeon-hide-mobile"/,
-  html: /<mj-raw><div style="padding: [^"]*;" class="pigeon-hide-mobile">/,
+  html: /<mj-raw><div class="lp-html pigeon-hide-mobile" style="padding: [^"]*;">/,
 };
 
 describe('device visibility in MJML', () => {

@@ -29,6 +29,13 @@ describe('device visibility on import', () => {
     },
   );
 
+  it('round-trips an html block without flags through its lp-html wrapper', () => {
+    const doc = createDefaultDocument('Html');
+    doc.body.rows = [createRow([createColumn([createBlock('html', { content: '<p>Raw</p>', padding: { top: 4, right: 0, bottom: 4, left: 0 } })])])];
+    const block = firstBlock(documentToMjml(doc));
+    expect(block.values).toEqual({ content: '<p>Raw</p>', padding: { top: 4, right: 0, bottom: 4, left: 0 } });
+  });
+
   it('round-trips a hero section', () => {
     const doc = createDefaultDocument('Hero');
     doc.body.rows = [createRow([createColumn([createBlock('hero', { hideOnDesktop: true })])])];

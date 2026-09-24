@@ -14,5 +14,5 @@ export function renderHtmlBlock(block: HtmlBlock): string {
   const safeContent = escapeMjRawTags(content);
   const cls = visibilityClass(block.values);
 
-  return `<mj-raw><div style="padding: ${paddingStr};"${cls ? ` class="${cls}"` : ''}>${safeContent}</div></mj-raw>`;
+  return `<mj-raw><div class="lp-html${cls ? ` ${cls}` : ''}" style="padding: ${paddingStr};">${safeContent}</div></mj-raw>`;
 }
