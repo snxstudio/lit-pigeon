@@ -25,12 +25,17 @@ export function withCssClass(markup: string, cls: string): string {
  * `<class>-outlook` class to its Outlook table cell, which is hidden too.
  * The mobile hide rule comes last, at the restore rules' specificity, so an
  * element hidden on both stays hidden on mobile.
+ *
+ * Each restore rule names the element MJML puts the class on: `td` for a
+ * column, `div` for a section, and `table` for a full-width section, which
+ * MJML wraps in a table rather than a div.
  */
 export const VISIBILITY_STYLE = `    <mj-style>
       .pigeon-hide-desktop, .pigeon-hide-desktop-outlook { display: none !important; mso-hide: all !important; }
       @media only screen and (max-width:479px) {
         td.pigeon-hide-desktop { display: table-cell !important; }
         div.pigeon-hide-desktop { display: block !important; }
-        .pigeon-hide-mobile, td.pigeon-hide-mobile, div.pigeon-hide-mobile { display: none !important; }
+        table.pigeon-hide-desktop { display: table !important; }
+        .pigeon-hide-mobile, td.pigeon-hide-mobile, div.pigeon-hide-mobile, table.pigeon-hide-mobile { display: none !important; }
       }
     </mj-style>`;

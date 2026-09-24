@@ -118,10 +118,16 @@ function renderRow(row: RowNode): string {
     row.columns[0].blocks[0].type === 'hero'
   ) {
     const hero = row.columns[0].blocks[0] as HeroBlock;
+    // The row and its hero block collapse into one mj-hero, so hiding either
+    // hides the element. On a round trip the flags come back on the block.
+    const heroVisibility = visibilityClass({
+      hideOnMobile: row.attributes.hideOnMobile || hero.values.hideOnMobile,
+      hideOnDesktop: row.attributes.hideOnDesktop || hero.values.hideOnDesktop,
+    });
     return wrapConditional(
       wrapRepeat(
         wrapConditional(
-          withCssClass(renderHeroSection(hero), visibilityClass(hero.values)),
+          withCssClass(renderHeroSection(hero), heroVisibility),
           hero.values.condition,
         ),
         row.attributes.repeat,
@@ -150,8 +156,9 @@ function renderRow(row: RowNode): string {
     attrs.push('background-repeat="no-repeat"');
   }
 
-  if (cssClass) {
-    attrs.push(`css-class="${escapeAttr(cssClass)}"`);
+  const rowClass = [cssClass && escapeAttr(cssClass), visibilityClass(row.attributes)].filter(Boolean).join(' ');
+  if (rowClass) {
+    attrs.push(`css-class="${rowClass}"`);
   }
 
   // Calculate column width percentages from ratios
@@ -325,8 +332,10 @@ function renderHead(doc: PigeonDocument, options: Required<DocumentToMjmlOptions
     </mj-style>`);
   }
 
-  const hidesOnDevice = doc.body.rows.some((row) =>
-    row.columns.some((col) => visibilityClass(col.attributes) || col.blocks.some((b) => visibilityClass(b.values))),
+  const hidesOnDevice = doc.body.rows.some(
+    (row) =>
+      visibilityClass(row.attributes) ||
+      row.columns.some((col) => visibilityClass(col.attributes) || col.blocks.some((b) => visibilityClass(b.values))),
   );
   if (hidesOnDevice) headParts.push(VISIBILITY_STYLE);
 

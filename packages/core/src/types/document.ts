@@ -218,7 +218,7 @@ export interface ColumnNode {
 export interface RowNode {
   id: string;
   type: 'row';
-  attributes: {
+  attributes: DeviceVisibility & {
     backgroundColor?: string;
     backgroundImage?: string;
     padding: Spacing;

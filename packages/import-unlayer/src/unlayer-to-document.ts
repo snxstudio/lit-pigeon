@@ -1,4 +1,4 @@
-import type { ColumnNode, ContentBlock, PigeonDocument, RowNode } from '@lit-pigeon/core';
+import type { ColumnNode, ContentBlock, DeviceVisibility, PigeonDocument, RowNode } from '@lit-pigeon/core';
 import { generateId } from '@lit-pigeon/core';
 import type { UnlayerColumn, UnlayerDesign, UnlayerRow } from './types.js';
 import type { ImportWarning } from './warnings.js';
@@ -135,6 +135,7 @@ function convertRow(row: UnlayerRow, inherited: InheritedStyle, warnings: Import
     id: generateId(),
     type: 'row',
     attributes: {
+      ...visibility(v),
       ...(color(v.backgroundColor) ?? color(v.columnsBackgroundColor)
         ? { backgroundColor: (color(v.backgroundColor) ?? color(v.columnsBackgroundColor))! }
         : {}),
@@ -157,6 +158,7 @@ function convertColumn(col: UnlayerColumn, inherited: InheritedStyle, warnings: 
   for (const content of contents) {
     const block = convertContent(content, inherited, warnings);
     if (block) {
+      Object.assign(block.values, visibility((content.values ?? {}) as Record<string, unknown>));
       blocks.push(block);
       continue;
     }
@@ -183,12 +185,26 @@ function convertColumn(col: UnlayerColumn, inherited: InheritedStyle, warnings: 
     id: generateId(),
     type: 'column',
     attributes: {
+      ...visibility(v),
       ...(bg ? { backgroundColor: bg } : {}),
       padding: parseSpacing(v.padding, 0),
       verticalAlign: verticalAlign(v.verticalAlign),
     },
     blocks,
   };
+}
+
+/**
+ * Unlayer keeps hide-on-desktop as a flag on the element itself and
+ * hide-on-mobile inside its `_override.mobile` block; older exports also put
+ * `hideMobile` at the top level. Only flags that are set appear in the result,
+ * so an element visible everywhere adds nothing to the document.
+ */
+function visibility(v: Record<string, unknown>): DeviceVisibility {
+  const flags: DeviceVisibility = {};
+  if (v.hideDesktop === true) flags.hideOnDesktop = true;
+  if (v.hideMobile === true || dig(v, '_override', 'mobile', 'hideMobile') === true) flags.hideOnMobile = true;
+  return flags;
 }
 
 function verticalAlign(value: unknown): 'top' | 'middle' | 'bottom' {

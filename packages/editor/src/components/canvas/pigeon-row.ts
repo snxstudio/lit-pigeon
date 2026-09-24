@@ -183,11 +183,12 @@ export class PigeonRow extends LitElement {
 
     return html`
       <div
-        class="row-wrapper ${isSelected ? 'selected' : ''} ${this._dragging ? 'dragging' : ''}"
+        class="row-wrapper ${isSelected ? 'selected' : ''} ${this._dragging ? 'dragging' : ''} ${hiddenOnDevice(a, this.device) ? 'device-hidden' : ''}"
         style="${bgStyle} ${bgImgStyle} ${padStyle}"
         @click=${this._onRowClick}
       >
         ${this.readonly ? '' : html`<div class="row-label">${locked ? 'Locked' : 'Row'}</div>`}
+        ${visibilityBadge(a)}
 
         <div class="columns">
           ${this.row.columns.map((col, i) => {
