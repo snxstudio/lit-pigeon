@@ -18,4 +18,5 @@ export {
   addColumn,
   removeColumn,
   resizeColumns,
+  updateColumnAttributes,
 } from './column-commands.js';

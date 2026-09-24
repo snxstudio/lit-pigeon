@@ -17,7 +17,12 @@
  *
  * Drops: script, style, iframe, object, embed, all on* event handlers,
  *        javascript: hrefs, anything not in the tag allowlist.
+ *
+ * Markers left by `holdRawFragments` are restored from the `RawStore` they
+ * were held in. An id the store does not know is dropped, so a forged marker
+ * cannot reintroduce markup the allowlist would otherwise strip.
  */
+import { openTagOf, type RawStore } from './raw-html.js';
 
 const ALLOWED_TAGS = new Set([
   'p', 'br', 'strong', 'em', 's', 'u', 'code', 'a',
@@ -43,29 +48,39 @@ const VOID_ELEMENTS = new Set(['br']);
  * unchanged — defenders should be aware that the TipTap schema is still the
  * primary defence and that this sanitiser is best-effort.
  */
-export function sanitizeHTML(input: string): string {
+export function sanitizeHTML(input: string, store?: RawStore): string {
   if (typeof DOMParser === 'undefined') return input;
   const doc = new DOMParser().parseFromString(`<div id="__root">${input}</div>`, 'text/html');
   const root = doc.getElementById('__root');
   if (!root) return '';
-  return serializeChildren(root);
+  return serializeChildren(root, store);
 }
 
-function serializeChildren(node: Element | DocumentFragment): string {
+function serializeChildren(node: Element | DocumentFragment, store?: RawStore): string {
   let out = '';
   for (const child of Array.from(node.childNodes)) {
-    out += serializeNode(child);
+    out += serializeNode(child, store);
   }
   return out;
 }
 
-function serializeNode(node: Node): string {
+function serializeNode(node: Node, store?: RawStore): string {
   if (node.nodeType === 3 /* TEXT_NODE */) {
     return escapeText(node.textContent ?? '');
   }
   if (node.nodeType !== 1 /* ELEMENT_NODE */) return '';
   const el = node as Element;
   const tag = el.tagName.toLowerCase();
+
+  const rawId = el.getAttribute('data-pigeon-raw');
+  if (rawId !== null) return store?.getRaw(rawId) ?? '';
+
+  const wrapId = el.getAttribute('data-pigeon-wrap');
+  if (wrapId !== null) {
+    const spec = store?.getWrapper(wrapId);
+    if (!spec) return serializeChildren(el, store);
+    return `${openTagOf(spec)}${serializeChildren(el, store)}</${spec.tag}>`;
+  }
 
   // Merge-tag spans round-trip as plain `{{name}}` text so MJML output is
   // unchanged. The chip rendering is rebuilt on next load via preprocess.
@@ -75,20 +90,20 @@ function serializeNode(node: Node): string {
     if (MERGE_TAG_IDENTIFIER.test(name)) {
       return `{{${name}}}`;
     }
-    return serializeChildren(el);
+    return serializeChildren(el, store);
   }
 
   if (!ALLOWED_TAGS.has(tag)) {
     // Drop the wrapper but keep textual children.
-    return serializeChildren(el);
+    return serializeChildren(el, store);
   }
   const attrs = serializeAttrs(el, tag);
   if (attrs === null) {
     // Mark element was tagged for removal (e.g. unsafe href on <a>).
-    return serializeChildren(el);
+    return serializeChildren(el, store);
   }
   if (VOID_ELEMENTS.has(tag)) return `<${tag}${attrs}>`;
-  return `<${tag}${attrs}>${serializeChildren(el)}</${tag}>`;
+  return `<${tag}${attrs}>${serializeChildren(el, store)}</${tag}>`;
 }
 
 function serializeAttrs(el: Element, tag: string): string | null {
