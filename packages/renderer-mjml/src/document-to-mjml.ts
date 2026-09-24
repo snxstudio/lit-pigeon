@@ -282,6 +282,15 @@ function renderHead(doc: PigeonDocument, options: Required<DocumentToMjmlOptions
       <mj-button font-size="14px" />
     </mj-attributes>`);
 
+  // mj-raw gets neither mj-all nor mj-text defaults, and sits in a column td
+  // with font-size:0px, so unstyled html-block text would be invisible.
+  const hasHtmlBlock = doc.body.rows.some((row) => row.columns.some((col) => col.blocks.some((b) => b.type === 'html')));
+  if (hasHtmlBlock) {
+    headParts.push(`    <mj-style inline="inline">
+      .lp-html { font-size: 14px; line-height: 1.5; font-family: ${fontFamily.replace(/[<>{};]/g, '')}; }
+    </mj-style>`);
+  }
+
   if (css) {
     // A literal </mj-style would end the element early; <\/ means the same in CSS
     headParts.push(`    <mj-style>
