@@ -36,6 +36,10 @@ export class PigeonColumn extends LitElement {
   @property({ type: String, attribute: 'editing-block-id' })
   editingBlockId: string | null = null;
 
+  /** Set for a locked row or a readonly editor: no block drags in or out. */
+  @property({ type: Boolean })
+  locked = false;
+
   @state()
   private _dropIndex = -1;
 
@@ -191,7 +195,7 @@ export class PigeonColumn extends LitElement {
                 ?visible=${this._isDragOver && this._dropIndex === index}
               ></pigeon-drop-indicator>
               <div class="block-wrapper ${this._draggingBlockId === block.id ? 'dragging' : ''}">
-                <button
+                ${this.locked ? '' : html`<button
                   class="block-drag-handle"
                   title="Drag to reorder"
                   draggable="true"
@@ -202,7 +206,7 @@ export class PigeonColumn extends LitElement {
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
                     <path d="M9 5v14M15 5v14" />
                   </svg>
-                </button>
+                </button>`}
                 ${this._renderBlock(block)}
               </div>
             `)}
@@ -296,7 +300,7 @@ export class PigeonColumn extends LitElement {
 
   private _onDragOver(e: DragEvent) {
     const dragData = getDragData();
-    if (!dragData) return;
+    if (!dragData || this.locked) return;
 
     // Columns only accept block drags. Row drags (palette-row / existing-row)
     // must bubble up to the canvas, which owns row insertion/reordering — so
@@ -340,7 +344,7 @@ export class PigeonColumn extends LitElement {
 
   private _onDrop(e: DragEvent) {
     const dragData = getDragData();
-    if (!dragData) return;
+    if (!dragData || this.locked) return;
 
     // Let row drags fall through to the canvas (see _onDragOver). Guard before
     // calling stopPropagation so the canvas still receives the row drop.
