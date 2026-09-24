@@ -182,6 +182,10 @@ export class PigeonEditor extends LitElement {
   @property({ type: Object })
   documentToMjml?: (doc: PigeonDocument, options?: { fonts?: FontDefinition[] }) => string;
 
+  /** Optional function to convert document to plain text. */
+  @property({ type: Object })
+  documentToPlainText?: (doc: PigeonDocument) => string;
+
   /**
    * Optional template storage backend. When unset, the editor falls back to
    * an in-memory storage seeded with the starter templates so the picker is
@@ -383,6 +387,11 @@ export class PigeonEditor extends LitElement {
       return this.documentToMjml(this._state.doc, { fonts: this._renderFonts() });
     }
     return null;
+  }
+
+  /** Export the document as plain text. Requires documentToPlainText to be set. */
+  exportPlainText(): string | null {
+    return this.documentToPlainText ? this.documentToPlainText(this._state.doc) : null;
   }
 
   /** Export the document as HTML. Requires renderer to be set. */

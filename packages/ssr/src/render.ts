@@ -1,5 +1,5 @@
 import type { PigeonDocument, RenderError, RenderOptions } from '@lit-pigeon/core';
-import { documentToMjml, MjmlRenderer } from '@lit-pigeon/renderer-mjml';
+import { documentToMjml, documentToPlainText, MjmlRenderer } from '@lit-pigeon/renderer-mjml';
 import { applyMergeTags, type MergeTagValues } from './merge-tags.js';
 
 export interface RenderDocumentOptions extends RenderOptions {
@@ -51,4 +51,18 @@ export function renderDocumentToMjml(
   options: Pick<RenderOptions, 'outlookWorkarounds'> = {},
 ): string {
   return documentToMjml(doc, { outlookWorkarounds: options.outlookWorkarounds });
+}
+
+/**
+ * Render a document to the `text/plain` alternative part. Merge-tag values
+ * are substituted verbatim (no HTML escaping) when supplied.
+ */
+export function renderDocumentToText(
+  doc: PigeonDocument,
+  options: Pick<RenderDocumentOptions, 'mergeTags' | 'mergeTagFallback'> = {},
+): string {
+  const text = documentToPlainText(doc);
+  return options.mergeTags && Object.keys(options.mergeTags).length > 0
+    ? applyMergeTags(text, options.mergeTags, { fallback: options.mergeTagFallback, escape: false })
+    : text;
 }

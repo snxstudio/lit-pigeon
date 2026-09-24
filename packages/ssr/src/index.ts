@@ -1,4 +1,4 @@
-export { renderDocument, renderDocumentToMjml } from './render.js';
+export { renderDocument, renderDocumentToMjml, renderDocumentToText } from './render.js';
 export type { RenderDocumentOptions, RenderDocumentResult } from './render.js';
 
 export { renderTemplate } from './template.js';
