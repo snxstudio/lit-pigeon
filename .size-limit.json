@@ -15,15 +15,21 @@
   {
     "name": "@lit-pigeon/editor (ESM, excluding lit)",
     "path": "packages/editor/dist/index.js",
-    "ignore": ["lit", "lit/decorators.js", "lit/directives/ref.js", "lit/directives/unsafe-html.js", "@lit-pigeon/core", "./rich-text.js", "./pigeon-brand-tab.js", "./pigeon-saved-tab.js", "./pigeon-stock-tab.js"],
+    "ignore": ["lit", "lit/decorators.js", "lit/directives/ref.js", "lit/directives/unsafe-html.js", "@lit-pigeon/core", "./rich-text.js", "./pigeon-brand-tab.js", "./pigeon-saved-tab.js", "./pigeon-stock-tab.js", "./es.js", "./fr.js", "./de.js", "./pt-BR.js", "./it.js", "./nl.js", "./ja.js", "./zh-CN.js", "./ar.js", "./hi.js"],
     "limit": "50.2 kB",
     "gzip": true
   },
   {
     "name": "@lit-pigeon/editor (lazy rich-text chunk)",
     "path": "packages/editor/dist/rich-text.js",
-    "ignore": ["@lit-pigeon/core"],
+    "ignore": ["@lit-pigeon/core", "./es.js", "./fr.js", "./de.js", "./pt-BR.js", "./it.js", "./nl.js", "./ja.js", "./zh-CN.js", "./ar.js", "./hi.js"],
     "limit": "140 kB",
+    "gzip": true
+  },
+  {
+    "name": "@lit-pigeon/editor (lazy locale chunk, largest: hi)",
+    "path": "packages/editor/dist/hi.js",
+    "limit": "4 kB",
     "gzip": true
   },
   {
