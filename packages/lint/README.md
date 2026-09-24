@@ -2,8 +2,9 @@
 
 Pre-flight QA for [Lit Pigeon](https://github.com/snxstudio/lit-pigeon)
 documents. Catches the mistakes that break emails in the wild: missing image
-alt text, low text/background contrast, links without an `href`, undefined
-merge tags, likely spam-trigger content, and empty blocks. An async pass adds
+alt text, low button contrast, links without an absolute `http(s)`, `mailto`
+or `tel` URL, malformed merge tags, preview text length, likely spam-trigger
+content, and empty rows. An async pass adds
 network checks — total image weight and link reachability.
 
 ## Install
@@ -34,6 +35,10 @@ built-in rules are exported individually — `altTextRule`, `contrastRule`,
 `emptyContentRule`, `imageWeightRule`, `linkReachabilityRule` — alongside the
 `defaultRules` and `defaultAsyncRules` arrays. These checks are also exposed as
 `/lint` and `/lint/async` endpoints by [`@lit-pigeon/rest`](../rest).
+
+Hero blocks have no alt text field, so `alt-text/missing` is always reported
+for them; filter that rule for hero blocks if you gate sending on errors. See
+[Server-side](../../docs/guide/server-side.md#lit-pigeonlint).
 
 Part of [Lit Pigeon](https://github.com/snxstudio/lit-pigeon) — open-source drag-and-drop email editor.
 

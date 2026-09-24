@@ -45,11 +45,11 @@ const { document } = figmaFrameToDocument(frameNode, { imageUrls: myImageMap });
 | Any other direct child | Single-column row | One block per row. |
 | `TEXT` | `text` block | Colour, font-size, font-weight, font-family, alignment, and line-height are extracted. |
 | FRAME/INSTANCE with corner-radius, one TEXT child, height ≤ 80px, solid fill | `button` block | Heuristic — won't trigger for non-button shapes. |
+| FRAME/COMPONENT/INSTANCE at least 280×120px with an image or solid background and text inside | `hero` block | Heuristic; buttons are checked first. The image must resolve through `imageUrls`. |
 | RECTANGLE/FRAME with an IMAGE fill | `image` block | Requires `imageUrls[imageRef]` to resolve. `importFromFigma` fetches that map automatically. |
 | `VECTOR`, `ELLIPSE`, decorative shapes | _skipped, warned_ | The library returns soft warnings; the import still succeeds. |
 
 What you don't get yet (planned):
-- Hero blocks (image background + text overlay) — currently lands as a plain image + adjacent text.
 - Multi-line rich-text formatting per character — text is rendered as a single styled `<p>`.
 - Dividers and spacers — Figma's pixel-perfect dividers don't map cleanly; use a text block for now.
 

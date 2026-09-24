@@ -192,12 +192,16 @@ describe('@lit-pigeon/mcp-server', () => {
     );
   });
 
-  it('list_templates returns the 4 starters with no document payload', async () => {
+  it('list_templates returns the starters and gallery with no document payload', async () => {
     const { templates } = parseReply<{ templates: Array<{ id: string; name: string; document?: unknown }> }>(
       await client.callTool({ name: 'list_templates', arguments: {} }),
     );
     expect(templates.map((t) => t.id).sort()).toEqual(
-      ['starter-newsletter', 'starter-promo', 'starter-transactional', 'starter-welcome'].sort(),
+      [
+        'starter-newsletter', 'starter-promo', 'starter-transactional', 'starter-welcome',
+        'starter-order-confirmation', 'starter-shipping-update', 'starter-password-reset', 'starter-invoice',
+        'starter-event-invite', 'starter-product-launch', 'starter-abandoned-cart', 'starter-monthly-digest',
+      ].sort(),
     );
     // Listing must NOT carry the full document — keep payloads small.
     expect(templates[0].document).toBeUndefined();
