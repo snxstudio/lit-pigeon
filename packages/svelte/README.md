@@ -45,7 +45,7 @@ npm install @lit-pigeon/svelte
 | Prop | Type | Notes |
 |---|---|---|
 | `document` | `PigeonDocument` | Initial document. Set as a DOM property — never stringified into an attribute. |
-| `config` | `Partial<EditorConfig>` | Editor configuration (merge tags, asset manager, plugins). |
+| `config` | `Partial<EditorConfig>` | Editor configuration (merge tags, asset manager, fonts, locale, …). |
 | `renderer` | `Renderer` | Optional renderer for preview mode (e.g. `MjmlRenderer`). |
 | `documentToMjml` | `(doc: PigeonDocument) => string` | Custom document → MJML converter. |
 
@@ -59,11 +59,23 @@ All native `pigeon:*` events are re-emitted as Svelte events with the original
 | `pigeon:change` | `change` | `{ document: PigeonDocument }` |
 | `pigeon:select` | `select` | `{ selection: Selection \| null }` |
 | `pigeon:ready` | `ready` | `void` |
-| `pigeon:preview` | `preview` | `unknown` |
-| `pigeon:export-html` | `exportHtml` | `{ html: string }` |
-| `pigeon:export-mjml` | `exportMjml` | `{ mjml: string \| null }` |
+| `pigeon:preview` | `preview` | `null` |
+| `pigeon:export-html` | `exportHtml` | `{ document, html: string \| null }` (declared as `{ html: string }`) |
+| `pigeon:export-mjml` | `exportMjml` | `{ document, mjml: string \| null }` |
 | `pigeon:export-json` | `exportJson` | `{ document: PigeonDocument }` |
-| `pigeon:merge-tag-request` | `mergeTagRequest` | `unknown` |
+| `pigeon:merge-tag-request` | `mergeTagRequest` | `null` |
+
+`pigeon:change` also fires when a document is loaded and when only the
+selection changes. Binding `document` back to the object from `change` is
+safe; binding a copy reloads the editor.
+
+## Methods and other properties
+
+The component exposes no methods, element reference or extra attributes, so
+`theme`, `themeOverrides`, `templateStorage` and `assetStorage` cannot be passed
+through it. Find the `<pigeon-editor>` element inside a container you own and
+use it directly; see
+[Events and API](../../docs/guide/events-and-api.md#svelte-lit-pigeonsvelte-015).
 
 ## Why a property, not an attribute?
 
