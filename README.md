@@ -11,6 +11,7 @@
 
 <p align="center">
   <a href="https://lit-pigeon.wearesnx.studio/">Live Demo</a> &middot;
+  <a href="https://lit-pigeon.wearesnx.studio/migrate-from-unlayer/">Migrate from Unlayer</a> &middot;
   <a href="#quick-start">Quick Start</a> &middot;
   <a href="#packages">Packages</a> &middot;
   <a href="#usage">Usage</a> &middot;
