@@ -61,6 +61,14 @@ describe('device visibility in MJML', () => {
     expect(mjml).toContain('@media only screen and (max-width:479px)');
   });
 
+  it('keeps an element hidden on mobile when it is also hidden on desktop', () => {
+    const mjml = documentToMjml(docWith('text', { hideOnMobile: true, hideOnDesktop: true }));
+    const media = mjml.slice(mjml.indexOf('@media only screen and (max-width:479px)'));
+    const hide = media.indexOf('td.pigeon-hide-mobile, div.pigeon-hide-mobile { display: none !important; }');
+    expect(hide).toBeGreaterThan(media.indexOf('td.pigeon-hide-desktop { display: table-cell'));
+    expect(hide).toBeGreaterThan(media.indexOf('div.pigeon-hide-desktop { display: block'));
+  });
+
   it('compiles to HTML that carries the classes and the media query', () => {
     const { html, errors } = mjml2html(documentToMjml(docWith('text', { hideOnMobile: true }, { hideOnDesktop: true })));
     expect(errors).toEqual([]);
