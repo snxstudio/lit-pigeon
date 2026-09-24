@@ -88,6 +88,7 @@ export function resizeColumns(rowId: string, ratios: number[]): Command {
     if (rowIndex === -1) return false;
 
     const row = state.doc.body.rows[rowIndex];
+    if (row.locked) return false;
     if (ratios.length !== row.columns.length) return false;
 
     const sum = ratios.reduce((a, b) => a + b, 0);
@@ -105,6 +106,44 @@ export function resizeColumns(rowId: string, ratios: number[]): Command {
         },
         (doc) => {
           doc.body.rows[rowIndex].columnRatios = oldRatios;
+        },
+      );
+
+      tr.addStep(step);
+      dispatch(tr);
+    }
+
+    return true;
+  };
+}
+
+export function updateColumnAttributes(
+  rowId: string,
+  columnId: string,
+  attributes: Partial<ColumnNode['attributes']>,
+): Command {
+  return (state, dispatch) => {
+    const rowIndex = state.doc.body.rows.findIndex((r) => r.id === rowId);
+    if (rowIndex === -1) return false;
+
+    const row = state.doc.body.rows[rowIndex];
+    if (row.locked) return false;
+
+    const colIndex = row.columns.findIndex((c) => c.id === columnId);
+    if (colIndex === -1) return false;
+
+    if (dispatch) {
+      const oldAttrs: ColumnNode['attributes'] = { ...row.columns[colIndex].attributes };
+      const tr = state.createTransaction();
+
+      const step = createDocStep(
+        'updateColumnAttributes',
+        `body.rows[${rowIndex}].columns[${colIndex}].attributes`,
+        (doc) => {
+          Object.assign(doc.body.rows[rowIndex].columns[colIndex].attributes, attributes);
+        },
+        (doc) => {
+          doc.body.rows[rowIndex].columns[colIndex].attributes = oldAttrs;
         },
       );
 

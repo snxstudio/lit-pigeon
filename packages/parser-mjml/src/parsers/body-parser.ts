@@ -62,6 +62,7 @@ export function parseBody(bodyNode: MjmlNode, warnings: ParseWarning[]): BodyDat
         // mj-hero becomes a row with a single column containing a hero block
         const heroContent = extractHeroContent(child, warnings);
         const heroBlock = parseHeroBlock(child.attrs, heroContent.content, heroContent.innerPadding);
+        Object.assign(heroBlock.values, child.visibility);
         const column: ColumnNode = {
           id: generateId(),
           type: 'column',

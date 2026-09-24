@@ -29,6 +29,7 @@ export function parseColumn(columnNode: MjmlNode, warnings: ParseWarning[]): Col
     if (condition && isEndMarker(children[i + 2])) {
       const block = parseBlockElement(children[i + 1], warnings);
       if (block) {
+        Object.assign(block.values, children[i + 1].visibility);
         block.values.condition = condition;
         blocks.push(block);
         i += 2;
@@ -37,6 +38,7 @@ export function parseColumn(columnNode: MjmlNode, warnings: ParseWarning[]): Col
     }
     const block = parseBlockElement(children[i], warnings);
     if (block) {
+      Object.assign(block.values, children[i].visibility);
       blocks.push(block);
     }
   }
@@ -50,6 +52,7 @@ export function parseColumn(columnNode: MjmlNode, warnings: ParseWarning[]): Col
       borderRadius: getNumericAttr(attrs, 'border-radius', 0) || undefined,
       verticalAlign: (getAttr(attrs, 'vertical-align', 'top') as 'top' | 'middle' | 'bottom'),
       cssClass: getAttr(attrs, 'css-class') || undefined,
+      ...columnNode.visibility,
     },
     blocks,
   };

@@ -9,6 +9,7 @@ import type {
 } from '@lit-pigeon/core';
 import { getBlockDefinition } from '@lit-pigeon/core';
 import { spacingToMjml } from './utils/spacing.js';
+import { visibilityClass, withCssClass, VISIBILITY_STYLE } from './utils/visibility.js';
 import { renderTextBlock } from './block-renderers/text.js';
 import { renderImageBlock } from './block-renderers/image.js';
 import { renderButtonBlock } from './block-renderers/button.js';
@@ -84,12 +85,19 @@ function renderColumn(column: ColumnNode, widthPercent: string): string {
     attrs.push(`border-radius="${borderRadius}px"`);
   }
 
-  if (cssClass) {
-    attrs.push(`css-class="${escapeAttr(cssClass)}"`);
+  const columnClass = [cssClass && escapeAttr(cssClass), visibilityClass(column.attributes)].filter(Boolean).join(' ');
+  if (columnClass) {
+    attrs.push(`css-class="${columnClass}"`);
   }
 
   const blocksMarkup = column.blocks
-    .map((block) => wrapConditional(`      ${renderBlock(block)}`, block.values.condition, '      '))
+    .map((block) =>
+      wrapConditional(
+        `      ${withCssClass(renderBlock(block), visibilityClass(block.values))}`,
+        block.values.condition,
+        '      ',
+      ),
+    )
     .join('\n');
 
   return `    <mj-column ${attrs.join(' ')}>
@@ -111,7 +119,13 @@ function renderRow(row: RowNode): string {
   ) {
     const hero = row.columns[0].blocks[0] as HeroBlock;
     return wrapConditional(
-      wrapRepeat(wrapConditional(renderHeroSection(hero), hero.values.condition), row.attributes.repeat),
+      wrapRepeat(
+        wrapConditional(
+          withCssClass(renderHeroSection(hero), visibilityClass(hero.values)),
+          hero.values.condition,
+        ),
+        row.attributes.repeat,
+      ),
       row.attributes.condition,
     );
   }
@@ -301,6 +315,20 @@ function renderHead(doc: PigeonDocument, options: Required<DocumentToMjmlOptions
       <mj-text font-size="14px" line-height="1.5" />
       <mj-button font-size="14px" />
     </mj-attributes>`);
+
+  // mj-raw gets neither mj-all nor mj-text defaults, and sits in a column td
+  // with font-size:0px, so unstyled html-block text would be invisible.
+  const hasHtmlBlock = doc.body.rows.some((row) => row.columns.some((col) => col.blocks.some((b) => b.type === 'html')));
+  if (hasHtmlBlock) {
+    headParts.push(`    <mj-style inline="inline">
+      .lp-html { font-size: 14px; line-height: 1.5; font-family: ${fontFamily.replace(/[<>{};]/g, '')}; }
+    </mj-style>`);
+  }
+
+  const hidesOnDevice = doc.body.rows.some((row) =>
+    row.columns.some((col) => visibilityClass(col.attributes) || col.blocks.some((b) => visibilityClass(b.values))),
+  );
+  if (hidesOnDevice) headParts.push(VISIBILITY_STYLE);
 
   if (css) {
     // A literal </mj-style would end the element early; <\/ means the same in CSS
