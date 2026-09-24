@@ -136,6 +136,8 @@ export const EN_MESSAGES: Record<string, string> = {
   'panel.body.contentWidth': 'Content Width',
   'panel.body.fontFamily': 'Font Family',
   'panel.body.contentAlignment': 'Content Alignment',
+  'panel.body.linkColor': 'Link Color',
+  'panel.body.linkUnderline': 'Underline Links',
   'panel.body.emailName': 'Email Name',
   'panel.body.previewText': 'Preview Text',
   'panel.body.previewTextPlaceholder': 'Email preview text...',

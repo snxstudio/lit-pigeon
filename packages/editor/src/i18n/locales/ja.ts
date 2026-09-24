@@ -134,6 +134,8 @@ const messages: Record<string, string> = {
   'panel.body.contentWidth': 'コンテンツ幅',
   'panel.body.fontFamily': 'フォントファミリー',
   'panel.body.contentAlignment': 'コンテンツの配置',
+  'panel.body.linkColor': 'リンクの色',
+  'panel.body.linkUnderline': 'リンクに下線',
   'panel.body.emailName': 'メール名',
   'panel.body.previewText': 'プレビューテキスト',
   'panel.body.previewTextPlaceholder': 'メールのプレビューテキスト...',

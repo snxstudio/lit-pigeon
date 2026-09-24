@@ -1,9 +1,12 @@
+import type { LinkStyle } from '@lit-pigeon/core';
+import { cssToLinkStyle } from '@lit-pigeon/core';
 import type { ParseWarning } from '../mjml-to-document.js';
 import type { AttributeDefaults } from '../utils/resolve-attributes.js';
 
 export interface HeadData {
   previewText?: string;
   fontFamily?: string;
+  linkStyle?: LinkStyle;
   css?: string;
   attributeDefaults: AttributeDefaults;
 }
@@ -43,12 +46,16 @@ export function parseHead(headChildren: HeadNode[], _warnings: ParseWarning[]): 
           result.fontFamily = result.attributeDefaults.all['font-family'];
         }
         break;
-      case 'mj-style':
+      case 'mj-style': {
         // Inline styles are applied by MJML at compile time and have no place in the document
-        if (child.attrs.inline !== 'inline' && child.text.trim()) {
-          styles.push(child.text.trim());
-        }
+        if (child.attrs.inline === 'inline' || !child.text.trim()) break;
+        // Our own generated link rule goes back to linkStyle rather than being
+        // handed to the user as CSS they never wrote.
+        const linkStyle = cssToLinkStyle(child.text);
+        if (linkStyle) result.linkStyle = linkStyle;
+        else styles.push(child.text.trim());
         break;
+      }
       default:
         // Ignore unknown head elements
         break;

@@ -20,7 +20,7 @@ PigeonDocument
 ├── version: "1.0"
 ├── metadata: { name, previewText, createdAt, updatedAt }
 └── body
-    ├── attributes: { width, backgroundColor, fontFamily, contentAlignment }
+    ├── attributes: { width, backgroundColor, fontFamily, contentAlignment, linkStyle? }
     └── rows: Row[]
         └── columns: Column[]              ← columnRatios sum to 12
             └── blocks: Block[]            ← typed content (text/image/button/…)
