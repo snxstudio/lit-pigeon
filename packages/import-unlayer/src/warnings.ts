@@ -19,4 +19,5 @@ export type ImportWarningCode =
   | 'custom-tool'
   | 'display-condition-dropped'
   | 'heading-level-clamped'
-  | 'empty-row';
+  | 'empty-row'
+  | 'unknown-text-direction';

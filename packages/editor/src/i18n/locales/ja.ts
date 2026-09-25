@@ -137,6 +137,12 @@ const messages: Record<string, string> = {
   'panel.body.emailName': 'メール名',
   'panel.body.previewText': 'プレビューテキスト',
   'panel.body.previewTextPlaceholder': 'メールのプレビューテキスト...',
+  'panel.body.language': '言語',
+  'panel.body.languagePlaceholder': '例: en, pt-BR',
+  'panel.body.textDirection': '文字方向',
+  'panel.body.directionAuto': '自動',
+  'panel.body.directionLtr': '左から右',
+  'panel.body.directionRtl': '右から左',
 
   // property panels — text
   'panel.text.title': 'テキストのプロパティ',
