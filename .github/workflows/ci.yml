@@ -1,8 +1,9 @@
 name: CI
 
 on:
+  # No branch filter: it matches the PR's base, so filtering on main would skip
+  # every stacked PR entirely rather than merely narrowing what runs.
   pull_request:
-    branches: [main]
   push:
     branches: [main]
 
