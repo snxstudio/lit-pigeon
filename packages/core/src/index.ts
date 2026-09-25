@@ -109,6 +109,7 @@ export { PluginRegistry } from './plugins/plugin-registry.js';
 // Utils
 export { generateId } from './utils/id.js';
 export { deepEqual } from './utils/deep-equal.js';
+export { resolveDirection } from './utils/direction.js';
 
 // Templates
 export {

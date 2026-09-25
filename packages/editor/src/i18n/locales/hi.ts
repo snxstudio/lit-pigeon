@@ -137,6 +137,12 @@ const messages: Record<string, string> = {
   'panel.body.emailName': 'ईमेल का नाम',
   'panel.body.previewText': 'प्रीव्यू टेक्स्ट',
   'panel.body.previewTextPlaceholder': 'ईमेल प्रीव्यू टेक्स्ट...',
+  'panel.body.language': 'भाषा',
+  'panel.body.languagePlaceholder': 'उदा. en, pt-BR',
+  'panel.body.textDirection': 'पाठ दिशा',
+  'panel.body.directionAuto': 'स्वचालित',
+  'panel.body.directionLtr': 'बाएँ से दाएँ',
+  'panel.body.directionRtl': 'दाएँ से बाएँ',
 
   // property panels — text
   'panel.text.title': 'टेक्स्ट गुण',

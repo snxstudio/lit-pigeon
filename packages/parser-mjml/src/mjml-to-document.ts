@@ -46,7 +46,7 @@ function parseMjmlToTree(mjml: string): MjmlNode {
 
   // Tags whose inner content should be captured as raw text
   const rawContentTags = new Set([
-    'mj-text', 'mj-button', 'mj-raw', 'mj-preview',
+    'mj-text', 'mj-button', 'mj-raw', 'mj-preview', 'mj-title',
     'mj-social-element', 'mj-navbar-link', 'mj-table',
   ]);
 
@@ -237,11 +237,18 @@ export function mjmlToDocument(mjml: string, _options?: ParseOptions): ParseResu
 
   const bodyData = parseBody(bodyNode, warnings);
 
+  // `und`/`auto` are the values MJML emits for a root that set neither, so
+  // reading them back would turn its placeholder into an authored choice.
+  const rootLang = mjmlRoot.attrs.lang;
+  const language = rootLang && rootLang !== 'und' ? rootLang : undefined;
+  const rootDir = mjmlRoot.attrs.dir;
+  const direction = rootDir === 'ltr' || rootDir === 'rtl' ? rootDir : undefined;
+
   const now = new Date().toISOString();
   const document: PigeonDocument = {
     version: '1.0',
     metadata: {
-      name: 'Imported Template',
+      name: headData.title?.trim() || 'Imported Template',
       previewText: headData.previewText,
       createdAt: now,
       updatedAt: now,
@@ -252,6 +259,8 @@ export function mjmlToDocument(mjml: string, _options?: ParseOptions): ParseResu
         backgroundColor: bodyData.backgroundColor,
         fontFamily,
         contentAlignment: 'center',
+        ...(language ? { language } : {}),
+        ...(direction ? { direction } : {}),
         css: headData.css,
       },
       rows: bodyData.rows,

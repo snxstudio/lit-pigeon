@@ -3,6 +3,7 @@ import type { AttributeDefaults } from '../utils/resolve-attributes.js';
 
 export interface HeadData {
   previewText?: string;
+  title?: string;
   fontFamily?: string;
   css?: string;
   attributeDefaults: AttributeDefaults;
@@ -26,6 +27,9 @@ export function parseHead(headChildren: HeadNode[], _warnings: ParseWarning[]): 
     switch (child.tag) {
       case 'mj-preview':
         result.previewText = child.text;
+        break;
+      case 'mj-title':
+        result.title = child.text;
         break;
       case 'mj-attributes':
         for (const attrChild of child.children) {

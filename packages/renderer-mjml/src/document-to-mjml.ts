@@ -7,7 +7,7 @@ import type {
   RegisteredBlock,
   FontDefinition,
 } from '@lit-pigeon/core';
-import { getBlockDefinition } from '@lit-pigeon/core';
+import { getBlockDefinition, resolveDirection } from '@lit-pigeon/core';
 import { spacingToMjml } from './utils/spacing.js';
 import { visibilityClass, withCssClass, VISIBILITY_STYLE } from './utils/visibility.js';
 import { renderTextBlock } from './block-renderers/text.js';
@@ -288,6 +288,20 @@ function renderFontTags(fonts: FontDefinition[]): string {
 }
 
 /**
+ * `lang` and `dir` for the <mjml> root, which MJML copies onto <html> and onto
+ * the `role="article"` wrapper it adds for clients that strip <html>. Both are
+ * omitted when the document sets neither, leaving MJML's `lang="und" dir="auto"`
+ * exactly as before.
+ */
+function renderRootAttrs(doc: PigeonDocument): string {
+  const { language, direction } = doc.body.attributes;
+  if (!language && !direction) return '';
+
+  const dir = resolveDirection(language, direction);
+  return `${language ? ` lang="${escapeAttr(language)}"` : ''} dir="${dir}"`;
+}
+
+/**
  * Builds the <mj-head> section of the MJML document, including:
  * - Outlook + dark-mode workarounds (unless disabled)
  * - <mj-attributes> for default styling
@@ -337,6 +351,12 @@ ${css.replace(/<\/mj-style/gi, '<\\/mj-style')}
     </mj-style>`);
   }
 
+  // Becomes <title> and the article wrapper's aria-label
+  const title = doc.metadata.name.trim();
+  if (title) {
+    headParts.push(`    <mj-title>${escapeHtml(title)}</mj-title>`);
+  }
+
   // Preview text
   if (previewText) {
     headParts.push(`    <mj-preview>${escapeHtml(previewText)}</mj-preview>`);
@@ -377,7 +397,7 @@ export function documentToMjml(doc: PigeonDocument, options?: DocumentToMjmlOpti
   const head = renderHead(doc, resolved);
   const rows = doc.body.rows.map((row) => renderRow(row)).join('\n');
 
-  return `<mjml>
+  return `<mjml${renderRootAttrs(doc)}>
 ${head}
   <mj-body ${bodyAttrs.join(' ')}>
 ${rows}

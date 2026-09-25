@@ -259,6 +259,17 @@ export interface PigeonDocument {
       backgroundColor: string;
       fontFamily: string;
       contentAlignment: 'center' | 'left';
+      /**
+       * BCP 47 tag, e.g. `"en"`, `"pt-BR"`. Written out as `lang` on `<mjml>`,
+       * which MJML copies onto `<html>` and the `role="article"` wrapper.
+       * Left unset, the output keeps MJML's own `lang="und"`.
+       */
+      language?: string;
+      /**
+       * Written out as `dir` on `<mjml>`. Defaults to the natural direction of
+       * `language`, so it only needs setting to override that.
+       */
+      direction?: 'ltr' | 'rtl';
       /** Document-level CSS, written out as a non-inline `<mj-style>`. */
       css?: string;
     };
