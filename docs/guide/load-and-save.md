@@ -76,9 +76,8 @@ not return `errors`.
 
 A template that has been saved once opens and saves again without further
 changes: the output of `documentToMjml` is stable under a second round trip.
-The exception is column widths. A layout the user sets in the editor (for
-example 4:8) is saved in the MJML, but comes back as equal columns the next
-time the template is opened; see the first row of the table below.
+Column widths survive it — a 4:8 layout set in the editor is written out as
+33.33%/66.67% and read back as 4:8.
 
 ### What the parser keeps
 
@@ -114,8 +113,8 @@ Silently:
 
 | Input | What happens |
 |---|---|
-| `mj-column` `width` | Ignored, including in MJML that Lit Pigeon wrote itself. Every column in a section gets an equal share of the 12-column grid, so a 30%/70% layout opens as 50%/50%. [`restoreColumnWidths`](./migrating-from-grapesjs.md#2-import-the-mjml) re-applies the widths after parsing. |
-| `mj-group` | Its columns are imported as ordinary columns. |
+| `mj-column` `width` | Rounded to the nearest twelfth of the 12-column grid, so a 30%/70% layout opens as 4:8 and saves back as 33.33%/66.67%. Widths that overflow the body warn and are scaled to fit. |
+| `mj-group` | Its columns are imported with their widths, but as ordinary columns, so they stack on mobile where the group kept them side by side. |
 | `mj-font` | Dropped. Register fonts with `config.fontConfig` and pass them to `documentToMjml` and `render`. |
 | `mj-title`, `mj-breakpoint`, `mj-html-attributes` | Dropped. |
 | `<mj-style inline="inline">` | Dropped, so its rules are no longer inlined into the HTML. Move them to a non-inline `mj-style` or into the content. |
@@ -185,8 +184,7 @@ A practical approach for a production application is to store all three:
 the JSON document as the source of truth for editing, the MJML for
 portability, and the HTML for sending. If MJML must remain the source of
 truth, show the parse warnings to users when a template opens, and avoid
-features that do not survive the round trip (custom blocks, row locking,
-uneven column widths).
+features that do not survive the round trip (custom blocks, row locking).
 
 In every case, treat stored HTML as untrusted: it was produced in a browser
 you do not control. Re-render it on the server from the MJML or JSON before

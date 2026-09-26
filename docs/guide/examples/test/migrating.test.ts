@@ -58,15 +58,12 @@ describe('migrating from GrapesJS (grapesjs-mjml)', () => {
     <mj-section><mj-column><mj-text>Only</mj-text></mj-column></mj-section>
   </mj-body></mjml>`;
 
-  it('imports and restores column widths the parser ignores', () => {
-    const { document, warnings, columnNotes } = importGrapesJsMjml(mjml, 'Newsletter');
+  it('imports the column widths the source declares', () => {
+    const { document, warnings } = importGrapesJsMjml(mjml, 'Newsletter');
     expect(warnings).toEqual([]);
     expect(document.metadata.name).toBe('Newsletter');
+    // 30%/70% in the first section, 200px/auto of a 600px body in the third.
     expect(document.body.rows.map((r) => r.columnRatios)).toEqual([[4, 8], [12], [4, 8], [12]]);
-    expect(columnNotes).toEqual([
-      'row 1: columns 30% / 70% → 4:8 of 12',
-      'row 3: columns 200px / auto → 4:8 of 12',
-    ]);
     expect(documentToMjml(document)).toContain('width="33.33%"');
   });
 });

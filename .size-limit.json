@@ -43,7 +43,7 @@
     "name": "@lit-pigeon/parser-mjml (ESM)",
     "path": "packages/parser-mjml/dist/index.js",
     "ignore": ["@lit-pigeon/core", "htmlparser2"],
-    "limit": "6.3 kB",
+    "limit": "6.6 kB",
     "gzip": true
   },
   {
