@@ -239,6 +239,12 @@ export interface RowNode {
     repeat?: string;
     /** Written out as MJML `css-class`. */
     cssClass?: string;
+    /**
+     * When true, the columns keep their widths on mobile instead of stacking.
+     * Rendered as MJML `<mj-group>`, which is what holds a logo beside a nav
+     * on a phone. Off by default: columns stack.
+     */
+    noStackOnMobile?: boolean;
   };
   columns: ColumnNode[];
   columnRatios: number[];

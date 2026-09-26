@@ -232,6 +232,7 @@ const messages: Record<string, string> = {
   'panel.row.layout4col': '4 等分',
   'panel.row.backgroundImageUrl': '背景画像 URL',
   'panel.row.fullWidth': '全幅',
+  'panel.row.noStackOnMobile': 'モバイルで縦積みにしない',
   'panel.row.displayCondition': '表示条件',
   'panel.row.repeat': '各項目で繰り返す',
 

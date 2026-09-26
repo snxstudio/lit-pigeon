@@ -96,6 +96,9 @@ Column widths survive it — a 4:8 layout set in the editor is written out as
   as `<br>`, and escaped entities inside `mj-text`, `mj-button` and `mj-raw`.
 - Row display conditions written by the renderer as
   `<mj-raw>{{#if …}}</mj-raw>` around a section.
+- `mj-group`, when the section is one whole group: the row gets
+  `noStackOnMobile` and is written back out as a group, so its columns keep
+  sitting side by side on mobile.
 
 ### What the parser does not keep
 
@@ -108,13 +111,14 @@ With a warning:
 | Unknown `mj-body` children | Dropped. |
 | `mj-hero` children other than `mj-text` and `mj-button` | Dropped. |
 | `css-class` on any element other than section, column, text, button or image | Dropped. |
+| A section mixing `mj-group` with loose columns, or holding more than one group | Flattened. A row-level flag cannot describe it, and applying it anyway would stop the ungrouped columns stacking too, so those columns will stack on mobile. |
+| `mj-column` widths totalling more than the body width | Scaled to fit. Usually a sign the source was authored against a different body width. |
 
 Silently:
 
 | Input | What happens |
 |---|---|
-| `mj-column` `width` | Rounded to the nearest twelfth of the 12-column grid, so a 30%/70% layout opens as 4:8 and saves back as 33.33%/66.67%. Widths that overflow the body warn and are scaled to fit. |
-| `mj-group` | Its columns are imported with their widths, but as ordinary columns, so they stack on mobile where the group kept them side by side. |
+| `mj-column` `width` | Rounded to the nearest twelfth of the 12-column grid, so a 30%/70% layout opens as 4:8 and saves back as 33.33%/66.67%. |
 | `mj-font` | Dropped. Register fonts with `config.fontConfig` and pass them to `documentToMjml` and `render`. |
 | `mj-title`, `mj-breakpoint`, `mj-html-attributes` | Dropped. |
 | `<mj-style inline="inline">` | Dropped, so its rules are no longer inlined into the HTML. Move them to a non-inline `mj-style` or into the content. |

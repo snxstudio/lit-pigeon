@@ -232,6 +232,7 @@ const messages: Record<string, string> = {
   'panel.row.layout4col': '4 gelijk',
   'panel.row.backgroundImageUrl': 'URL achtergrondafbeelding',
   'panel.row.fullWidth': 'Volledige breedte',
+  'panel.row.noStackOnMobile': 'Niet stapelen op mobiel',
   'panel.row.displayCondition': 'Weergavevoorwaarde',
   'panel.row.repeat': 'Herhalen voor elk',
 
