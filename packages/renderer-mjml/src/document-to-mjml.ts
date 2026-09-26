@@ -130,7 +130,7 @@ function renderRow(row: RowNode): string {
     );
   }
 
-  const { backgroundColor, backgroundImage, padding, fullWidth, cssClass } = row.attributes;
+  const { backgroundColor, backgroundImage, padding, fullWidth, cssClass, noStackOnMobile } = row.attributes;
 
   const attrs: string[] = [
     `padding="${spacingToMjml(padding)}"`,
@@ -165,10 +165,18 @@ function renderRow(row: RowNode): string {
     })
     .join('\n');
 
+  // mj-group is what keeps the columns side by side on mobile; without it MJML
+  // stacks them at its breakpoint.
+  const body = noStackOnMobile
+    ? `    <mj-group>
+${columnsMarkup}
+    </mj-group>`
+    : columnsMarkup;
+
   return wrapConditional(
     wrapRepeat(
       `  <mj-section ${attrs.join(' ')}>
-${columnsMarkup}
+${body}
   </mj-section>`,
       row.attributes.repeat,
     ),

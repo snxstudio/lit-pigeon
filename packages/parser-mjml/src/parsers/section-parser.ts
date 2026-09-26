@@ -19,12 +19,16 @@ export function parseSection(
   // Kept alongside `columns` so the ratios can be read off the source widths,
   // which the ColumnNode does not carry.
   const columnNodes: MjmlNode[] = [];
+  let groups = 0;
+  let looseColumns = 0;
 
   for (const child of sectionNode.children) {
     if (child.tag === 'mj-column') {
       columns.push(parseColumn(child, warnings));
       columnNodes.push(child);
+      looseColumns++;
     } else if (child.tag === 'mj-group') {
+      groups++;
       // mj-group contains columns
       for (const groupChild of child.children) {
         if (groupChild.tag === 'mj-column') {
@@ -57,6 +61,19 @@ export function parseSection(
     ? calculateColumnRatios(columnNodes, bodyWidth, warnings)
     : [12];
 
+  // The document models non-stacking per row, so one group holding every
+  // column maps cleanly. A section that mixes a group with loose columns, or
+  // holds more than one, cannot be expressed: keeping the flag would make the
+  // ungrouped columns stop stacking too, so it is dropped and said out loud.
+  const wholeSectionIsOneGroup = groups === 1 && looseColumns === 0;
+  if (groups > 0 && !wholeSectionIsOneGroup) {
+    warnings.push({
+      message:
+        'A section mixing mj-group with other columns was flattened: its columns will stack on mobile',
+      tag: 'mj-group',
+    });
+  }
+
   const fullWidthAttr = getAttr(attrs, 'full-width');
   const isFullWidth = fullWidthAttr === 'full-width';
 
@@ -69,6 +86,7 @@ export function parseSection(
       padding: parseSpacing(getAttr(attrs, 'padding'), 0),
       fullWidth: isFullWidth,
       cssClass: getAttr(attrs, 'css-class') || undefined,
+      ...(wholeSectionIsOneGroup ? { noStackOnMobile: true } : {}),
     },
     columns,
     columnRatios,

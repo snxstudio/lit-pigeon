@@ -232,6 +232,7 @@ const messages: Record<string, string> = {
   'panel.row.layout4col': '4 iguais',
   'panel.row.backgroundImageUrl': 'URL da imagem de fundo',
   'panel.row.fullWidth': 'Largura total',
+  'panel.row.noStackOnMobile': 'Não empilhar no celular',
   'panel.row.displayCondition': 'Condição de exibição',
   'panel.row.repeat': 'Repetir para cada',
 

@@ -62,7 +62,7 @@ look for in GrapesJS output are:
 | `mj-wrapper` (warning) | Its background and padding are dropped. Move the background onto the rows or the body. |
 | `mj-carousel`, `mj-accordion` (warning) | Dropped. Rebuild with the `carouselBlock` and `accordionBlock` from `@lit-pigeon/blocks`, or as [custom blocks](./custom-blocks.md). |
 | Custom GrapesJS components (warning as unknown elements) | Dropped. Rebuild as custom blocks. |
-| `mj-group` | Its columns are imported with their widths, but as ordinary columns, so they stack on mobile where the group kept them side by side. |
+| `mj-group` | A section that is one whole group keeps its non-stacking behaviour. One that mixes a group with loose columns is flattened (warning), and those columns will stack on mobile. |
 | `mj-font`, `mj-title`, inline `mj-style` | Dropped silently. Register fonts with `config.fontConfig`, and move inline styles into non-inline `mj-style` or the content. |
 | Attributes GrapesJS may add, such as `id` | Dropped silently; they have no meaning in the document model. |
 

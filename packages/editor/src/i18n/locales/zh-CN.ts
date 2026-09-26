@@ -232,6 +232,7 @@ const messages: Record<string, string> = {
   'panel.row.layout4col': '4 等分',
   'panel.row.backgroundImageUrl': '背景图片 URL',
   'panel.row.fullWidth': '全宽',
+  'panel.row.noStackOnMobile': '在移动端不堆叠',
   'panel.row.displayCondition': '显示条件',
   'panel.row.repeat': '为每一项重复',
 
