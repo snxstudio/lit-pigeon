@@ -221,6 +221,15 @@ export interface RowNode {
   attributes: {
     backgroundColor?: string;
     backgroundImage?: string;
+    /**
+     * MJML `background-repeat` for {@link backgroundImage}. Absent means the
+     * legacy `no-repeat`; see {@link resolveRowBackground}.
+     */
+    backgroundRepeat?: 'repeat' | 'no-repeat';
+    /** MJML `background-size`: `cover`, `contain`, `auto` or a CSS length. */
+    backgroundSize?: string;
+    /** MJML `background-position`, e.g. `top center`. */
+    backgroundPosition?: string;
     padding: Spacing;
     fullWidth: boolean;
     /**

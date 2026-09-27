@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import type { RowNode, Selection } from '@lit-pigeon/core';
+import { resolveRowBackground } from '@lit-pigeon/core';
 import { writeDragTransfer, clearDragData } from '../../dnd/drag-manager.js';
 import './pigeon-column.js';
 import { hiddenOnDevice, visibilityBadge, visibilityStyles } from './visibility.js';
@@ -177,7 +178,10 @@ export class PigeonRow extends LitElement {
     const isSelected = this.selection?.type === 'row' && this.selection.rowId === this.row.id;
     const a = this.row.attributes;
     const bgStyle = a.backgroundColor ? `background-color: ${a.backgroundColor};` : '';
-    const bgImgStyle = a.backgroundImage ? `background-image: url(${a.backgroundImage}); background-size: cover; background-position: center;` : '';
+    const bg = resolveRowBackground(this.row);
+    const bgImgStyle = bg
+      ? `background-image: url(${bg.url}); background-size: ${bg.size}; background-repeat: ${bg.repeat}; background-position: ${bg.position};`
+      : '';
     const padStyle = `padding: ${a.padding.top}px ${a.padding.right}px ${a.padding.bottom}px ${a.padding.left}px;`;
     const locked = this.row.locked;
 

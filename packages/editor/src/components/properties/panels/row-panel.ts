@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import type { RowNode, Spacing } from '@lit-pigeon/core';
+import { resolveRowBackground } from '@lit-pigeon/core';
 import { panelStyles } from './panel-styles.js';
 import { t } from '../../../i18n/index.js';
 import '../controls/color-picker.js';
@@ -95,6 +96,7 @@ export class PigeonRowPanel extends LitElement {
   render() {
     if (!this.row) return html``;
     const a = this.row.attributes;
+    const bg = resolveRowBackground(this.row);
     const currentRatiosStr = this.row.columnRatios.join(',');
 
     return html`
@@ -131,6 +133,35 @@ export class PigeonRowPanel extends LitElement {
           @change=${this._onBgImageChange}
         />
       </div>
+
+      ${a.backgroundImage ? html`
+        <div class="field">
+          <label>${t('panel.row.backgroundRepeat')}</label>
+          <select @change=${this._onBgRepeatChange}>
+            <option value="no-repeat" ?selected=${bg?.repeat === 'no-repeat'}>${t('panel.row.backgroundRepeatNone')}</option>
+            <option value="repeat" ?selected=${bg?.repeat === 'repeat'}>${t('panel.row.backgroundRepeatTile')}</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>${t('panel.row.backgroundSize')}</label>
+          <input
+            type="text"
+            .value=${bg?.size ?? ''}
+            placeholder="cover"
+            @change=${this._onBgSizeChange}
+          />
+        </div>
+
+        <div class="field">
+          <label>${t('panel.row.backgroundPosition')}</label>
+          <select @change=${this._onBgPositionChange}>
+            ${(['top center', 'center center', 'bottom center', 'left center', 'right center'] as const).map(
+              pos => html`<option value=${pos} ?selected=${bg?.position === pos}>${pos}</option>`
+            )}
+          </select>
+        </div>
+      ` : ''}
 
       <div class="toggle-row">
         <span class="toggle-label">${t('panel.row.fullWidth')}</span>
@@ -211,6 +242,19 @@ export class PigeonRowPanel extends LitElement {
 
   private _onBgImageChange(e: Event) {
     this._emitRowUpdate({ backgroundImage: (e.target as HTMLInputElement).value });
+  }
+
+  private _onBgRepeatChange(e: Event) {
+    this._emitRowUpdate({ backgroundRepeat: (e.target as HTMLSelectElement).value as 'repeat' | 'no-repeat' });
+  }
+
+  private _onBgSizeChange(e: Event) {
+    const value = (e.target as HTMLInputElement).value.trim();
+    this._emitRowUpdate({ backgroundSize: value || undefined });
+  }
+
+  private _onBgPositionChange(e: Event) {
+    this._emitRowUpdate({ backgroundPosition: (e.target as HTMLSelectElement).value });
   }
 
   private _onFullWidthChange(e: Event) {
