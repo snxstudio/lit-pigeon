@@ -114,7 +114,7 @@ without sanitising. See [Security](./security.md).
 | `locale`, `translations` | `config.locale`, `config.messages`. |
 | `appearance.theme` | The `theme` property (`light`, `dark`, `auto`) and design tokens; see [Theming](./theming-and-customisation.md). |
 | `fonts` option | `config.fontConfig`. |
-| `tools` option (enable or disable built-in tools) | No equivalent: all built-in blocks are always in the palette. |
+| `tools` option (enable or disable built-in tools) | `config.blocks`: the block types to offer, in palette order. Covers `enabled` and `position`; per-tool `data` and `properties` have no equivalent. |
 | `registerTool` (custom tools) | `registerBlock()`; see [Custom blocks](./custom-blocks.md). |
 
 ### Merge tags
