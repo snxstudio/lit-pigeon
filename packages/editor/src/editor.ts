@@ -51,6 +51,7 @@ import {
   createDocStep,
   generateId,
   SYSTEM_LINK_TYPES,
+  setAvailableBlockTypes,
 } from '@lit-pigeon/core';
 import type { HistoryState, TransactionSnapshot, BrandKit, BrandKitStorage, BrandLogo, ImageBlock, FontDefinition, LinkType } from '@lit-pigeon/core';
 
@@ -271,6 +272,7 @@ export class PigeonEditor extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     configureI18n(this.config.locale, this.config.messages);
+    setAvailableBlockTypes(this.config.blocks);
     // Hosts move the element (dialogs, tabs); a re-attach must not reset the document.
     if (!this._state) this._initState();
     this._applyDir();
@@ -311,6 +313,7 @@ export class PigeonEditor extends LitElement {
     }
     if (changed.has('config')) {
       configureI18n(this.config.locale, this.config.messages);
+      setAvailableBlockTypes(this.config.blocks);
       this._applyDir();
       this._resolveBrandKit();
     }
@@ -454,6 +457,7 @@ export class PigeonEditor extends LitElement {
           .selection=${sel}
           .brandKit=${this._activeBrandKit}
           .rowLibrary=${this._resolveRowLibrary()}
+          .blocks=${this.config.blocks}
           @row-select=${this._handleRowSelect}
           @block-select=${this._handleBlockSelect}
           @palette-item-activate=${this._handlePaletteActivate}
