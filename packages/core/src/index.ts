@@ -109,6 +109,7 @@ export { PluginRegistry } from './plugins/plugin-registry.js';
 // Utils
 export { generateId } from './utils/id.js';
 export { deepEqual } from './utils/deep-equal.js';
+export { resolveRowBackground, type ResolvedRowBackground } from './utils/row-background.js';
 
 // Templates
 export {

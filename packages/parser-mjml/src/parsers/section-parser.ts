@@ -55,7 +55,7 @@ export function parseSection(sectionNode: MjmlNode, warnings: ParseWarning[]): R
     type: 'row',
     attributes: {
       backgroundColor: getAttr(attrs, 'background-color') || undefined,
-      backgroundImage: getAttr(attrs, 'background-url') || undefined,
+      ...backgroundAttributes(attrs, warnings),
       padding: parseSpacing(getAttr(attrs, 'padding'), 0),
       fullWidth: isFullWidth,
       cssClass: getAttr(attrs, 'css-class') || undefined,
@@ -63,6 +63,36 @@ export function parseSection(sectionNode: MjmlNode, warnings: ParseWarning[]): R
     columns,
     columnRatios,
     locked: false,
+  };
+}
+
+/**
+ * Reads a section's background image and its sizing. `resolveAttributes` has
+ * already merged MJML's own `mj-section` defaults onto the node, so an
+ * attribute nobody set still reads as what MJML would render — which is how a
+ * tiled background survives the round trip instead of coming back as `cover`.
+ * The sizing attributes are only kept when there is an image to size.
+ */
+function backgroundAttributes(
+  attrs: Record<string, string>,
+  warnings: ParseWarning[],
+): Partial<RowNode['attributes']> {
+  const backgroundImage = getAttr(attrs, 'background-url');
+  if (!backgroundImage) return {};
+
+  const repeat = getAttr(attrs, 'background-repeat');
+  if (repeat === 'repeat-x' || repeat === 'repeat-y') {
+    warnings.push({
+      message: `background-repeat="${repeat}" became "repeat" — a row cannot repeat on one axis`,
+      tag: 'mj-section',
+    });
+  }
+
+  return {
+    backgroundImage,
+    backgroundRepeat: repeat === 'no-repeat' ? 'no-repeat' : 'repeat',
+    backgroundSize: getAttr(attrs, 'background-size') || undefined,
+    backgroundPosition: getAttr(attrs, 'background-position') || undefined,
   };
 }
 
