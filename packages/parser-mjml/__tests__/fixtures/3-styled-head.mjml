@@ -1,0 +1,30 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Georgia, 'Times New Roman', serif" />
+      <mj-text color="#444444" font-size="15px" line-height="24px" />
+      <mj-section background-color="#ffffff" />
+      <mj-button background-color="#6a1b9a" color="#ffffff" border-radius="24px" font-size="14px" />
+      <mj-divider border-color="#e1d5ec" border-width="2px" />
+      <mj-class name="accent" color="#6a1b9a" />
+      <mj-class name="muted" color="#8a8a8a" font-size="12px" />
+      <mj-class name="lead" font-size="20px" line-height="30px" />
+    </mj-attributes>
+    <mj-style>
+      .footer a { color: #6a1b9a !important; text-decoration: underline; }
+      @media only screen and (max-width: 480px) { .lead-text div { font-size: 18px !important; } }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#f6f2fa">
+    <mj-section padding="30px 20px 10px">
+      <mj-column>
+        <mj-text mj-class="accent lead" css-class="lead-text"><h1>Welcome aboard, {{ first_name }}</h1></mj-text>
+        <mj-text>Your Shipthis workspace <b>{{ workspace }}</b> is ready. Start by creating your first booking.</mj-text>
+        <mj-text><p>Three things to try:</p><ul><li>Create a booking</li><li>Invite your team</li><li>Connect ICEGATE</li></ul></mj-text>
+        <mj-button href="https://app.shipthis.co/onboarding">Open workspace</mj-button>
+        <mj-divider />
+        <mj-text mj-class="muted" css-class="footer">Need help? <a href="https://help.shipthis.co">Visit the help centre</a> or reply to this email.</mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

@@ -1,0 +1,36 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Helvetica, Arial, sans-serif" />
+      <mj-table font-size="13px" color="#1f2933" />
+      <mj-text font-size="14px" line-height="20px" />
+    </mj-attributes>
+    <mj-preview>Invoice {{ invoice_no }} from Shipthis</mj-preview>
+  </mj-head>
+  <mj-body background-color="#eef1f5" width="640px">
+    <mj-section background-color="#ffffff" padding="24px 0 8px">
+      <mj-column width="60%">
+        <mj-image src="https://cdn.shipthis.co/logo-dark.png" width="120px" align="left" alt="Shipthis Logistics" />
+      </mj-column>
+      <mj-column width="40%">
+        <mj-text align="right" font-size="12px" color="#52606d">Invoice <b>{{ invoice_no }}</b><br/>Date: {{ invoice_date }}<br/>Due: {{ due_date }}</mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section background-color="#ffffff" padding="0 0 16px">
+      <mj-column>
+        <mj-text><p>Dear {{ customer_name }},</p><p>Please find below the charges for job <b>{{ job_no }}</b> (MBL {{ mbl_no }}).</p></mj-text>
+        <mj-table cellpadding="6" border="1px solid #d9e2ec" width="100%">
+          <tr style="background-color:#0b2545;color:#ffffff;text-align:left;">
+            <th>Charge</th><th>Qty</th><th style="text-align:right">Amount (INR)</th>
+          </tr>
+          <tr><td>Ocean freight</td><td>2 x 40HC</td><td style="text-align:right">{{ freight_amount }}</td></tr>
+          <tr><td>Terminal handling</td><td>2</td><td style="text-align:right">{{ thc_amount }}</td></tr>
+          <tr><td>Documentation</td><td>1</td><td style="text-align:right">{{ doc_amount }}</td></tr>
+          <tr style="font-weight:bold;border-top:2px solid #0b2545;"><td colspan="2">Total incl. GST</td><td style="text-align:right">{{ total_amount }}</td></tr>
+        </mj-table>
+        <mj-button background-color="#0b5fff" color="#ffffff" border-radius="4px" href="https://pay.shipthis.co/i/{{ invoice_id }}" font-size="15px">Pay now</mj-button>
+        <mj-text font-size="11px" color="#7b8794">Bank: HDFC Bank Ltd, A/c {{ bank_account }}, IFSC {{ ifsc }}<br/>Questions? Write to <a href="mailto:accounts@shipthis.co">accounts@shipthis.co</a>.<hr/>This is a system-generated invoice. <img src="https://cdn.shipthis.co/stamp.png" alt="Stamp" width="60"></mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

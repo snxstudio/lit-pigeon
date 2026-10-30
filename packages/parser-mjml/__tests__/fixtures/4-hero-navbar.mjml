@@ -1,0 +1,28 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Arial, Helvetica, sans-serif" />
+    </mj-attributes>
+  </mj-head>
+  <mj-body background-color="#ffffff" width="600px">
+    <mj-section background-color="#0b2545" padding="0">
+      <mj-column>
+        <mj-navbar base-url="https://shipthis.co" hamburger="hamburger" ico-color="#ffffff">
+          <mj-navbar-link href="/tracking" color="#ffffff">Tracking</mj-navbar-link>
+          <mj-navbar-link href="/pricing" color="#ffffff">Pricing</mj-navbar-link>
+          <mj-navbar-link href="/contact" color="#ffd166">Contact</mj-navbar-link>
+        </mj-navbar>
+      </mj-column>
+    </mj-section>
+    <mj-hero mode="fixed-height" height="360px" background-width="600px" background-height="360px" background-url="https://cdn.shipthis.co/hero-port.jpg" background-color="#13315c" padding="60px 0">
+      <mj-text align="center" color="#ffffff" font-size="30px" line-height="38px" font-weight="bold">Peak season is here</mj-text>
+      <mj-text align="center" color="#e0e7ff" font-size="16px">Lock in space on Nhava Sheva to Rotterdam before {{ cutoff_date }}.</mj-text>
+      <mj-button href="https://app.shipthis.co/quote?lane=INNSA-NLRTM" background-color="#ffd166" color="#0b2545" font-size="16px" border-radius="6px" inner-padding="14px 28px">Get a quote</mj-button>
+    </mj-hero>
+    <mj-section>
+      <mj-column>
+        <mj-text align="center" color="#52606d">Rates valid for bookings made this week.</mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
