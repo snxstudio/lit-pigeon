@@ -89,6 +89,9 @@ export {
   registerBlock,
   getBlockDefinition,
   getAllBlockDefinitions,
+  getAvailableBlockDefinitions,
+  setAvailableBlockTypes,
+  isBlockTypeAvailable,
   isKnownBlockType,
 } from './schema/block-registry.js';
 
@@ -110,6 +113,7 @@ export { PluginRegistry } from './plugins/plugin-registry.js';
 export { generateId } from './utils/id.js';
 export { deepEqual } from './utils/deep-equal.js';
 export { resolveDirection } from './utils/direction.js';
+export { resolveRowBackground, type ResolvedRowBackground } from './utils/row-background.js';
 
 // Templates
 export {

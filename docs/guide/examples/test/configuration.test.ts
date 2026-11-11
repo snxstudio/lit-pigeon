@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import '@lit-pigeon/editor';
 import type { PigeonEditor } from '@lit-pigeon/editor';
-import { InMemoryAssetStorage, createDefaultDocument } from '@lit-pigeon/core';
+import { InMemoryAssetStorage, createDefaultDocument, setAvailableBlockTypes } from '@lit-pigeon/core';
 import { createEditorConfig } from '../src/configuration/full-config.js';
 
 async function mount(setup: (el: PigeonEditor) => void): Promise<PigeonEditor> {
@@ -14,6 +14,8 @@ async function mount(setup: (el: PigeonEditor) => void): Promise<PigeonEditor> {
 
 afterEach(() => {
   document.body.innerHTML = '';
+  // config.blocks is global to the page, so it outlives the element that set it.
+  setAvailableBlockTypes(undefined);
 });
 
 describe('configuration', () => {
@@ -24,6 +26,10 @@ describe('configuration', () => {
     const toolbar = el.shadowRoot!.querySelector('pigeon-toolbar') as HTMLElement & { updateComplete: Promise<unknown> };
     await toolbar.updateComplete;
     expect(toolbar.shadowRoot!.innerHTML).toContain('Aperçu');
+    const palette = el.shadowRoot!.querySelector('pigeon-palette') as HTMLElement & { updateComplete: Promise<unknown> };
+    await palette.updateComplete;
+    expect([...palette.shadowRoot!.querySelectorAll('pigeon-palette-item[drag-type="palette-block"]')]
+      .map((i) => i.getAttribute('block-type'))).toEqual(['text', 'image', 'button', 'divider', 'spacer']);
   });
 
   it('prefers the document property over config.doc', async () => {

@@ -56,7 +56,7 @@ export function parseBody(bodyNode: MjmlNode, warnings: ParseWarning[]): BodyDat
         break;
       }
       case 'mj-section':
-        rows.push(applyCondition(parseSection(child, warnings)));
+        rows.push(applyCondition(parseSection(child, warnings, width)));
         break;
       case 'mj-hero': {
         // mj-hero becomes a row with a single column containing a hero block
@@ -95,7 +95,7 @@ export function parseBody(bodyNode: MjmlNode, warnings: ParseWarning[]): BodyDat
         // Treat wrapper children as normal sections
         for (const wrapperChild of child.children) {
           if (wrapperChild.tag === 'mj-section') {
-            rows.push(applyCondition(parseSection(wrapperChild, warnings)));
+            rows.push(applyCondition(parseSection(wrapperChild, warnings, width)));
           }
         }
         break;
