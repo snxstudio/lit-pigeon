@@ -7,7 +7,7 @@ import type {
   RegisteredBlock,
   FontDefinition,
 } from '@lit-pigeon/core';
-import { getBlockDefinition, linkStyleToCss } from '@lit-pigeon/core';
+import { getBlockDefinition, linkStyleToCss, resolveDirection, resolveRowBackground } from '@lit-pigeon/core';
 import { spacingToMjml } from './utils/spacing.js';
 import { visibilityClass, withCssClass, VISIBILITY_STYLE } from './utils/visibility.js';
 import { renderTextBlock } from './block-renderers/text.js';
@@ -118,10 +118,16 @@ function renderRow(row: RowNode): string {
     row.columns[0].blocks[0].type === 'hero'
   ) {
     const hero = row.columns[0].blocks[0] as HeroBlock;
+    // The row and its hero block collapse into one mj-hero, so hiding either
+    // hides the element. On a round trip the flags come back on the block.
+    const heroVisibility = visibilityClass({
+      hideOnMobile: row.attributes.hideOnMobile || hero.values.hideOnMobile,
+      hideOnDesktop: row.attributes.hideOnDesktop || hero.values.hideOnDesktop,
+    });
     return wrapConditional(
       wrapRepeat(
         wrapConditional(
-          withCssClass(renderHeroSection(hero), visibilityClass(hero.values)),
+          withCssClass(renderHeroSection(hero), heroVisibility),
           hero.values.condition,
         ),
         row.attributes.repeat,
@@ -130,7 +136,7 @@ function renderRow(row: RowNode): string {
     );
   }
 
-  const { backgroundColor, backgroundImage, padding, fullWidth, cssClass } = row.attributes;
+  const { backgroundColor, padding, fullWidth, cssClass } = row.attributes;
 
   const attrs: string[] = [
     `padding="${spacingToMjml(padding)}"`,
@@ -144,14 +150,17 @@ function renderRow(row: RowNode): string {
     attrs.push(`background-color="${backgroundColor}"`);
   }
 
-  if (backgroundImage) {
-    attrs.push(`background-url="${escapeAttr(backgroundImage)}"`);
-    attrs.push('background-size="cover"');
-    attrs.push('background-repeat="no-repeat"');
+  const background = resolveRowBackground(row);
+  if (background) {
+    attrs.push(`background-url="${escapeAttr(background.url)}"`);
+    attrs.push(`background-size="${escapeAttr(background.size)}"`);
+    attrs.push(`background-repeat="${background.repeat}"`);
+    attrs.push(`background-position="${escapeAttr(background.position)}"`);
   }
 
-  if (cssClass) {
-    attrs.push(`css-class="${escapeAttr(cssClass)}"`);
+  const rowClass = [cssClass && escapeAttr(cssClass), visibilityClass(row.attributes)].filter(Boolean).join(' ');
+  if (rowClass) {
+    attrs.push(`css-class="${rowClass}"`);
   }
 
   // Calculate column width percentages from ratios
@@ -288,6 +297,20 @@ function renderFontTags(fonts: FontDefinition[]): string {
 }
 
 /**
+ * `lang` and `dir` for the <mjml> root, which MJML copies onto <html> and onto
+ * the `role="article"` wrapper it adds for clients that strip <html>. Both are
+ * omitted when the document sets neither, leaving MJML's `lang="und" dir="auto"`
+ * exactly as before.
+ */
+function renderRootAttrs(doc: PigeonDocument): string {
+  const { language, direction } = doc.body.attributes;
+  if (!language && !direction) return '';
+
+  const dir = resolveDirection(language, direction);
+  return `${language ? ` lang="${escapeAttr(language)}"` : ''} dir="${dir}"`;
+}
+
+/**
  * Builds the <mj-head> section of the MJML document, including:
  * - Outlook + dark-mode workarounds (unless disabled)
  * - <mj-attributes> for default styling
@@ -325,8 +348,10 @@ function renderHead(doc: PigeonDocument, options: Required<DocumentToMjmlOptions
     </mj-style>`);
   }
 
-  const hidesOnDevice = doc.body.rows.some((row) =>
-    row.columns.some((col) => visibilityClass(col.attributes) || col.blocks.some((b) => visibilityClass(b.values))),
+  const hidesOnDevice = doc.body.rows.some(
+    (row) =>
+      visibilityClass(row.attributes) ||
+      row.columns.some((col) => visibilityClass(col.attributes) || col.blocks.some((b) => visibilityClass(b.values))),
   );
   if (hidesOnDevice) headParts.push(VISIBILITY_STYLE);
 
@@ -343,6 +368,12 @@ ${linkCss.split('\n').map((line) => `      ${line}`).join('\n')}
     headParts.push(`    <mj-style>
 ${css.replace(/<\/mj-style/gi, '<\\/mj-style')}
     </mj-style>`);
+  }
+
+  // Becomes <title> and the article wrapper's aria-label
+  const title = doc.metadata.name.trim();
+  if (title) {
+    headParts.push(`    <mj-title>${escapeHtml(title)}</mj-title>`);
   }
 
   // Preview text
@@ -385,7 +416,7 @@ export function documentToMjml(doc: PigeonDocument, options?: DocumentToMjmlOpti
   const head = renderHead(doc, resolved);
   const rows = doc.body.rows.map((row) => renderRow(row)).join('\n');
 
-  return `<mjml>
+  return `<mjml${renderRootAttrs(doc)}>
 ${head}
   <mj-body ${bodyAttrs.join(' ')}>
 ${rows}

@@ -89,6 +89,31 @@ describe('unlayerToDocument', () => {
     const { document } = unlayerToDocument(design([], { contentWidth: '500px' }));
     expect(document.body.attributes.width).toBe(500);
   });
+
+  it('carries the language and text direction across', () => {
+    const { document, warnings } = unlayerToDocument(design([], { language: 'ar', textDirection: 'rtl' }));
+    expect(document.body.attributes.language).toBe('ar');
+    expect(document.body.attributes.direction).toBe('rtl');
+    expect(warnings.map((w) => w.code)).not.toContain('unknown-text-direction');
+  });
+
+  it('leaves both unset for a design that states neither', () => {
+    const { document } = unlayerToDocument(design([], {}));
+    expect(document.body.attributes.language).toBeUndefined();
+    expect(document.body.attributes.direction).toBeUndefined();
+  });
+
+  it('warns on a text direction it does not recognise', () => {
+    const { document, warnings } = unlayerToDocument(design([], { language: 'en', textDirection: 'auto' }));
+    expect(document.body.attributes.direction).toBeUndefined();
+    expect(document.body.attributes.language).toBe('en');
+    expect(warnings.map((w) => w.code)).toContain('unknown-text-direction');
+  });
+
+  it('ignores the language map the translations feature stores', () => {
+    const { document } = unlayerToDocument(design([], { language: { en: 'English', ar: 'Arabic' } }));
+    expect(document.body.attributes.language).toBeUndefined();
+  });
 });
 
 describe('block conversion', () => {
@@ -318,10 +343,76 @@ describe('block conversion', () => {
 describe('lossy input', () => {
   it('drops unsupported blocks with a warning rather than failing', () => {
     const { document, warnings } = unlayerToDocument(
-      design([row([{ type: 'timer', values: {} }, { type: 'text', values: { text: '<p>Kept</p>' } }])]),
+      design([row([{ type: 'form', values: {} }, { type: 'text', values: { text: '<p>Kept</p>' } }])]),
     );
-    expect(warnings.find((w) => w.code === 'unsupported-block')?.contentType).toBe('timer');
+    expect(warnings.find((w) => w.code === 'unsupported-block')?.contentType).toBe('form');
     expect(document.body.rows[0].columns[0].blocks).toHaveLength(1);
+  });
+
+  it('imports a video as a video block rather than dropping it', () => {
+    const { document, warnings } = unlayerToDocument(
+      design([
+        row([
+          {
+            type: 'video',
+            values: {
+              videoUrl: 'https://youtu.be/abc123',
+              thumbnail: { url: 'https://cdn.test/poster.jpg', width: 480 },
+              altText: 'Watch the launch',
+            },
+          },
+        ]),
+      ]),
+    );
+    const block = document.body.rows[0].columns[0].blocks[0];
+    expect(block.type).toBe('video');
+    expect(block.values).toMatchObject({
+      videoUrl: 'https://youtu.be/abc123',
+      posterUrl: 'https://cdn.test/poster.jpg',
+      alt: 'Watch the launch',
+      width: 480,
+    });
+    expect(warnings.find((w) => w.code === 'unsupported-block')).toBeUndefined();
+  });
+
+  it('imports a timer as a countdown block carrying its end time', () => {
+    const { document } = unlayerToDocument(
+      design([
+        row([
+          {
+            type: 'timer',
+            values: { endTime: '2026-12-31 23:59', href: { values: { href: 'https://shop.test' } } },
+          },
+        ]),
+      ]),
+    );
+    const block = document.body.rows[0].columns[0].blocks[0];
+    expect(block.type).toBe('countdown');
+    expect(block.values).toMatchObject({ endDateLabel: '2026-12-31 23:59', href: 'https://shop.test' });
+  });
+
+  it('falls back to the block definition\'s own defaults for a sparse design', () => {
+    const { document } = unlayerToDocument(design([row([{ type: 'video', values: {} }])]));
+    expect(document.body.rows[0].columns[0].blocks[0].values).toMatchObject({
+      posterUrl: '',
+      videoUrl: '#',
+      alt: 'Watch the video',
+      width: 560,
+      playButtonColor: '#ffffff',
+    });
+  });
+
+  it.each(['video', 'timer'])('warns that %s needs @lit-pigeon/blocks registered', (type) => {
+    const { warnings } = unlayerToDocument(design([row([{ type, values: {} }])]));
+    const warning = warnings.find((w) => w.code === 'plugin-block');
+    expect(warning?.contentType).toBe(type);
+    expect(warning?.message).toContain('registerStandardBlocks');
+  });
+
+  it('still drops a form, which has no equivalent', () => {
+    const { document, warnings } = unlayerToDocument(design([row([{ type: 'form', values: {} }])]));
+    expect(document.body.rows[0].columns[0].blocks).toHaveLength(0);
+    expect(warnings.find((w) => w.code === 'unsupported-block')?.contentType).toBe('form');
   });
 
   it('names the custom tool that needs re-creating', () => {
