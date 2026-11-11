@@ -1,4 +1,5 @@
 import type { DeviceVisibility } from '@lit-pigeon/core';
+import { generatedStyleMarker } from '@lit-pigeon/core';
 
 /** The hide classes for an element's visibility flags, or '' when it shows everywhere. */
 export function visibilityClass(v: DeviceVisibility): string {
@@ -31,6 +32,7 @@ export function withCssClass(markup: string, cls: string): string {
  * MJML wraps in a table rather than a div.
  */
 export const VISIBILITY_STYLE = `    <mj-style>
+      ${generatedStyleMarker('visibility')}
       .pigeon-hide-desktop, .pigeon-hide-desktop-outlook { display: none !important; mso-hide: all !important; }
       @media only screen and (max-width:479px) {
         td.pigeon-hide-desktop { display: table-cell !important; }
