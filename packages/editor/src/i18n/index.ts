@@ -1,9 +1,7 @@
+import { resolveDirection } from '@lit-pigeon/core';
 import { EN_MESSAGES } from './en.js';
 
 type Catalog = Record<string, string>;
-
-/** Language subtags that render right-to-left. */
-const RTL_LANGS = new Set(['ar', 'he', 'fa', 'ur', 'ps', 'sd', 'dv', 'yi']);
 
 let _locale = 'en';
 let _catalogs: Record<string, Catalog> = { en: EN_MESSAGES };
@@ -56,7 +54,5 @@ export function getLocale(): string {
 
 /** Resolve text direction: explicit override wins, else derived from the locale's language subtag. */
 export function resolveDir(locale?: string, override?: 'ltr' | 'rtl'): 'ltr' | 'rtl' {
-  if (override) return override;
-  const lang = (locale || 'en').toLowerCase().split(/[-_]/)[0];
-  return RTL_LANGS.has(lang) ? 'rtl' : 'ltr';
+  return resolveDirection(locale, override);
 }

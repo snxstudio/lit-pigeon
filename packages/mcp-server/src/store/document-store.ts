@@ -1,6 +1,7 @@
 import {
   createDefaultDocument,
   createBlock,
+  isBlockTypeAvailable,
   createColumn,
   createRow,
   generateId,
@@ -104,6 +105,11 @@ export class DocumentStore {
     overrides?: Record<string, unknown>,
   ): ContentBlock {
     const doc = this.get(documentId);
+    // This store mutates the document directly rather than going through the
+    // insertBlock command, so it has to honour the host's block list itself.
+    if (!isBlockTypeAvailable(blockType)) {
+      throw new Error(`Block type not available: ${blockType}`);
+    }
     const { column } = locateColumn(doc, rowId, columnId);
     const block = createBlock(blockType, overrides as Partial<ContentBlock['values']>);
     column.blocks.push(block);

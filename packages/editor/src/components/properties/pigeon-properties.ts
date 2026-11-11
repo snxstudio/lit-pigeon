@@ -215,7 +215,13 @@ export class PigeonProperties extends LitElement {
       if (row) {
         return html`
           <div class="panel-wrapper" part="panel">
-            ${this._lockGuard(row.id, html`<pigeon-row-panel .row=${row}></pigeon-row-panel>`)}
+            ${this._lockGuard(
+              row.id,
+              html`<pigeon-row-panel .row=${row}></pigeon-row-panel>
+              ${this._renderVisibility(row.attributes, (attributes) =>
+                this._emit('row-property-change', { rowId: row.id, attributes }),
+              )}`,
+            )}
           </div>
         `;
       }

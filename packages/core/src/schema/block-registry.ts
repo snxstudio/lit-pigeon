@@ -83,6 +83,43 @@ export function getAllBlockDefinitions(): BlockDefinition[] {
   return Array.from(registry.values());
 }
 
+/**
+ * Block types the host has opted into, in palette order. `undefined` means no
+ * restriction — every registered block is offered, which is the default.
+ */
+let availableTypes: string[] | undefined;
+
+/**
+ * Restricts the editor to `types`, in the order given. Pass `undefined` to
+ * lift the restriction. Availability gates *insertion*, not rendering: a
+ * document that already contains a type the host left out still renders, so
+ * narrowing the palette never blanks a saved template.
+ */
+export function setAvailableBlockTypes(types: readonly string[] | undefined): void {
+  availableTypes = types ? [...types] : undefined;
+}
+
+/**
+ * Whether a block of `type` may be inserted. Enforced in `insertBlock`, so
+ * the palette, the keyboard, the MCP server and the REST handler are all held
+ * to it rather than only the palette.
+ */
+export function isBlockTypeAvailable(type: string): boolean {
+  return availableTypes ? availableTypes.includes(type) : true;
+}
+
+/**
+ * The definitions the palette offers: every registered block by default, or
+ * the host's list in its own order. A listed type nobody registered is
+ * skipped rather than rendered as a broken chip.
+ */
+export function getAvailableBlockDefinitions(): BlockDefinition[] {
+  if (!availableTypes) return getAllBlockDefinitions();
+  return availableTypes
+    .map((type) => registry.get(type))
+    .filter((def): def is BlockDefinition => def !== undefined);
+}
+
 export function isKnownBlockType(type: string): type is BlockType {
   return registry.has(type);
 }

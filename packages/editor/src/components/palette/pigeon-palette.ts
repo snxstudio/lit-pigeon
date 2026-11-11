@@ -1,6 +1,6 @@
 import { LitElement, html, css, type PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { getAllBlockDefinitions } from '@lit-pigeon/core';
+import { getAvailableBlockDefinitions } from '@lit-pigeon/core';
 import type { BrandKit, BlockDefinition, PigeonDocument, Selection, RowLibraryStorage } from '@lit-pigeon/core';
 import { t } from '../../i18n/index.js';
 import './pigeon-palette-item.js';
@@ -54,6 +54,13 @@ export class PigeonPalette extends LitElement {
 
   @property({ attribute: false })
   rowLibrary: RowLibraryStorage | null = null;
+
+  /**
+   * The host's `EditorConfig.blocks`. Only a change signal — the definitions
+   * themselves come from the registry, which the editor has already set.
+   */
+  @property({ attribute: false })
+  blocks?: string[];
 
   @state()
   private _blockDefs: BlockDefinition[] = [];
@@ -149,7 +156,16 @@ export class PigeonPalette extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    this._blockDefs = getAllBlockDefinitions();
+    this._blockDefs = getAvailableBlockDefinitions();
+  }
+
+  // The editor writes the host's list to the registry before passing it here,
+  // so re-reading picks up a config change without a reconnect. Done in
+  // willUpdate rather than updated so it lands in the same render pass.
+  override willUpdate(changed: PropertyValues) {
+    if (changed.has('blocks')) {
+      this._blockDefs = getAvailableBlockDefinitions();
+    }
   }
 
   override updated(changed: PropertyValues) {
