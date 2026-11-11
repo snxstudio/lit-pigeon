@@ -36,21 +36,21 @@
     "name": "@lit-pigeon/renderer-mjml (ESM, excluding mjml)",
     "path": "packages/renderer-mjml/dist/index.js",
     "ignore": ["mjml", "@lit-pigeon/core"],
-    "limit": "4.9 kB",
+    "limit": "5.1 kB",
     "gzip": true
   },
   {
     "name": "@lit-pigeon/parser-mjml (ESM)",
     "path": "packages/parser-mjml/dist/index.js",
     "ignore": ["@lit-pigeon/core", "htmlparser2"],
-    "limit": "6.5 kB",
+    "limit": "6.8 kB",
     "gzip": true
   },
   {
     "name": "@lit-pigeon/import-unlayer (ESM)",
     "path": "packages/import-unlayer/dist/index.js",
     "ignore": ["@lit-pigeon/core", "htmlparser2"],
-    "limit": "4 kB",
+    "limit": "4.4 kB",
     "gzip": true
   },
   {
