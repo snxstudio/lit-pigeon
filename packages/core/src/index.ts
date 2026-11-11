@@ -89,6 +89,9 @@ export {
   registerBlock,
   getBlockDefinition,
   getAllBlockDefinitions,
+  getAvailableBlockDefinitions,
+  setAvailableBlockTypes,
+  isBlockTypeAvailable,
   isKnownBlockType,
 } from './schema/block-registry.js';
 
