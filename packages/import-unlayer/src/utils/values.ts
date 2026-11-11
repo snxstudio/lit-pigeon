@@ -40,6 +40,18 @@ export function color(value: unknown): string | undefined {
   return s ? s : undefined;
 }
 
+/**
+ * Unlayer writes font weights either as a CSS keyword (`"normal"`, `"bold"`) or
+ * as a numeric weight, which older designs store as a number and newer ones as
+ * a string. Normalises both to the string `mj-button` expects, and treats
+ * `""`/absent as unset so callers can fall through to their own default.
+ */
+export function weight(value: unknown): string | undefined {
+  if (typeof value === 'number') return Number.isFinite(value) ? String(value) : undefined;
+  const s = str(value).trim();
+  return s ? s : undefined;
+}
+
 export function align(value: unknown, fallback: 'left' | 'center' | 'right' = 'left'): 'left' | 'center' | 'right' {
   return value === 'left' || value === 'center' || value === 'right' ? value : fallback;
 }

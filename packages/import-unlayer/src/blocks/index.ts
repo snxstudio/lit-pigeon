@@ -2,7 +2,7 @@ import type { ContentBlock } from '@lit-pigeon/core';
 import { generateId } from '@lit-pigeon/core';
 import type { UnlayerContent } from '../types.js';
 import type { ImportWarning } from '../warnings.js';
-import { align, color, dig, parseSpacing, px, str } from '../utils/values.js';
+import { align, color, dig, parseSpacing, px, str, weight } from '../utils/values.js';
 import { applyInlineStyle, ensureBlockHtml } from '../utils/inline-style.js';
 
 /** Body-level defaults that Unlayer content blocks inherit when unset. */
@@ -124,7 +124,7 @@ function buttonBlock(v: Record<string, unknown>): ContentBlock {
       padding: parseSpacing(v.containerPadding, 10),
       innerPadding: parseSpacing(v.padding, 12),
       fontSize: px(v.fontSize, 16),
-      fontWeight: '600',
+      fontWeight: weight(v.fontWeight) ?? '600',
       alignment: align(v.textAlign, 'center'),
       // Unlayer's `size.autoWidth` is the inverse of Pigeon's `fullWidth`.
       fullWidth: dig(v, 'size', 'autoWidth') === false,
