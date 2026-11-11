@@ -139,6 +139,12 @@ export const EN_MESSAGES: Record<string, string> = {
   'panel.body.emailName': 'Email Name',
   'panel.body.previewText': 'Preview Text',
   'panel.body.previewTextPlaceholder': 'Email preview text...',
+  'panel.body.language': 'Language',
+  'panel.body.languagePlaceholder': 'e.g. en, pt-BR',
+  'panel.body.textDirection': 'Text Direction',
+  'panel.body.directionAuto': 'Auto',
+  'panel.body.directionLtr': 'Left to right',
+  'panel.body.directionRtl': 'Right to left',
 
   // property panels — text
   'panel.text.title': 'Text Properties',

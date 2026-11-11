@@ -137,6 +137,12 @@ const messages: Record<string, string> = {
   'panel.body.emailName': 'اسم الرسالة',
   'panel.body.previewText': 'نص المعاينة',
   'panel.body.previewTextPlaceholder': 'نص معاينة الرسالة...',
+  'panel.body.language': 'اللغة',
+  'panel.body.languagePlaceholder': 'مثال: en، pt-BR',
+  'panel.body.textDirection': 'اتجاه النص',
+  'panel.body.directionAuto': 'تلقائي',
+  'panel.body.directionLtr': 'من اليسار إلى اليمين',
+  'panel.body.directionRtl': 'من اليمين إلى اليسار',
 
   // property panels — text
   'panel.text.title': 'خصائص النص',

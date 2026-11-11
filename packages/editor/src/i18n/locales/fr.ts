@@ -137,6 +137,12 @@ const messages: Record<string, string> = {
   'panel.body.emailName': 'Nom de l’e-mail',
   'panel.body.previewText': 'Texte d’aperçu',
   'panel.body.previewTextPlaceholder': 'Texte d’aperçu de l’e-mail...',
+  'panel.body.language': 'Langue',
+  'panel.body.languagePlaceholder': 'ex. en, pt-BR',
+  'panel.body.textDirection': 'Sens du texte',
+  'panel.body.directionAuto': 'Automatique',
+  'panel.body.directionLtr': 'De gauche à droite',
+  'panel.body.directionRtl': 'De droite à gauche',
 
   // property panels — text
   'panel.text.title': 'Propriétés du texte',

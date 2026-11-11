@@ -20,4 +20,5 @@ export type ImportWarningCode =
   | 'display-condition-dropped'
   | 'heading-level-clamped'
   | 'empty-row'
+  | 'unknown-text-direction'
   | 'background-repeat-clamped';

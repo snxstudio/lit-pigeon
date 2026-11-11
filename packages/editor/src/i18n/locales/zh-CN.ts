@@ -137,6 +137,12 @@ const messages: Record<string, string> = {
   'panel.body.emailName': '邮件名称',
   'panel.body.previewText': '预览文本',
   'panel.body.previewTextPlaceholder': '邮件预览文本...',
+  'panel.body.language': '语言',
+  'panel.body.languagePlaceholder': '例如 en、pt-BR',
+  'panel.body.textDirection': '文字方向',
+  'panel.body.directionAuto': '自动',
+  'panel.body.directionLtr': '从左到右',
+  'panel.body.directionRtl': '从右到左',
 
   // property panels — text
   'panel.text.title': '文本属性',

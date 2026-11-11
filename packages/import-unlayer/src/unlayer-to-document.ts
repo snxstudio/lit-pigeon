@@ -60,6 +60,7 @@ export function unlayerToDocument(
 
   const now = new Date().toISOString();
   const previewText = str(bodyValues.preheaderText);
+  const { language, direction } = readLocale(bodyValues, warnings);
 
   return {
     document: {
@@ -76,12 +77,36 @@ export function unlayerToDocument(
           backgroundColor: color(bodyValues.backgroundColor) ?? DEFAULT_BACKGROUND,
           fontFamily: inherited.fontFamily ?? DEFAULT_FONT,
           contentAlignment: bodyValues.contentAlign === 'left' ? 'left' : 'center',
+          ...(language ? { language } : {}),
+          ...(direction ? { direction } : {}),
         },
         rows,
       },
     },
     warnings,
   };
+}
+
+/**
+ * Unlayer keeps the document language under `language` and its text-direction
+ * setting under `textDirection`. `language` is a string on a plain design but an
+ * object once the translations feature is in use, where no single tag applies.
+ */
+function readLocale(
+  bodyValues: Record<string, unknown>,
+  warnings: ImportWarning[],
+): { language?: string; direction?: 'ltr' | 'rtl' } {
+  const language = str(bodyValues.language) || undefined;
+  const raw = str(bodyValues.textDirection);
+
+  if (!raw) return { language };
+  if (raw === 'ltr' || raw === 'rtl') return { language, direction: raw };
+
+  warnings.push({
+    code: 'unknown-text-direction',
+    message: `Unrecognised text direction "${raw}"; the document falls back to its language's natural direction.`,
+  });
+  return { language };
 }
 
 function coerceDesign(design: UnlayerDesign | string, warnings: ImportWarning[]): UnlayerDesign | null {

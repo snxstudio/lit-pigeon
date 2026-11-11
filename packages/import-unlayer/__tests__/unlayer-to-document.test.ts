@@ -64,6 +64,31 @@ describe('unlayerToDocument', () => {
     const { document } = unlayerToDocument(design([], { contentWidth: '500px' }));
     expect(document.body.attributes.width).toBe(500);
   });
+
+  it('carries the language and text direction across', () => {
+    const { document, warnings } = unlayerToDocument(design([], { language: 'ar', textDirection: 'rtl' }));
+    expect(document.body.attributes.language).toBe('ar');
+    expect(document.body.attributes.direction).toBe('rtl');
+    expect(warnings.map((w) => w.code)).not.toContain('unknown-text-direction');
+  });
+
+  it('leaves both unset for a design that states neither', () => {
+    const { document } = unlayerToDocument(design([], {}));
+    expect(document.body.attributes.language).toBeUndefined();
+    expect(document.body.attributes.direction).toBeUndefined();
+  });
+
+  it('warns on a text direction it does not recognise', () => {
+    const { document, warnings } = unlayerToDocument(design([], { language: 'en', textDirection: 'auto' }));
+    expect(document.body.attributes.direction).toBeUndefined();
+    expect(document.body.attributes.language).toBe('en');
+    expect(warnings.map((w) => w.code)).toContain('unknown-text-direction');
+  });
+
+  it('ignores the language map the translations feature stores', () => {
+    const { document } = unlayerToDocument(design([], { language: { en: 'English', ar: 'Arabic' } }));
+    expect(document.body.attributes.language).toBeUndefined();
+  });
 });
 
 describe('block conversion', () => {
