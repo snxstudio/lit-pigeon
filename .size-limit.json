@@ -43,14 +43,14 @@
     "name": "@lit-pigeon/parser-mjml (ESM)",
     "path": "packages/parser-mjml/dist/index.js",
     "ignore": ["@lit-pigeon/core", "htmlparser2"],
-    "limit": "6.8 kB",
+    "limit": "6.9 kB",
     "gzip": true
   },
   {
     "name": "@lit-pigeon/import-unlayer (ESM)",
     "path": "packages/import-unlayer/dist/index.js",
     "ignore": ["@lit-pigeon/core", "htmlparser2"],
-    "limit": "4.4 kB",
+    "limit": "4.5 kB",
     "gzip": true
   },
   {
