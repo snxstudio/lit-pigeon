@@ -134,6 +134,8 @@ const messages: Record<string, string> = {
   'panel.body.contentWidth': '内容宽度',
   'panel.body.fontFamily': '字体',
   'panel.body.contentAlignment': '内容对齐',
+  'panel.body.linkColor': '链接颜色',
+  'panel.body.linkUnderline': '链接加下划线',
   'panel.body.emailName': '邮件名称',
   'panel.body.previewText': '预览文本',
   'panel.body.previewTextPlaceholder': '邮件预览文本...',

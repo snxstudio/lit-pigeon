@@ -259,6 +259,7 @@ export function mjmlToDocument(mjml: string, _options?: ParseOptions): ParseResu
         backgroundColor: bodyData.backgroundColor,
         fontFamily,
         contentAlignment: 'center',
+        ...(headData.linkStyle ? { linkStyle: headData.linkStyle } : {}),
         ...(language ? { language } : {}),
         ...(direction ? { direction } : {}),
         css: headData.css,

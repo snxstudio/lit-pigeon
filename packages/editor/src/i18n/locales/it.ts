@@ -134,6 +134,8 @@ const messages: Record<string, string> = {
   'panel.body.contentWidth': 'Larghezza contenuto',
   'panel.body.fontFamily': 'Famiglia di font',
   'panel.body.contentAlignment': 'Allineamento contenuto',
+  'panel.body.linkColor': 'Colore dei link',
+  'panel.body.linkUnderline': 'Sottolinea i link',
   'panel.body.emailName': 'Nome email',
   'panel.body.previewText': 'Testo di anteprima',
   'panel.body.previewTextPlaceholder': 'Testo di anteprima dell’email...',

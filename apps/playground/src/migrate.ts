@@ -155,7 +155,8 @@ const settings: Array<[string, boolean, string]> = [
   ['Mobile overrides (<code>_override</code>)', false, 'Not carried over'],
   ['Hide on desktop / mobile', false, 'Not carried over'],
   ['Button font weight and border', true, 'Button block values'],
-  ['Button hover colours, body link styles', false, 'Not carried over'],
+  ['Body link colour and underline', true, 'Document <code>linkStyle</code>'],
+  ['Link and button hover colours', false, 'Not carried over. <code>:hover</code> is ignored by most email clients, so a control for it would imply a guarantee we cannot make.'],
 ];
 
 document.getElementById('coverage-settings')!.innerHTML = settings

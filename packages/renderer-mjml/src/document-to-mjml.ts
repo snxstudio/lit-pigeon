@@ -7,7 +7,7 @@ import type {
   RegisteredBlock,
   FontDefinition,
 } from '@lit-pigeon/core';
-import { getBlockDefinition, resolveDirection, resolveRowBackground } from '@lit-pigeon/core';
+import { getBlockDefinition, linkStyleToCss, resolveDirection, resolveRowBackground } from '@lit-pigeon/core';
 import { spacingToMjml } from './utils/spacing.js';
 import { visibilityClass, withCssClass, VISIBILITY_STYLE } from './utils/visibility.js';
 import { renderTextBlock } from './block-renderers/text.js';
@@ -317,7 +317,7 @@ function renderRootAttrs(doc: PigeonDocument): string {
  * - <mj-preview> for preview text
  */
 function renderHead(doc: PigeonDocument, options: Required<DocumentToMjmlOptions>): string {
-  const { fontFamily, css } = doc.body.attributes;
+  const { fontFamily, linkStyle, css } = doc.body.attributes;
   const previewText = doc.metadata.previewText;
 
   const headParts: string[] = [];
@@ -354,6 +354,14 @@ function renderHead(doc: PigeonDocument, options: Required<DocumentToMjmlOptions
       row.columns.some((col) => visibilityClass(col.attributes) || col.blocks.some((b) => visibilityClass(b.values))),
   );
   if (hidesOnDevice) headParts.push(VISIBILITY_STYLE);
+
+  // Before the document's own CSS, so a hand-written rule can still override it.
+  const linkCss = linkStyle && linkStyleToCss(linkStyle);
+  if (linkCss) {
+    headParts.push(`    <mj-style>
+${linkCss.split('\n').map((line) => `      ${line}`).join('\n')}
+    </mj-style>`);
+  }
 
   if (css) {
     // A literal </mj-style would end the element early; <\/ means the same in CSS

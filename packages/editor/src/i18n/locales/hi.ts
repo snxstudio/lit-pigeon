@@ -134,6 +134,8 @@ const messages: Record<string, string> = {
   'panel.body.contentWidth': 'सामग्री की चौड़ाई',
   'panel.body.fontFamily': 'फ़ॉन्ट फ़ैमिली',
   'panel.body.contentAlignment': 'सामग्री संरेखण',
+  'panel.body.linkColor': 'लिंक का रंग',
+  'panel.body.linkUnderline': 'लिंक रेखांकित करें',
   'panel.body.emailName': 'ईमेल का नाम',
   'panel.body.previewText': 'प्रीव्यू टेक्स्ट',
   'panel.body.previewTextPlaceholder': 'ईमेल प्रीव्यू टेक्स्ट...',

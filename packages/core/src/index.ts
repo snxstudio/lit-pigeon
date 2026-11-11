@@ -19,6 +19,7 @@ export type {
   NavLink,
   Spacing,
   Border,
+  LinkStyle,
   DeviceVisibility,
   SocialIcon,
 } from './types/document.js';
@@ -86,6 +87,7 @@ export {
   getDefaultValues,
 } from './schema/defaults.js';
 export { validateDocument, isValidDocument, type ValidationError } from './schema/schema.js';
+export { LINK_STYLE_MARKER, linkStyleToCss, cssToLinkStyle } from './schema/link-style.js';
 export {
   registerBlock,
   getBlockDefinition,

@@ -134,6 +134,8 @@ const messages: Record<string, string> = {
   'panel.body.contentWidth': 'عرض المحتوى',
   'panel.body.fontFamily': 'عائلة الخط',
   'panel.body.contentAlignment': 'محاذاة المحتوى',
+  'panel.body.linkColor': 'لون الروابط',
+  'panel.body.linkUnderline': 'تسطير الروابط',
   'panel.body.emailName': 'اسم الرسالة',
   'panel.body.previewText': 'نص المعاينة',
   'panel.body.previewTextPlaceholder': 'نص معاينة الرسالة...',
