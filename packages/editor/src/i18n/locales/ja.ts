@@ -252,6 +252,7 @@ const messages: Record<string, string> = {
   'panel.row.backgroundSize': '背景のサイズ',
   'panel.row.backgroundPosition': '背景の位置',
   'panel.row.fullWidth': '全幅',
+  'panel.row.noStackOnMobile': 'モバイルで縦積みにしない',
   'panel.row.displayCondition': '表示条件',
   'panel.row.repeat': '各項目で繰り返す',
 

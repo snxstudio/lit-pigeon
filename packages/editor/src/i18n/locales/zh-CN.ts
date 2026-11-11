@@ -252,6 +252,7 @@ const messages: Record<string, string> = {
   'panel.row.backgroundSize': '背景尺寸',
   'panel.row.backgroundPosition': '背景位置',
   'panel.row.fullWidth': '全宽',
+  'panel.row.noStackOnMobile': '在移动端不堆叠',
   'panel.row.displayCondition': '显示条件',
   'panel.row.repeat': '为每一项重复',
 

@@ -252,6 +252,7 @@ const messages: Record<string, string> = {
   'panel.row.backgroundSize': 'Achtergrondgrootte',
   'panel.row.backgroundPosition': 'Achtergrondpositie',
   'panel.row.fullWidth': 'Volledige breedte',
+  'panel.row.noStackOnMobile': 'Niet stapelen op mobiel',
   'panel.row.displayCondition': 'Weergavevoorwaarde',
   'panel.row.repeat': 'Herhalen voor elk',
 

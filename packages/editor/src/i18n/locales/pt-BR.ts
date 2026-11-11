@@ -252,6 +252,7 @@ const messages: Record<string, string> = {
   'panel.row.backgroundSize': 'Tamanho do fundo',
   'panel.row.backgroundPosition': 'Posição do fundo',
   'panel.row.fullWidth': 'Largura total',
+  'panel.row.noStackOnMobile': 'Não empilhar no celular',
   'panel.row.displayCondition': 'Condição de exibição',
   'panel.row.repeat': 'Repetir para cada',
 

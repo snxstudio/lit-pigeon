@@ -254,6 +254,7 @@ export const EN_MESSAGES: Record<string, string> = {
   'panel.row.backgroundSize': 'Background Size',
   'panel.row.backgroundPosition': 'Background Position',
   'panel.row.fullWidth': 'Full Width',
+  'panel.row.noStackOnMobile': 'Do not stack on mobile',
   'panel.row.displayCondition': 'Display condition',
   'panel.row.repeat': 'Repeat for each',
 

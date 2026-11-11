@@ -175,6 +175,18 @@ export class PigeonRowPanel extends LitElement {
         </label>
       </div>
 
+      <div class="toggle-row">
+        <span class="toggle-label">${t('panel.row.noStackOnMobile')}</span>
+        <label class="toggle">
+          <input
+            type="checkbox"
+            .checked=${a.noStackOnMobile ?? false}
+            @change=${this._onNoStackChange}
+          />
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+
       <pigeon-spacing-input
         label=${t('panel.common.padding')}
         .value=${a.padding}
@@ -259,6 +271,13 @@ export class PigeonRowPanel extends LitElement {
 
   private _onFullWidthChange(e: Event) {
     this._emitRowUpdate({ fullWidth: (e.target as HTMLInputElement).checked });
+  }
+
+  private _onNoStackChange(e: Event) {
+    // Store undefined rather than false so a row that never used this renders
+    // byte-identically to one saved before it existed.
+    const checked = (e.target as HTMLInputElement).checked;
+    this._emitRowUpdate({ noStackOnMobile: checked || undefined });
   }
 
   private _onPaddingChange(e: CustomEvent<{ value: Spacing }>) {

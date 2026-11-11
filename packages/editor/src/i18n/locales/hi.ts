@@ -252,6 +252,7 @@ const messages: Record<string, string> = {
   'panel.row.backgroundSize': 'बैकग्राउंड आकार',
   'panel.row.backgroundPosition': 'बैकग्राउंड स्थिति',
   'panel.row.fullWidth': 'पूरी चौड़ाई',
+  'panel.row.noStackOnMobile': 'मोबाइल पर स्टैक न करें',
   'panel.row.displayCondition': 'प्रदर्शन शर्त',
   'panel.row.repeat': 'प्रत्येक के लिए दोहराएँ',
 
