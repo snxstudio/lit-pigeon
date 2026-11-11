@@ -375,6 +375,9 @@ export class PigeonPreview extends LitElement {
 
   private _close() {
     this.open = false;
+    // The host binds `open`, so closing ourselves leaves its value stale and the
+    // next open would be a no-op. Tell it, so it can drive `open` back down.
+    this.dispatchEvent(new CustomEvent('preview-close', { bubbles: true, composed: true }));
   }
 }
 

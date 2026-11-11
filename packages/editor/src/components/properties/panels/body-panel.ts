@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
 import type { PigeonDocument, MergeTag, BrandColor, FontDefinition } from '@lit-pigeon/core';
+import { resolveDirection } from '@lit-pigeon/core';
 import { panelStyles } from './panel-styles.js';
 import '../controls/color-picker.js';
 import '../controls/font-picker.js';
@@ -153,6 +154,35 @@ export class PigeonBodyPanel extends LitElement {
       </div>
 
       <div class="field">
+        <label>${t('panel.body.language')}</label>
+        <input
+          type="text"
+          .value=${a.language ?? ''}
+          placeholder=${t('panel.body.languagePlaceholder')}
+          @change=${this._onLanguageChange}
+        />
+      </div>
+
+      <div class="field">
+        <label>${t('panel.body.textDirection')}</label>
+        <div class="alignment-buttons">
+          <button
+            class="${a.direction === undefined ? 'active' : ''}"
+            title=${t(`panel.body.direction${resolveDirection(a.language) === 'rtl' ? 'Rtl' : 'Ltr'}`)}
+            @click=${() => this._onDirectionChange(undefined)}
+          >${t('panel.body.directionAuto')}</button>
+          <button
+            class="${a.direction === 'ltr' ? 'active' : ''}"
+            @click=${() => this._onDirectionChange('ltr')}
+          >${t('panel.body.directionLtr')}</button>
+          <button
+            class="${a.direction === 'rtl' ? 'active' : ''}"
+            @click=${() => this._onDirectionChange('rtl')}
+          >${t('panel.body.directionRtl')}</button>
+        </div>
+      </div>
+
+      <div class="field">
         <label>${t('panel.body.emailName')}</label>
         <input
           type="text"
@@ -243,6 +273,14 @@ export class PigeonBodyPanel extends LitElement {
 
   private _onAlignChange(align: 'left' | 'center') {
     this._emit({ attribute: 'contentAlignment', value: align });
+  }
+
+  private _onLanguageChange(e: Event) {
+    this._emit({ attribute: 'language', value: (e.target as HTMLInputElement).value.trim() || undefined });
+  }
+
+  private _onDirectionChange(dir: 'ltr' | 'rtl' | undefined) {
+    this._emit({ attribute: 'direction', value: dir });
   }
 
   private _onNameChange(e: Event) {

@@ -60,6 +60,7 @@ export function unlayerToDocument(
 
   const now = new Date().toISOString();
   const previewText = str(bodyValues.preheaderText);
+  const { language, direction } = readLocale(bodyValues, warnings);
 
   return {
     document: {
@@ -76,12 +77,36 @@ export function unlayerToDocument(
           backgroundColor: color(bodyValues.backgroundColor) ?? DEFAULT_BACKGROUND,
           fontFamily: inherited.fontFamily ?? DEFAULT_FONT,
           contentAlignment: bodyValues.contentAlign === 'left' ? 'left' : 'center',
+          ...(language ? { language } : {}),
+          ...(direction ? { direction } : {}),
         },
         rows,
       },
     },
     warnings,
   };
+}
+
+/**
+ * Unlayer keeps the document language under `language` and its text-direction
+ * setting under `textDirection`. `language` is a string on a plain design but an
+ * object once the translations feature is in use, where no single tag applies.
+ */
+function readLocale(
+  bodyValues: Record<string, unknown>,
+  warnings: ImportWarning[],
+): { language?: string; direction?: 'ltr' | 'rtl' } {
+  const language = str(bodyValues.language) || undefined;
+  const raw = str(bodyValues.textDirection);
+
+  if (!raw) return { language };
+  if (raw === 'ltr' || raw === 'rtl') return { language, direction: raw };
+
+  warnings.push({
+    code: 'unknown-text-direction',
+    message: `Unrecognised text direction "${raw}"; the document falls back to its language's natural direction.`,
+  });
+  return { language };
 }
 
 function coerceDesign(design: UnlayerDesign | string, warnings: ImportWarning[]): UnlayerDesign | null {
@@ -107,6 +132,45 @@ function coerceDesign(design: UnlayerDesign | string, warnings: ImportWarning[])
   return value as UnlayerDesign;
 }
 
+/**
+ * Converts Unlayer's `backgroundImage` object to the row's background
+ * attributes. Unlayer has shipped `repeat` as a boolean (older designs) and as
+ * a CSS keyword string, and both shapes still appear in exported designs, so
+ * both are read. Position comes from `customPosition` ("50%"/"50%") when
+ * present, otherwise from the `center` flag.
+ */
+function convertBackgroundImage(
+  source: unknown,
+  warnings: ImportWarning[],
+): Partial<RowNode['attributes']> {
+  const url = str(dig(source, 'url'));
+  if (!url) return {};
+
+  const repeat = dig(source, 'repeat');
+  if (repeat === 'repeat-x' || repeat === 'repeat-y') {
+    warnings.push({
+      code: 'background-repeat-clamped',
+      message: `Background image repeats on one axis (${repeat}), which the row model cannot express — imported as a full repeat. Check the row's background.`,
+    });
+  }
+
+  const custom = dig(source, 'customPosition');
+  const position = Array.isArray(custom) && custom.length === 2
+    ? `${str(custom[0])} ${str(custom[1])}`.trim()
+    : dig(source, 'center') === true
+      ? 'center center'
+      : undefined;
+
+  const size = str(dig(source, 'size'));
+
+  return {
+    backgroundImage: url,
+    backgroundRepeat: repeat === false || repeat === 'no-repeat' ? 'no-repeat' : 'repeat',
+    ...(size ? { backgroundSize: size } : {}),
+    ...(position ? { backgroundPosition: position } : {}),
+  };
+}
+
 function convertRow(row: UnlayerRow, inherited: InheritedStyle, warnings: ImportWarning[]): RowNode | null {
   const v = (row.values ?? {}) as Record<string, unknown>;
   const sourceColumns = Array.isArray(row.columns) ? row.columns : [];
@@ -129,7 +193,7 @@ function convertRow(row: UnlayerRow, inherited: InheritedStyle, warnings: Import
   }
 
   const columns = sourceColumns.map((col) => convertColumn(col, inherited, warnings));
-  const backgroundImage = str(dig(v, 'backgroundImage', 'url'));
+  const background = convertBackgroundImage(v.backgroundImage, warnings);
 
   return {
     id: generateId(),
@@ -138,7 +202,7 @@ function convertRow(row: UnlayerRow, inherited: InheritedStyle, warnings: Import
       ...(color(v.backgroundColor) ?? color(v.columnsBackgroundColor)
         ? { backgroundColor: (color(v.backgroundColor) ?? color(v.columnsBackgroundColor))! }
         : {}),
-      ...(backgroundImage ? { backgroundImage } : {}),
+      ...background,
       padding: parseSpacing(v.padding, 0),
       fullWidth: v.fullWidth === true || dig(v, 'backgroundImage', 'fullWidth') === true,
     },

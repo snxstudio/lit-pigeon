@@ -64,6 +64,31 @@ describe('unlayerToDocument', () => {
     const { document } = unlayerToDocument(design([], { contentWidth: '500px' }));
     expect(document.body.attributes.width).toBe(500);
   });
+
+  it('carries the language and text direction across', () => {
+    const { document, warnings } = unlayerToDocument(design([], { language: 'ar', textDirection: 'rtl' }));
+    expect(document.body.attributes.language).toBe('ar');
+    expect(document.body.attributes.direction).toBe('rtl');
+    expect(warnings.map((w) => w.code)).not.toContain('unknown-text-direction');
+  });
+
+  it('leaves both unset for a design that states neither', () => {
+    const { document } = unlayerToDocument(design([], {}));
+    expect(document.body.attributes.language).toBeUndefined();
+    expect(document.body.attributes.direction).toBeUndefined();
+  });
+
+  it('warns on a text direction it does not recognise', () => {
+    const { document, warnings } = unlayerToDocument(design([], { language: 'en', textDirection: 'auto' }));
+    expect(document.body.attributes.direction).toBeUndefined();
+    expect(document.body.attributes.language).toBe('en');
+    expect(warnings.map((w) => w.code)).toContain('unknown-text-direction');
+  });
+
+  it('ignores the language map the translations feature stores', () => {
+    const { document } = unlayerToDocument(design([], { language: { en: 'English', ar: 'Arabic' } }));
+    expect(document.body.attributes.language).toBeUndefined();
+  });
 });
 
 describe('block conversion', () => {
@@ -158,6 +183,21 @@ describe('block conversion', () => {
       fontSize: 17,
       fullWidth: true,
       innerPadding: { top: 10, right: 20, bottom: 10, left: 20 },
+    });
+  });
+
+  it.each([
+    ['a keyword weight', { fontWeight: 'normal' }, 'normal'],
+    ['a numeric weight', { fontWeight: 400 }, '400'],
+    ['a numeric weight written as a string', { fontWeight: '700' }, '700'],
+    ['no weight at all', {}, '600'],
+    ['an empty weight', { fontWeight: '' }, '600'],
+  ])('reads the button font weight from a design with %s', (_name, values, expected) => {
+    const { document } = unlayerToDocument(
+      design([row([{ type: 'button', values: { text: 'Buy', ...values } }])]),
+    );
+    expect(document.body.rows[0].columns[0].blocks[0].values).toMatchObject({
+      fontWeight: expected,
     });
   });
 
