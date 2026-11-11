@@ -7,7 +7,7 @@ import type {
   RegisteredBlock,
   FontDefinition,
 } from '@lit-pigeon/core';
-import { getBlockDefinition } from '@lit-pigeon/core';
+import { getBlockDefinition, resolveRowBackground } from '@lit-pigeon/core';
 import { spacingToMjml } from './utils/spacing.js';
 import { visibilityClass, withCssClass, VISIBILITY_STYLE } from './utils/visibility.js';
 import { renderTextBlock } from './block-renderers/text.js';
@@ -130,7 +130,7 @@ function renderRow(row: RowNode): string {
     );
   }
 
-  const { backgroundColor, backgroundImage, padding, fullWidth, cssClass } = row.attributes;
+  const { backgroundColor, padding, fullWidth, cssClass } = row.attributes;
 
   const attrs: string[] = [
     `padding="${spacingToMjml(padding)}"`,
@@ -144,10 +144,12 @@ function renderRow(row: RowNode): string {
     attrs.push(`background-color="${backgroundColor}"`);
   }
 
-  if (backgroundImage) {
-    attrs.push(`background-url="${escapeAttr(backgroundImage)}"`);
-    attrs.push('background-size="cover"');
-    attrs.push('background-repeat="no-repeat"');
+  const background = resolveRowBackground(row);
+  if (background) {
+    attrs.push(`background-url="${escapeAttr(background.url)}"`);
+    attrs.push(`background-size="${escapeAttr(background.size)}"`);
+    attrs.push(`background-repeat="${background.repeat}"`);
+    attrs.push(`background-position="${escapeAttr(background.position)}"`);
   }
 
   if (cssClass) {
