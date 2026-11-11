@@ -7,7 +7,7 @@ import type {
   RegisteredBlock,
   FontDefinition,
 } from '@lit-pigeon/core';
-import { getBlockDefinition } from '@lit-pigeon/core';
+import { getBlockDefinition, resolveDirection, resolveRowBackground } from '@lit-pigeon/core';
 import { spacingToMjml } from './utils/spacing.js';
 import { visibilityClass, withCssClass, VISIBILITY_STYLE } from './utils/visibility.js';
 import { renderTextBlock } from './block-renderers/text.js';
@@ -136,7 +136,7 @@ function renderRow(row: RowNode): string {
     );
   }
 
-  const { backgroundColor, backgroundImage, padding, fullWidth, cssClass } = row.attributes;
+  const { backgroundColor, padding, fullWidth, cssClass } = row.attributes;
 
   const attrs: string[] = [
     `padding="${spacingToMjml(padding)}"`,
@@ -150,10 +150,12 @@ function renderRow(row: RowNode): string {
     attrs.push(`background-color="${backgroundColor}"`);
   }
 
-  if (backgroundImage) {
-    attrs.push(`background-url="${escapeAttr(backgroundImage)}"`);
-    attrs.push('background-size="cover"');
-    attrs.push('background-repeat="no-repeat"');
+  const background = resolveRowBackground(row);
+  if (background) {
+    attrs.push(`background-url="${escapeAttr(background.url)}"`);
+    attrs.push(`background-size="${escapeAttr(background.size)}"`);
+    attrs.push(`background-repeat="${background.repeat}"`);
+    attrs.push(`background-position="${escapeAttr(background.position)}"`);
   }
 
   const rowClass = [cssClass && escapeAttr(cssClass), visibilityClass(row.attributes)].filter(Boolean).join(' ');
@@ -295,6 +297,20 @@ function renderFontTags(fonts: FontDefinition[]): string {
 }
 
 /**
+ * `lang` and `dir` for the <mjml> root, which MJML copies onto <html> and onto
+ * the `role="article"` wrapper it adds for clients that strip <html>. Both are
+ * omitted when the document sets neither, leaving MJML's `lang="und" dir="auto"`
+ * exactly as before.
+ */
+function renderRootAttrs(doc: PigeonDocument): string {
+  const { language, direction } = doc.body.attributes;
+  if (!language && !direction) return '';
+
+  const dir = resolveDirection(language, direction);
+  return `${language ? ` lang="${escapeAttr(language)}"` : ''} dir="${dir}"`;
+}
+
+/**
  * Builds the <mj-head> section of the MJML document, including:
  * - Outlook + dark-mode workarounds (unless disabled)
  * - <mj-attributes> for default styling
@@ -346,6 +362,12 @@ ${css.replace(/<\/mj-style/gi, '<\\/mj-style')}
     </mj-style>`);
   }
 
+  // Becomes <title> and the article wrapper's aria-label
+  const title = doc.metadata.name.trim();
+  if (title) {
+    headParts.push(`    <mj-title>${escapeHtml(title)}</mj-title>`);
+  }
+
   // Preview text
   if (previewText) {
     headParts.push(`    <mj-preview>${escapeHtml(previewText)}</mj-preview>`);
@@ -386,7 +408,7 @@ export function documentToMjml(doc: PigeonDocument, options?: DocumentToMjmlOpti
   const head = renderHead(doc, resolved);
   const rows = doc.body.rows.map((row) => renderRow(row)).join('\n');
 
-  return `<mjml>
+  return `<mjml${renderRootAttrs(doc)}>
 ${head}
   <mj-body ${bodyAttrs.join(' ')}>
 ${rows}
