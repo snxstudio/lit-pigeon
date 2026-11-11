@@ -8,19 +8,28 @@ import type { ParseWarning, MjmlNode } from '../mjml-to-document.js';
 /**
  * Parses an mj-section element into a RowNode.
  */
-export function parseSection(sectionNode: MjmlNode, warnings: ParseWarning[]): RowNode {
+export function parseSection(
+  sectionNode: MjmlNode,
+  warnings: ParseWarning[],
+  bodyWidth: number,
+): RowNode {
   const attrs = sectionNode.attrs;
 
   const columns: ColumnNode[] = [];
+  // Kept alongside `columns` so the ratios can be read off the source widths,
+  // which the ColumnNode does not carry.
+  const columnNodes: MjmlNode[] = [];
 
   for (const child of sectionNode.children) {
     if (child.tag === 'mj-column') {
       columns.push(parseColumn(child, warnings));
+      columnNodes.push(child);
     } else if (child.tag === 'mj-group') {
       // mj-group contains columns
       for (const groupChild of child.children) {
         if (groupChild.tag === 'mj-column') {
           columns.push(parseColumn(groupChild, warnings));
+          columnNodes.push(groupChild);
         }
       }
     } else {
@@ -44,8 +53,9 @@ export function parseSection(sectionNode: MjmlNode, warnings: ParseWarning[]): R
     });
   }
 
-  // Calculate column ratios from widths
-  const columnRatios = calculateColumnRatios(columns, sectionNode);
+  const columnRatios = columnNodes.length
+    ? calculateColumnRatios(columnNodes, bodyWidth, warnings)
+    : [12];
 
   const fullWidthAttr = getAttr(attrs, 'full-width');
   const isFullWidth = fullWidthAttr === 'full-width';
@@ -67,12 +77,62 @@ export function parseSection(sectionNode: MjmlNode, warnings: ParseWarning[]): R
 }
 
 /**
- * Calculate column ratios from column width percentages.
- * Defaults to equal widths if not specified.
+ * Resolves a single `mj-column` width to a percentage of the section's content
+ * width, or undefined when the column does not declare one.
+ *
+ * MJML accepts a percentage or a pixel length; a bare number is pixels. Pixel
+ * widths are taken against the body width so they can be compared with
+ * percentages in the same section.
  */
-function calculateColumnRatios(columns: ColumnNode[], _sectionNode: MjmlNode): number[] {
-  // For now, distribute evenly based on column count
-  const count = columns.length;
-  const ratio = Math.floor(12 / count);
-  return columns.map(() => ratio);
+function widthPercent(node: MjmlNode, bodyWidth: number): number | undefined {
+  const raw = node.attrs['width']?.trim();
+  if (!raw) return undefined;
+
+  const value = parseFloat(raw);
+  if (isNaN(value) || value <= 0) return undefined;
+
+  return raw.endsWith('%') ? value : (value / bodyWidth) * 100;
+}
+
+/**
+ * Derives a row's column ratios from the source `mj-column` widths.
+ *
+ * Ratios are a fraction of a 12-column grid, so each width is scaled onto that
+ * grid and rounded. Unlike `cellsToRatios` in `@lit-pigeon/import-unlayer`,
+ * the result is deliberately not forced to sum to 12: five equal columns are
+ * `[2, 2, 2, 2, 2]`, not `[4, 2, 2, 2, 2]`. The renderer normalises by the
+ * total, so proportionality is what matters, and forcing the sum would widen
+ * one column of an even split by a third.
+ */
+function calculateColumnRatios(
+  columnNodes: MjmlNode[],
+  bodyWidth: number,
+  warnings: ParseWarning[],
+): number[] {
+  const declared = columnNodes.map((node) => widthPercent(node, bodyWidth));
+
+  // No column states a width: MJML splits the section evenly, and so did every
+  // document written before widths were read. Keep that result exactly.
+  if (declared.every((pct) => pct === undefined)) {
+    const ratio = Math.floor(12 / declared.length);
+    return declared.map(() => ratio);
+  }
+
+  const claimed = declared.reduce<number>((sum, pct) => sum + (pct ?? 0), 0);
+  if (claimed > 101) {
+    warnings.push({
+      message: `Column widths total ${Math.round(claimed)}% of the body width; they were scaled to fit`,
+      tag: 'mj-section',
+    });
+  }
+
+  // MJML gives the columns that state no width an equal share of what is left.
+  const implicit = declared.filter((pct) => pct === undefined).length;
+  const remainder = Math.max(0, 100 - claimed);
+  const widths = declared.map((pct) => pct ?? remainder / implicit);
+
+  const total = widths.reduce((a, b) => a + b, 0);
+  // A column too thin to register on the grid still gets one twelfth: losing it
+  // entirely would be a worse answer than showing it narrow.
+  return widths.map((w) => Math.max(1, Math.round((w * 12) / total)));
 }

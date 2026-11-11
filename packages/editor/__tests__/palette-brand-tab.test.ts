@@ -18,6 +18,23 @@ async function mount(doc: PigeonDocument, brandKit: BrandKit | null) {
   return el;
 }
 
+/**
+ * The brand tab is dynamically imported when the tab is first activated, and
+ * nothing outside the component exposes that promise. Poll for the element
+ * instead of guessing how long the import takes: this returns as soon as it
+ * lands, and stays patient when the machine is loaded and a fixed wait would
+ * have expired first.
+ */
+async function waitForBrandTab(el: PigeonPalette): Promise<Element | null> {
+  for (let attempt = 0; attempt < 200; attempt++) {
+    await el.updateComplete;
+    const found = el.shadowRoot!.querySelector('pigeon-brand-tab');
+    if (found) return found;
+    await new Promise((r) => setTimeout(r, 10));
+  }
+  return null;
+}
+
 describe('pigeon-palette brand tab', () => {
   afterEach(() => { document.body.innerHTML = ''; });
 
@@ -34,10 +51,7 @@ describe('pigeon-palette brand tab', () => {
   it('renders pigeon-brand-tab when the Brand tab is selected', async () => {
     const el = await mount(createDefaultDocument(), KIT);
     (el.shadowRoot!.querySelector('#pigeon-tab-brand') as HTMLButtonElement).click();
-    // Brand tab is dynamically imported on first activation — let macrotasks settle.
-    await new Promise((r) => setTimeout(r, 50));
-    await el.updateComplete;
-    expect(el.shadowRoot!.querySelector('pigeon-brand-tab')).toBeTruthy();
+    expect(await waitForBrandTab(el)).toBeTruthy();
   });
 
   it('does not render pigeon-brand-tab before the Brand tab is selected', async () => {
@@ -48,10 +62,7 @@ describe('pigeon-palette brand tab', () => {
   it('falls back to the Content tab when brandKit becomes null while Brand is active', async () => {
     const el = await mount(createDefaultDocument(), KIT);
     (el.shadowRoot!.querySelector('#pigeon-tab-brand') as HTMLButtonElement).click();
-    // Brand tab is dynamically imported on first activation — let macrotasks settle.
-    await new Promise((r) => setTimeout(r, 50));
-    await el.updateComplete;
-    expect(el.shadowRoot!.querySelector('pigeon-brand-tab')).toBeTruthy();
+    expect(await waitForBrandTab(el)).toBeTruthy();
     el.brandKit = null;
     await el.updateComplete;
     await el.updateComplete; // allow the updated() re-render to flush

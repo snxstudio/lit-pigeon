@@ -42,9 +42,9 @@ describe('load and save: MJML round trip', () => {
     expect(document.metadata.previewText).toBe('Preview line');
     expect(document.body.attributes.width).toBe(640);
     expect(document.body.attributes.css).toBe('.brand { color: #0055ff; }');
-    // Column widths are not read: every column gets an equal share.
+    // The 30%/70% widths in the source are read onto the 12-column grid.
     expect(shape(document)).toEqual([
-      { ratios: [6, 6], condition: undefined, blocks: [['text'], ['image']] },
+      { ratios: [4, 8], condition: undefined, blocks: [['text'], ['image']] },
       { ratios: [12], condition: 'user.vip', blocks: [['divider']] },
     ]);
     expect(document.body.rows[0].attributes.cssClass).toBe('hero');
@@ -76,12 +76,12 @@ describe('load and save: MJML round trip', () => {
     expect(second.mjml).toBe(first.mjml);
   });
 
-  it('loses column widths set in the editor on the next open', async () => {
+  it('keeps column widths set in the editor on the next open', async () => {
     const doc = createDefaultDocument();
     doc.body.rows.push(createRow([createColumn([createBlock('text')]), createColumn([createBlock('text')])], [4, 8]));
     const saved = await saveTemplate(doc);
     expect(saved.mjml).toContain('width="33.33%"');
-    expect(openTemplate(saved).document.body.rows[0].columnRatios).toEqual([6, 6]);
+    expect(openTemplate(saved).document.body.rows[0].columnRatios).toEqual([4, 8]);
   });
 
   it('regenerates ids and drops locked on every open', async () => {
