@@ -119,6 +119,47 @@ describe('device visibility in the properties panel', () => {
     expect(block().hideOnMobile).toBeUndefined();
   });
 
+  it('toggles a row flag, badging and hiding the whole row', async () => {
+    const { doc, row } = makeDoc();
+    const editor = await mount(doc);
+    $(editor, 'pigeon-properties').dispatchEvent(new CustomEvent('row-select', { detail: { rowId: row.id }, bubbles: true, composed: true }));
+    await settle(editor);
+
+    expect(toggle(editor, 'Hide on mobile').checked).toBe(true);
+    const attrs = () => editor.getDocument().body.rows[0].attributes as { hideOnMobile?: boolean };
+    expect(attrs().hideOnMobile).toBe(true);
+
+    await settle(editor);
+    const wrapper = () => rowEl(editor).shadowRoot!.querySelector('.row-wrapper') as HTMLElement;
+    expect(wrapper().querySelector('.visibility-badge')!.textContent).toContain('Hidden on mobile');
+    expect(wrapper().classList.contains('device-hidden')).toBe(false);
+
+    setDevice(editor, 'mobile');
+    await settle(editor);
+    expect(wrapper().classList.contains('device-hidden')).toBe(true);
+
+    editor.undo();
+    expect(attrs().hideOnMobile).toBeUndefined();
+  });
+
+  it('refuses the change on a locked row, in the panel and at the command layer', async () => {
+    const { doc, row } = makeDoc();
+    doc.body.rows[0].locked = true;
+    const editor = await mount(doc);
+    $(editor, 'pigeon-properties').dispatchEvent(new CustomEvent('row-select', { detail: { rowId: row.id }, bubbles: true, composed: true }));
+    await settle(editor);
+
+    // The panel puts the toggles behind the lock guard's inert wrapper.
+    expect($(editor, 'pigeon-properties').shadowRoot!.querySelector('.locked[inert] .visibility')).not.toBeNull();
+
+    // A caller bypassing the UI is refused too — locking lives in the command.
+    $(editor, 'pigeon-properties').dispatchEvent(
+      new CustomEvent('row-property-change', { detail: { rowId: row.id, attributes: { hideOnMobile: true } }, bubbles: true, composed: true }),
+    );
+    await settle(editor);
+    expect(editor.getDocument().body.rows[0].attributes.hideOnMobile).toBeUndefined();
+  });
+
   it('toggles a column flag', async () => {
     const { doc, row, hiddenColumn } = makeDoc();
     const editor = await mount(doc);

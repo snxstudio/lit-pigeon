@@ -64,6 +64,7 @@ export function parseSection(
     id: generateId(),
     type: 'row',
     attributes: {
+      ...sectionNode.visibility,
       backgroundColor: getAttr(attrs, 'background-color') || undefined,
       ...backgroundAttributes(attrs, warnings),
       padding: parseSpacing(getAttr(attrs, 'padding'), 0),
