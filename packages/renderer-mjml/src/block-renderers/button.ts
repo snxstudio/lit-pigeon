@@ -1,5 +1,6 @@
 import type { ButtonBlock } from '@lit-pigeon/core';
 import { spacingToMjml } from '../utils/spacing.js';
+import { borderToMjml } from '../utils/border.js';
 
 /**
  * Renders a ButtonBlock to an MJML <mj-button> element.
@@ -11,6 +12,7 @@ export function renderButtonBlock(block: ButtonBlock): string {
     backgroundColor,
     textColor,
     borderRadius,
+    border,
     padding,
     innerPadding,
     fontSize,
@@ -31,6 +33,13 @@ export function renderButtonBlock(block: ButtonBlock): string {
     `font-weight="${fontWeight}"`,
     `align="${alignment}"`,
   ];
+
+  // Left off entirely when absent so borderless buttons keep MJML's own
+  // `border: none` default rather than gaining an explicit one.
+  const borderValue = border && borderToMjml(border);
+  if (borderValue) {
+    attrs.push(`border="${escapeAttr(borderValue)}"`);
+  }
 
   if (fullWidth) {
     attrs.push('width="100%"');

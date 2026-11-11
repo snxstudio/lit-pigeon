@@ -154,7 +154,8 @@ const settings: Array<[string, boolean, string]> = [
   ],
   ['Mobile overrides (<code>_override</code>)', false, 'Not carried over'],
   ['Hide on desktop / mobile', false, 'Not carried over'],
-  ['Block font weight, button borders and hover colours, body link styles', false, 'Not carried over'],
+  ['Button font weight and border', true, 'Button block values'],
+  ['Button hover colours, body link styles', false, 'Not carried over'],
 ];
 
 document.getElementById('coverage-settings')!.innerHTML = settings

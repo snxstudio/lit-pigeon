@@ -6,6 +6,17 @@ export interface Spacing {
 }
 
 /**
+ * A border applied to all four sides. Structured here and serialised to the
+ * CSS shorthand at the MJML boundary, the same way {@link Spacing} is.
+ * Per-side borders are deliberately not modelled until something needs them.
+ */
+export interface Border {
+  width: number;
+  style: 'solid' | 'dashed' | 'dotted';
+  color: string;
+}
+
+/**
  * Hides a block or column at one breakpoint. Rendered as an MJML `css-class`
  * (`pigeon-hide-mobile` / `pigeon-hide-desktop`) plus a media query.
  */
@@ -65,6 +76,8 @@ export interface ButtonBlock {
     backgroundColor: string;
     textColor: string;
     borderRadius: number;
+    /** Omitted for a borderless button; MJML's own default is `border: none`. */
+    border?: Border;
     padding: Spacing;
     innerPadding: Spacing;
     fontSize: number;
