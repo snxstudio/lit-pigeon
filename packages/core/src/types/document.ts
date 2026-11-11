@@ -6,6 +6,28 @@ export interface Spacing {
 }
 
 /**
+ * A border applied to all four sides. Structured here and serialised to the
+ * CSS shorthand at the MJML boundary, the same way {@link Spacing} is.
+ * Per-side borders are deliberately not modelled until something needs them.
+ */
+export interface Border {
+  width: number;
+  style: 'solid' | 'dashed' | 'dotted';
+  color: string;
+}
+
+/**
+ * Document-level link styling. A brand setting rather than a per-link
+ * decision, so it lives on the body and is rendered as one `<mj-style>` rule
+ * targeting `a`. Each part is optional; whatever is unset stays at the
+ * client's default.
+ */
+export interface LinkStyle {
+  color?: string;
+  underline?: boolean;
+}
+
+/**
  * Hides a block or column at one breakpoint. Rendered as an MJML `css-class`
  * (`pigeon-hide-mobile` / `pigeon-hide-desktop`) plus a media query.
  */
@@ -65,6 +87,8 @@ export interface ButtonBlock {
     backgroundColor: string;
     textColor: string;
     borderRadius: number;
+    /** Omitted for a borderless button; MJML's own default is `border: none`. */
+    border?: Border;
     padding: Spacing;
     innerPadding: Spacing;
     fontSize: number;
@@ -218,9 +242,18 @@ export interface ColumnNode {
 export interface RowNode {
   id: string;
   type: 'row';
-  attributes: {
+  attributes: DeviceVisibility & {
     backgroundColor?: string;
     backgroundImage?: string;
+    /**
+     * MJML `background-repeat` for {@link backgroundImage}. Absent means the
+     * legacy `no-repeat`; see {@link resolveRowBackground}.
+     */
+    backgroundRepeat?: 'repeat' | 'no-repeat';
+    /** MJML `background-size`: `cover`, `contain`, `auto` or a CSS length. */
+    backgroundSize?: string;
+    /** MJML `background-position`, e.g. `top center`. */
+    backgroundPosition?: string;
     padding: Spacing;
     fullWidth: boolean;
     /**
@@ -265,6 +298,23 @@ export interface PigeonDocument {
       backgroundColor: string;
       fontFamily: string;
       contentAlignment: 'center' | 'left';
+      /**
+       * Link colour and underline for the whole document. Omitted, or with a
+       * part omitted, links fall back to whatever each client defaults to —
+       * blue and underlined in most, purple once visited in some.
+       */
+      linkStyle?: LinkStyle;
+      /**
+       * BCP 47 tag, e.g. `"en"`, `"pt-BR"`. Written out as `lang` on `<mjml>`,
+       * which MJML copies onto `<html>` and the `role="article"` wrapper.
+       * Left unset, the output keeps MJML's own `lang="und"`.
+       */
+      language?: string;
+      /**
+       * Written out as `dir` on `<mjml>`. Defaults to the natural direction of
+       * `language`, so it only needs setting to override that.
+       */
+      direction?: 'ltr' | 'rtl';
       /** Document-level CSS, written out as a non-inline `<mj-style>`. */
       css?: string;
     };

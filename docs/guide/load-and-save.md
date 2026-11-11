@@ -118,12 +118,12 @@ Silently:
 
 | Input | What happens |
 |---|---|
-| `mj-column` `width` | Rounded to the nearest twelfth of the 12-column grid, so a 30%/70% layout opens as 4:8 and saves back as 33.33%/66.67%. |
+| `mj-column` `width` | Rounded to the nearest twelfth of the 12-column grid, so a 30%/70% layout opens as 4:8 and saves back as 33.33%/66.67%. Widths that overflow the body warn and are scaled to fit. |
 | `mj-font` | Dropped. Register fonts with `config.fontConfig` and pass them to `documentToMjml` and `render`. |
-| `mj-title`, `mj-breakpoint`, `mj-html-attributes` | Dropped. |
+| `mj-breakpoint`, `mj-html-attributes` | Dropped. |
 | `<mj-style inline="inline">` | Dropped, so its rules are no longer inlined into the HTML. Move them to a non-inline `mj-style` or into the content. |
 | Attributes the document model has no field for (for example section borders, image height, button width) | Dropped. The fields each block keeps are listed in [`packages/core/src/types/document.ts`](../../packages/core/src/types/document.ts). |
-| `metadata.name` | Always `'Imported Template'`. Keep the template's name in your own record. |
+| `metadata.name` | Read from `mj-title`, falling back to `'Imported Template'` when the source has none. |
 | Ids | New ids are generated on every open, so ids are not stable across loads. |
 | `RowNode.locked` | Always `false`. |
 | Custom blocks | Their `renderMjml` output is plain MJML, so it opens as built-in blocks (or is dropped). See [Custom blocks](./custom-blocks.md). |

@@ -97,6 +97,17 @@ export interface EditorConfig {
    * (`SYSTEM_LINK_TYPES`). The host/SSR resolves any `{{…}}` templates at send.
    */
   linkTypes?: LinkType[];
+  /**
+   * Block types this editor offers, in palette order. Unset means every
+   * registered block, which is the default. A type nobody registered is
+   * ignored.
+   *
+   * The restriction is enforced in the `insertBlock` command, not just in the
+   * palette, so the keyboard, the MCP server and the REST handler are held to
+   * it too. It gates insertion only — a document that already contains an
+   * omitted type still renders.
+   */
+  blocks?: string[];
   /** Active locale code (e.g. 'fr', 'ar'). Defaults to 'en'. */
   locale?: string;
   /** Host-supplied per-locale catalogs, merged over the built-in `en` baseline. */

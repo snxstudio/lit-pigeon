@@ -1,7 +1,8 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
-import type { PigeonDocument, MergeTag, BrandColor, FontDefinition } from '@lit-pigeon/core';
+import type { PigeonDocument, MergeTag, BrandColor, FontDefinition, LinkStyle } from '@lit-pigeon/core';
+import { resolveDirection } from '@lit-pigeon/core';
 import { panelStyles } from './panel-styles.js';
 import '../controls/color-picker.js';
 import '../controls/font-picker.js';
@@ -152,6 +153,54 @@ export class PigeonBodyPanel extends LitElement {
         </div>
       </div>
 
+      <pigeon-color-picker
+        label=${t('panel.body.linkColor')}
+        .value=${a.linkStyle?.color ?? ''}
+        .swatches=${this.swatches}
+        @color-change=${this._onLinkColorChange}
+      ></pigeon-color-picker>
+
+      <div class="toggle-row">
+        <span class="toggle-label">${t('panel.body.linkUnderline')}</span>
+        <label class="toggle">
+          <input
+            type="checkbox"
+            .checked=${a.linkStyle?.underline ?? false}
+            @change=${this._onLinkUnderlineChange}
+          />
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+
+      <div class="field">
+        <label>${t('panel.body.language')}</label>
+        <input
+          type="text"
+          .value=${a.language ?? ''}
+          placeholder=${t('panel.body.languagePlaceholder')}
+          @change=${this._onLanguageChange}
+        />
+      </div>
+
+      <div class="field">
+        <label>${t('panel.body.textDirection')}</label>
+        <div class="alignment-buttons">
+          <button
+            class="${a.direction === undefined ? 'active' : ''}"
+            title=${t(`panel.body.direction${resolveDirection(a.language) === 'rtl' ? 'Rtl' : 'Ltr'}`)}
+            @click=${() => this._onDirectionChange(undefined)}
+          >${t('panel.body.directionAuto')}</button>
+          <button
+            class="${a.direction === 'ltr' ? 'active' : ''}"
+            @click=${() => this._onDirectionChange('ltr')}
+          >${t('panel.body.directionLtr')}</button>
+          <button
+            class="${a.direction === 'rtl' ? 'active' : ''}"
+            @click=${() => this._onDirectionChange('rtl')}
+          >${t('panel.body.directionRtl')}</button>
+        </div>
+      </div>
+
       <div class="field">
         <label>${t('panel.body.emailName')}</label>
         <input
@@ -241,8 +290,38 @@ export class PigeonBodyPanel extends LitElement {
     this._emit({ attribute: 'fontFamily', value: e.detail.value });
   }
 
+  /**
+   * Each part of `linkStyle` is set on its own, and clearing the colour drops
+   * the whole field when nothing else is set — so a document that never had a
+   * link style renders exactly as it did before anyone opened this panel.
+   */
+  private _onLinkColorChange(e: CustomEvent<{ value: string }>) {
+    this._emitLinkStyle({ color: e.detail.value || undefined });
+  }
+
+  private _onLinkUnderlineChange(e: Event) {
+    this._emitLinkStyle({ underline: (e.target as HTMLInputElement).checked });
+  }
+
+  private _emitLinkStyle(patch: LinkStyle) {
+    const next: LinkStyle = { ...this.doc.body.attributes.linkStyle, ...patch };
+    if (next.color === undefined) delete next.color;
+    this._emit({
+      attribute: 'linkStyle',
+      value: Object.keys(next).length ? next : undefined,
+    });
+  }
+
   private _onAlignChange(align: 'left' | 'center') {
     this._emit({ attribute: 'contentAlignment', value: align });
+  }
+
+  private _onLanguageChange(e: Event) {
+    this._emit({ attribute: 'language', value: (e.target as HTMLInputElement).value.trim() || undefined });
+  }
+
+  private _onDirectionChange(dir: 'ltr' | 'rtl' | undefined) {
+    this._emit({ attribute: 'direction', value: dir });
   }
 
   private _onNameChange(e: Event) {

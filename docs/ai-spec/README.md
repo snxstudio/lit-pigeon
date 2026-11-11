@@ -20,7 +20,7 @@ PigeonDocument
 ├── version: "1.0"
 ├── metadata: { name, previewText, createdAt, updatedAt }
 └── body
-    ├── attributes: { width, backgroundColor, fontFamily, contentAlignment }
+    ├── attributes: { width, backgroundColor, fontFamily, contentAlignment, linkStyle? }
     └── rows: Row[]
         └── columns: Column[]              ← columnRatios sum to 12
             └── blocks: Block[]            ← typed content (text/image/button/…)
@@ -34,7 +34,7 @@ Layout uses a 12-column grid per row. The renderer converts this to MJML, which 
 |---|---|---|
 | `text` | Rich text paragraph with inline HTML | `content`, `padding`, `lineHeight`, `textAlign` |
 | `image` | Single image with optional link | `src`, `alt`, `width`, `padding`, `alignment` |
-| `button` | Call-to-action button | `content`, `href`, `backgroundColor`, `textColor`, `borderRadius`, `padding`, `innerPadding`, `fontSize`, `fontWeight`, `alignment`, `fullWidth` |
+| `button` | Call-to-action button | `content`, `href`, `backgroundColor`, `textColor`, `borderRadius`, `padding`, `innerPadding`, `fontSize`, `fontWeight`, `alignment`, `fullWidth` (optional `border`, for outline buttons) |
 | `divider` | Horizontal rule | `borderColor`, `borderWidth`, `borderStyle`, `padding`, `width` |
 | `spacer` | Vertical whitespace | `height` |
 | `social` | Social-network icon row | `icons`, `iconSize`, `spacing`, `alignment`, `padding` |
