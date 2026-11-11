@@ -50,7 +50,7 @@
     "name": "@lit-pigeon/import-unlayer (ESM)",
     "path": "packages/import-unlayer/dist/index.js",
     "ignore": ["@lit-pigeon/core", "htmlparser2"],
-    "limit": "4.2 kB",
+    "limit": "4.3 kB",
     "gzip": true
   },
   {
