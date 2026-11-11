@@ -1,5 +1,31 @@
 # @lit-pigeon/react
 
+## 0.1.7
+
+### Patch Changes
+
+- Updated dependencies [c9b2881]
+- Updated dependencies [c532903]
+- Updated dependencies [9d63a2a]
+- Updated dependencies [706526a]
+- Updated dependencies [e2f6771]
+- Updated dependencies [cb51c66]
+- Updated dependencies [dbe6173]
+- Updated dependencies [33a9939]
+- Updated dependencies [59ea2d5]
+- Updated dependencies [bc942fc]
+- Updated dependencies [ee2d70d]
+- Updated dependencies [d8062d1]
+- Updated dependencies [a8b808c]
+- Updated dependencies [11e5465]
+- Updated dependencies [0616ae2]
+- Updated dependencies [6c35111]
+- Updated dependencies [519cec3]
+- Updated dependencies [e0b4b49]
+- Updated dependencies [3448501]
+  - @lit-pigeon/core@0.4.0
+  - @lit-pigeon/editor@0.4.0
+
 ## 0.1.6
 
 ### Patch Changes

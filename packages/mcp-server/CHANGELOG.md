@@ -1,5 +1,47 @@
 # @lit-pigeon/mcp-server
 
+## 0.3.0
+
+### Minor Changes
+
+- c9b2881: Let a host choose which blocks the editor offers, with `EditorConfig.blocks`.
+
+  The palette rendered every registered block unconditionally, so an embedder who needed a subset — a platform that cannot host arbitrary markup and must remove the `html` block, a transactional product that wants text, image and button only — had to fork the palette component.
+
+  ```ts
+  editor.config = { blocks: ['text', 'image', 'button'] };
+  ```
+
+  The list sets both membership and palette order. Unset means every registered block, which is the default, and a listed type nobody registered is skipped.
+
+  The restriction is enforced in the `insertBlock` command rather than by hiding the palette chip, so the keyboard and paste paths are held to it too — a chip is only one of the routes into insertion. `DocumentStore.addBlock` in `@lit-pigeon/mcp-server` mutates the document directly instead of going through commands, so it checks availability itself and throws for an unavailable type.
+
+  Availability gates insertion, not rendering: a document that already contains an omitted type still renders, so narrowing the palette never blanks a saved template.
+
+  Like `locale`, the setting is global to the page — the last editor to apply it wins for every instance.
+
+### Patch Changes
+
+- Updated dependencies [c9b2881]
+- Updated dependencies [c532903]
+- Updated dependencies [9d63a2a]
+- Updated dependencies [e2f6771]
+- Updated dependencies [cb51c66]
+- Updated dependencies [dbe6173]
+- Updated dependencies [33a9939]
+- Updated dependencies [ee2d70d]
+- Updated dependencies [76d5b0c]
+- Updated dependencies [a8b808c]
+- Updated dependencies [0cc4966]
+- Updated dependencies [11e5465]
+- Updated dependencies [6c35111]
+- Updated dependencies [519cec3]
+- Updated dependencies [e0b4b49]
+- Updated dependencies [3448501]
+  - @lit-pigeon/core@0.4.0
+  - @lit-pigeon/renderer-mjml@0.3.0
+  - @lit-pigeon/figma-import@0.1.6
+
 ## 0.2.2
 
 ### Patch Changes
