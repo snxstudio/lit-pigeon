@@ -161,6 +161,21 @@ describe('block conversion', () => {
     });
   });
 
+  it.each([
+    ['a keyword weight', { fontWeight: 'normal' }, 'normal'],
+    ['a numeric weight', { fontWeight: 400 }, '400'],
+    ['a numeric weight written as a string', { fontWeight: '700' }, '700'],
+    ['no weight at all', {}, '600'],
+    ['an empty weight', { fontWeight: '' }, '600'],
+  ])('reads the button font weight from a design with %s', (_name, values, expected) => {
+    const { document } = unlayerToDocument(
+      design([row([{ type: 'button', values: { text: 'Buy', ...values } }])]),
+    );
+    expect(document.body.rows[0].columns[0].blocks[0].values).toMatchObject({
+      fontWeight: expected,
+    });
+  });
+
   it('converts a divider', () => {
     const { document } = unlayerToDocument(
       design([
