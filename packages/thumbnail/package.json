@@ -1,0 +1,67 @@
+{
+  "name": "@lit-pigeon/thumbnail",
+  "version": "0.0.0",
+  "description": "Rasterise a Lit Pigeon document to a preview image with a headless browser — optional, server-side, never bundled into the editor.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@lit-pigeon/core": "workspace:^",
+    "@lit-pigeon/ssr": "workspace:^"
+  },
+  "peerDependencies": {
+    "playwright-core": ">=1.40.0"
+  },
+  "peerDependenciesMeta": {
+    "playwright-core": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "playwright-core": "^1.63.0",
+    "typescript": "^5.5.0",
+    "vitest": "^3.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/snxstudio/lit-pigeon.git",
+    "directory": "packages/thumbnail"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/snxstudio/lit-pigeon/tree/main/packages/thumbnail#readme",
+  "bugs": "https://github.com/snxstudio/lit-pigeon/issues",
+  "author": "Lit Pigeon Contributors",
+  "keywords": [
+    "email",
+    "email-template",
+    "email-editor",
+    "mjml",
+    "html-email",
+    "thumbnail",
+    "screenshot",
+    "preview"
+  ]
+}
