@@ -594,7 +594,7 @@ lit-pigeon/
   pnpm-workspace.yaml
   turbo.json           # Turborepo build pipeline
   tsconfig.base.json   # Shared TypeScript config
-  vitest.workspace.ts  # Test workspace config
+  vitest.config.ts     # Test workspace config
 ```
 
 ---

@@ -1,0 +1,23 @@
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    projects: [
+      'packages/core',
+      'packages/renderer-mjml',
+      'packages/parser-mjml',
+      'packages/import-unlayer',
+      'packages/editor',
+      'packages/ssr',
+      'packages/rest',
+      'packages/blocks',
+      'packages/lint',
+      'packages/figma-import',
+      'packages/mcp-server',
+      'packages/thumbnail',
+      'packages/svelte',
+      'packages/vue',
+      'docs/guide/examples',
+    ],
+  },
+});

@@ -10,3 +10,6 @@
 // registration race without changing production code-splitting.
 import '../src/rich-text/ui/bubble.js';
 import '../src/rich-text/ui/format-panel.js';
+
+// happy-dom has no window.prompt, and vi.spyOn only wraps an existing function.
+window.prompt = () => null;

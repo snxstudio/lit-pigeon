@@ -31,13 +31,13 @@
     "@lit-pigeon/core": "workspace:^",
     "@lit-pigeon/figma-import": "workspace:^",
     "@lit-pigeon/renderer-mjml": "workspace:^",
-    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@modelcontextprotocol/sdk": "^1.32.0",
     "zod": "^3.23.0"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",
     "typescript": "^5.5.0",
-    "vitest": "^3.0.0"
+    "vitest": "^4.1.12"
   },
   "publishConfig": {
     "access": "public"
