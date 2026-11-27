@@ -109,7 +109,23 @@ function socialName(type: string): string {
   return type[0].toUpperCase() + type.slice(1);
 }
 
+/**
+ * Wraps `body` in a template-engine block, matching what the MJML renderer
+ * emits as `mj-raw` so both MIME parts are substituted identically. An empty
+ * body gets no wrapper — a bare `{{#if}}{{/if}}` is noise in the text part.
+ */
+function wrap(body: string, tag: 'if' | 'each', expr: string | undefined): string {
+  const trimmed = expr?.trim();
+  return trimmed && body ? `{{#${tag} ${trimmed}}}\n${body}\n{{/${tag}}}` : body;
+}
+
 function blockToText(block: ContentBlock): string {
+  // The renderer wraps each block in its own condition; without this the text
+  // part delivers content the sender marked conditional to every recipient.
+  return wrap(blockBodyToText(block), 'if', block.values.condition);
+}
+
+function blockBodyToText(block: ContentBlock): string {
   switch (block.type) {
     case 'text':
     case 'html':
@@ -140,16 +156,19 @@ function rowToText(row: RowNode): string {
     .flatMap((column) => column.blocks.map(blockToText))
     .filter(Boolean)
     .join('\n\n');
-  const expr = row.attributes.condition?.trim();
-  return expr && body ? `{{#if ${expr}}}\n${body}\n{{/if}}` : body;
+  // Same nesting as renderRow: the condition wraps the repeat, not the other
+  // way round, so a conditional itemised row is substituted identically in
+  // both parts.
+  return wrap(wrap(body, 'each', row.attributes.repeat), 'if', row.attributes.condition);
 }
 
 /**
  * Converts a PigeonDocument into the `text/plain` alternative part of a
  * multipart email. Blocks are separated by a blank line; images fall back to
  * their alt text, buttons render as `label: url` and dividers as a rule.
- * Merge tags and row conditions are kept verbatim so the sending platform
- * substitutes them exactly as it does in the HTML part.
+ * Merge tags are kept verbatim, and row conditions, block conditions and row
+ * repeats are emitted as the same `{{#if}}` / `{{#each}}` wrappers the MJML
+ * renderer writes, so the sending platform substitutes both parts alike.
  */
 export function documentToPlainText(doc: PigeonDocument): string {
   const text = doc.body.rows.map(rowToText).filter(Boolean).join('\n\n');

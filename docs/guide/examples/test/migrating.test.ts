@@ -28,13 +28,25 @@ describe('migrating from Unlayer', () => {
           {
             cells: [1],
             values: { displayCondition: { label: 'VIP only', before: '{% if vip %}', after: '{% endif %}' } },
-            columns: [{ contents: [{ type: 'video', values: {} }, { type: 'custom#product', values: {} }] }],
+            columns: [{ contents: [{ type: 'form', values: {} }, { type: 'custom#product', values: {} }] }],
           },
         ],
       },
     };
     const [{ warnings }] = await migrateUnlayerDesigns([{ id: 't2', name: 'x', design }]);
     expect(warnings.map((w) => w.code)).toEqual(['display-condition-dropped', 'unsupported-block', 'custom-tool']);
+  });
+
+  it('converts a video, warning that the block catalog is not registered', async () => {
+    const design = {
+      body: {
+        values: {},
+        rows: [{ cells: [1], columns: [{ contents: [{ type: 'video', values: { videoUrl: 'https://youtu.be/a' } }] }] }],
+      },
+    };
+    const [{ document, warnings }] = await migrateUnlayerDesigns([{ id: 't3', name: 'x', design }]);
+    expect(document.body.rows[0].columns[0].blocks[0].type).toBe('video');
+    expect(warnings.map((w) => w.code)).toEqual(['plugin-block']);
   });
 
   it('maps merge tags, including groups', () => {
@@ -58,15 +70,12 @@ describe('migrating from GrapesJS (grapesjs-mjml)', () => {
     <mj-section><mj-column><mj-text>Only</mj-text></mj-column></mj-section>
   </mj-body></mjml>`;
 
-  it('imports and restores column widths the parser ignores', () => {
-    const { document, warnings, columnNotes } = importGrapesJsMjml(mjml, 'Newsletter');
+  it('imports the column widths the source declares', () => {
+    const { document, warnings } = importGrapesJsMjml(mjml, 'Newsletter');
     expect(warnings).toEqual([]);
     expect(document.metadata.name).toBe('Newsletter');
+    // 30%/70% in the first section, 200px/auto of a 600px body in the third.
     expect(document.body.rows.map((r) => r.columnRatios)).toEqual([[4, 8], [12], [4, 8], [12]]);
-    expect(columnNotes).toEqual([
-      'row 1: columns 30% / 70% → 4:8 of 12',
-      'row 3: columns 200px / auto → 4:8 of 12',
-    ]);
     expect(documentToMjml(document)).toContain('width="33.33%"');
   });
 });

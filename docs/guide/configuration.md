@@ -45,6 +45,8 @@ export function createEditorConfig(getToken: TokenGetter, assetStorage: AssetSto
       { name: 'Inter', family: 'Inter, Arial, sans-serif', url: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;700' },
     ],
     rowLibrary: new InMemoryRowLibraryStorage(),
+    // The palette offers these, in this order. Omit the field for all of them.
+    blocks: ['text', 'image', 'button', 'divider', 'spacer'],
     linkTypes: [{ id: 'preferences', label: 'Email preferences', href: '{{preferences_url}}' }],
     locale: 'fr',
     messages: { fr: { 'toolbar.preview': 'Aperçu', 'toolbar.export': 'Exporter' } },
@@ -68,6 +70,7 @@ object takes effect on the next render.
 | `brandKit` | `BrandKit \| BrandKitStorage` | None: no Brand tab | When `config` changes | A kit is used directly. A storage is detected by its `list()` method; the first kit it returns becomes active, and edits made in the Brand tab are written back with `save()`. |
 | `fontConfig` | `FontDefinition[]` (`{ name, family, url? }`) | `[]` | Live | Fonts added to the font pickers. Fonts with a `url` are emitted as `<mj-font>` by `exportMjml()`, `exportHtml()` and the preview. |
 | `rowLibrary` | `RowLibraryStorage` | An in-memory store, per element | Live | Persistence for the palette's Saved tab (rows saved with a row's save action). |
+| `blocks` | `string[]` | Unset: every registered block | When the element connects and when `config` changes | Block types offered by the palette, in the order given; a type nobody registered is skipped. Enforced in the `insertBlock` command, so the keyboard and paste paths honour it too, and it gates insertion only — a document that already contains an omitted type still renders. As with `locale`, the setting is global to the page: the last editor to apply it wins for every editor instance. |
 | `linkTypes` | `LinkType[]` (`{ id, label, href?, prompt? }`) | `[]` | Live | Extra entries for the link picker and the button panel, after the built-in Unsubscribe (`{{unsubscribe_url}}`), View in browser (`{{view_in_browser_url}}`), Email address and Phone number. |
 | `locale` | `string` | `'en'` | When the element connects and when `config` changes | Active UI locale. The setting is global to the page: the last editor to apply it wins for every editor instance. |
 | `messages` | `Record<string, Record<string, string>>` | English only | As `locale` | Per-locale catalogues, merged over the built-in English strings. Missing keys fall back to English, then to the key itself. |

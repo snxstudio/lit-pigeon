@@ -16,7 +16,10 @@ export type ImportWarningCode =
   | 'not-a-design'
   | 'no-rows'
   | 'unsupported-block'
+  | 'plugin-block'
   | 'custom-tool'
   | 'display-condition-dropped'
   | 'heading-level-clamped'
-  | 'empty-row';
+  | 'empty-row'
+  | 'unknown-text-direction'
+  | 'background-repeat-clamped';

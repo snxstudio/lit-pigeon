@@ -1,6 +1,7 @@
 import type { ButtonBlock } from '@lit-pigeon/core';
 import { generateId } from '@lit-pigeon/core';
 import { parseSpacing } from '../../utils/parse-spacing.js';
+import { parseBorder } from '../../utils/parse-border.js';
 import { getAttr, getNumericAttr } from '../../utils/parse-attributes.js';
 
 export function parseButtonBlock(attrs: Record<string, string>, innerText: string): ButtonBlock {
@@ -9,6 +10,7 @@ export function parseButtonBlock(attrs: Record<string, string>, innerText: strin
   // the stored shape always matches the schema's HTML invariant.
   const inner = innerText.trim();
   const content = /^<p[\s>]/i.test(inner) ? inner : `<p>${inner}</p>`;
+  const border = parseBorder(getAttr(attrs, 'border'));
   return {
     id: generateId(),
     type: 'button',
@@ -18,6 +20,7 @@ export function parseButtonBlock(attrs: Record<string, string>, innerText: strin
       backgroundColor: getAttr(attrs, 'background-color', '#3b82f6'),
       textColor: getAttr(attrs, 'color', '#ffffff'),
       borderRadius: getNumericAttr(attrs, 'border-radius', 4),
+      ...(border ? { border } : {}),
       padding: parseSpacing(getAttr(attrs, 'padding'), 10),
       innerPadding: parseSpacing(getAttr(attrs, 'inner-padding'), 12),
       fontSize: getNumericAttr(attrs, 'font-size', 16),

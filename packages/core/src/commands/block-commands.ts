@@ -3,6 +3,7 @@ import type { Command } from '../types/editor.js';
 import { createDocStep } from '../state/transaction.js';
 import { createBlockSelection } from '../state/selection.js';
 import { generateId } from '../utils/id.js';
+import { isBlockTypeAvailable } from '../schema/block-registry.js';
 
 function findRowAndColumn(
   doc: { body: { rows: Array<{ id: string; locked: boolean; columns: Array<{ id: string; blocks: ContentBlock[] }> }> } },
@@ -24,6 +25,10 @@ export function insertBlock(
   index?: number,
 ): Command {
   return (state, dispatch) => {
+    // Gated here rather than in the palette so the keyboard, MCP and REST
+    // paths cannot insert a block type the host left out.
+    if (!isBlockTypeAvailable(block.type)) return false;
+
     const loc = findRowAndColumn(state.doc, rowId, columnId);
     if (!loc) return false;
 

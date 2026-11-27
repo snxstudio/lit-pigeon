@@ -18,6 +18,8 @@ export type {
   NavBarBlock,
   NavLink,
   Spacing,
+  Border,
+  LinkStyle,
   DeviceVisibility,
   SocialIcon,
 } from './types/document.js';
@@ -85,10 +87,15 @@ export {
   getDefaultValues,
 } from './schema/defaults.js';
 export { validateDocument, isValidDocument, type ValidationError } from './schema/schema.js';
+export { LINK_STYLE_NAME, linkStyleToCss, cssToLinkStyle } from './schema/link-style.js';
+export { generatedStyleMarker, generatedStyleName } from './schema/generated-style.js';
 export {
   registerBlock,
   getBlockDefinition,
   getAllBlockDefinitions,
+  getAvailableBlockDefinitions,
+  setAvailableBlockTypes,
+  isBlockTypeAvailable,
   isKnownBlockType,
 } from './schema/block-registry.js';
 
@@ -109,6 +116,8 @@ export { PluginRegistry } from './plugins/plugin-registry.js';
 // Utils
 export { generateId } from './utils/id.js';
 export { deepEqual } from './utils/deep-equal.js';
+export { resolveDirection } from './utils/direction.js';
+export { resolveRowBackground, type ResolvedRowBackground } from './utils/row-background.js';
 
 // Templates
 export {

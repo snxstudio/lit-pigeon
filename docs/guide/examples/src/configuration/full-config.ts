@@ -28,6 +28,8 @@ export function createEditorConfig(getToken: TokenGetter, assetStorage: AssetSto
       { name: 'Inter', family: 'Inter, Arial, sans-serif', url: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;700' },
     ],
     rowLibrary: new InMemoryRowLibraryStorage(),
+    // The palette offers these, in this order. Omit the field for all of them.
+    blocks: ['text', 'image', 'button', 'divider', 'spacer'],
     linkTypes: [{ id: 'preferences', label: 'Email preferences', href: '{{preferences_url}}' }],
     locale: 'fr',
     messages: { fr: { 'toolbar.preview': 'Aperçu', 'toolbar.export': 'Exporter' } },

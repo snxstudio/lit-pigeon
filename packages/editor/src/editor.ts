@@ -51,6 +51,7 @@ import {
   createDocStep,
   generateId,
   SYSTEM_LINK_TYPES,
+  setAvailableBlockTypes,
 } from '@lit-pigeon/core';
 import type { HistoryState, TransactionSnapshot, BrandKit, BrandKitStorage, BrandLogo, ImageBlock, FontDefinition, LinkType } from '@lit-pigeon/core';
 
@@ -271,6 +272,7 @@ export class PigeonEditor extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     configureI18n(this.config.locale, this.config.messages);
+    setAvailableBlockTypes(this.config.blocks);
     // Hosts move the element (dialogs, tabs); a re-attach must not reset the document.
     if (!this._state) this._initState();
     this._applyDir();
@@ -311,6 +313,7 @@ export class PigeonEditor extends LitElement {
     }
     if (changed.has('config')) {
       configureI18n(this.config.locale, this.config.messages);
+      setAvailableBlockTypes(this.config.blocks);
       this._applyDir();
       this._resolveBrandKit();
     }
@@ -374,6 +377,31 @@ export class PigeonEditor extends LitElement {
   /** Redo the last undone change. */
   redo(): boolean {
     return !this.readonly && coreRedo(this._state, this._dispatch);
+  }
+
+  /** Whether {@link undo} would change anything, for a host rendering its own toolbar. */
+  canUndo(): boolean {
+    return !this.readonly && this._canUndo;
+  }
+
+  /** Whether {@link redo} would change anything, for a host rendering its own toolbar. */
+  canRedo(): boolean {
+    return !this.readonly && this._canRedo;
+  }
+
+  /**
+   * Open the built-in preview panel, as the toolbar's own preview button does:
+   * without a `renderer` there is nothing to preview, so it dispatches
+   * `pigeon:preview` for the host to handle and returns false.
+   */
+  showPreview(): boolean {
+    this._handlePreview();
+    return this._previewOpen;
+  }
+
+  /** Close the built-in preview panel. */
+  hidePreview(): void {
+    this._setPreviewOpen(false);
   }
 
   /** Export the document as JSON. */
@@ -454,6 +482,7 @@ export class PigeonEditor extends LitElement {
           .selection=${sel}
           .brandKit=${this._activeBrandKit}
           .rowLibrary=${this._resolveRowLibrary()}
+          .blocks=${this.config.blocks}
           @row-select=${this._handleRowSelect}
           @block-select=${this._handleBlockSelect}
           @palette-item-activate=${this._handlePaletteActivate}
@@ -517,9 +546,10 @@ export class PigeonEditor extends LitElement {
         .renderer=${this.renderer}
         .documentToMjml=${this.documentToMjml}
         .fonts=${this._renderFonts()}
+        @preview-close=${() => this._setPreviewOpen(false)}
         @click=${(e: Event) => {
           if ((e.target as HTMLElement).classList?.contains('overlay')) {
-            this._previewOpen = false;
+            this._setPreviewOpen(false);
           }
         }}
       ></pigeon-preview>
@@ -808,9 +838,23 @@ export class PigeonEditor extends LitElement {
     this._fullscreen = !this._fullscreen;
   }
 
+  /**
+   * The single point every preview open/close goes through, so `pigeon:preview-open`
+   * and `pigeon:preview-close` fire whether the toolbar, the overlay or a host
+   * method moved it, and a host's own button can stay in sync with the built-in one.
+   */
+  private _setPreviewOpen(open: boolean) {
+    if (this._previewOpen === open) return;
+    this._previewOpen = open;
+    this.dispatchEvent(new CustomEvent(open ? 'pigeon:preview-open' : 'pigeon:preview-close', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
   private _handlePreview() {
     if (this.renderer) {
-      this._previewOpen = true;
+      this._setPreviewOpen(true);
     } else {
       this.dispatchEvent(new CustomEvent('pigeon:preview', {
         bubbles: true,

@@ -7,7 +7,7 @@ import { starter } from './helpers.js';
 
 const LEGACY = `<mjml>
   <mj-head>
-    <mj-title>Ignored</mj-title>
+    <mj-title>Legacy campaign</mj-title>
     <mj-font name="Inter" href="https://fonts.example.com/inter.css" />
     <mj-attributes><mj-all font-family="Inter, Arial" /><mj-text color="#333333" /></mj-attributes>
     <mj-style inline="inline">.x { color: red; }</mj-style>
@@ -38,13 +38,13 @@ describe('load and save: MJML round trip', () => {
     expect(messages).toContain('Unknown block element: mj-carousel');
     expect(messages).toContain('css-class "rule" on <mj-divider> was dropped');
     expect(warnings.every((w) => w.line === undefined)).toBe(true);
-    expect(document.metadata.name).toBe('Imported Template');
+    expect(document.metadata.name).toBe('Legacy campaign');
     expect(document.metadata.previewText).toBe('Preview line');
     expect(document.body.attributes.width).toBe(640);
     expect(document.body.attributes.css).toBe('.brand { color: #0055ff; }');
-    // Column widths are not read: every column gets an equal share.
+    // The 30%/70% widths in the source are read onto the 12-column grid.
     expect(shape(document)).toEqual([
-      { ratios: [6, 6], condition: undefined, blocks: [['text'], ['image']] },
+      { ratios: [4, 8], condition: undefined, blocks: [['text'], ['image']] },
       { ratios: [12], condition: 'user.vip', blocks: [['divider']] },
     ]);
     expect(document.body.rows[0].attributes.cssClass).toBe('hero');
@@ -57,7 +57,7 @@ describe('load and save: MJML round trip', () => {
     expect(saved.mjml).toContain('Left<br>line');
     expect(saved.mjml).not.toContain('</br>');
     expect(saved.mjml).not.toContain('<mj-font');
-    expect(saved.mjml).not.toContain('mj-title');
+    expect(saved.mjml).toContain('<mj-title>Legacy campaign</mj-title>');
     expect(saved.mjml).not.toContain('.x { color: red; }');
     expect(saved.mjml).toContain('{{#if user.vip}}');
     expect(saved.html).toMatch(/<!doctype html>/i);
@@ -76,12 +76,12 @@ describe('load and save: MJML round trip', () => {
     expect(second.mjml).toBe(first.mjml);
   });
 
-  it('loses column widths set in the editor on the next open', async () => {
+  it('keeps column widths set in the editor on the next open', async () => {
     const doc = createDefaultDocument();
     doc.body.rows.push(createRow([createColumn([createBlock('text')]), createColumn([createBlock('text')])], [4, 8]));
     const saved = await saveTemplate(doc);
     expect(saved.mjml).toContain('width="33.33%"');
-    expect(openTemplate(saved).document.body.rows[0].columnRatios).toEqual([6, 6]);
+    expect(openTemplate(saved).document.body.rows[0].columnRatios).toEqual([4, 8]);
   });
 
   it('regenerates ids and drops locked on every open', async () => {
@@ -92,7 +92,7 @@ describe('load and save: MJML round trip', () => {
     const reopened = openTemplate(await saveTemplate(doc)).document;
     expect(reopened.body.rows[0].id).not.toBe(row.id);
     expect(reopened.body.rows[0].locked).toBe(false);
-    expect(reopened.metadata.name).toBe('Imported Template');
+    expect(reopened.metadata.name).toBe('Kept name');
   });
 });
 

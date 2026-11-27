@@ -20,6 +20,8 @@ All events are `CustomEvent`s dispatched on the `<pigeon-editor>` element with
 | `pigeon:export-html` | `{ document, html: string \| null }` | The user chooses Export HTML. `html` comes from `renderer` and is `null` without one. Fires after rendering, so it is asynchronous. |
 | `pigeon:export-mjml` | `{ document, mjml: string \| null }` | The user chooses Export MJML. `mjml` is `null` without `documentToMjml`. |
 | `pigeon:export-json` | `{ document }` | The user chooses Export JSON. |
+| `pigeon:preview-open` | `null` | The built-in preview opens, however it was opened — the toolbar button or `showPreview()`. Not fired when it was already open. |
+| `pigeon:preview-close` | `null` | The built-in preview closes, however it was closed — its own × button, Escape, a click on the overlay, or `hidePreview()`. Not fired when it was already closed. |
 | `pigeon:merge-tag-request` | `null` | The user clicks a Tag button while `config.mergeTags` is set but has no tags. Answer with `setMergeTags()`. |
 | `brand-kit-change` | `{ brandKit: BrandKit }` | The user edits the active brand kit in the Brand tab. Fires before the storage `save()`. |
 | `brand-kit-error` | `{ error, operation: 'list' \| 'save' }` | A `BrandKitStorage` call from `config.brandKit` rejected. |
@@ -135,8 +137,13 @@ handler or ignore the second event in the same task.
 | `loadDocument(doc)` | `void` | Replaces the document, clears undo history and fires `pigeon:change`. Plugins from `config.plugins` are re-initialised. |
 | `undo()` | `boolean` | Undoes the last change; `false` if there was nothing to undo. |
 | `redo()` | `boolean` | Redoes the last undone change; `false` if there was nothing to redo. |
+| `canUndo()` | `boolean` | Whether `undo()` would change anything. Always `false` under `readonly`. Use it to enable your own Undo button — the built-in toolbar disables on the same value. |
+| `canRedo()` | `boolean` | Whether `redo()` would change anything. Always `false` under `readonly`. |
+| `showPreview()` | `boolean` | Opens the built-in preview and returns `true`. Without a `renderer` there is nothing to preview, so it fires `pigeon:preview` for you to handle and returns `false` — the same contract as the toolbar's own button. |
+| `hidePreview()` | `void` | Closes the built-in preview. |
 | `exportJson()` | `PigeonDocument` | Same as `getDocument()`. |
 | `exportMjml()` | `string \| null` | `documentToMjml(doc, { fonts })`, or `null` without `documentToMjml`. |
+| `exportPlainText()` | `string \| null` | `documentToPlainText(doc)`, or `null` without `documentToPlainText`. |
 | `exportHtml()` | `Promise<string \| null>` | The HTML from `renderer.render(doc, { fonts })`, or `null` without a renderer. Render errors are discarded; call the renderer yourself if you need them. |
 | `setMergeTags(tags)` | `void` | Replaces `config` with a copy whose `mergeTags.tags` is `tags`. A later assignment of `config` overwrites it. |
 

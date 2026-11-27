@@ -76,9 +76,8 @@ not return `errors`.
 
 A template that has been saved once opens and saves again without further
 changes: the output of `documentToMjml` is stable under a second round trip.
-The exception is column widths. A layout the user sets in the editor (for
-example 4:8) is saved in the MJML, but comes back as equal columns the next
-time the template is opened; see the first row of the table below.
+Column widths survive it — a 4:8 layout set in the editor is written out as
+33.33%/66.67% and read back as 4:8.
 
 ### What the parser keeps
 
@@ -97,6 +96,9 @@ time the template is opened; see the first row of the table below.
   as `<br>`, and escaped entities inside `mj-text`, `mj-button` and `mj-raw`.
 - Row display conditions written by the renderer as
   `<mj-raw>{{#if …}}</mj-raw>` around a section.
+- `mj-group`, when the section is one whole group: the row gets
+  `noStackOnMobile` and is written back out as a group, so its columns keep
+  sitting side by side on mobile.
 
 ### What the parser does not keep
 
@@ -109,18 +111,19 @@ With a warning:
 | Unknown `mj-body` children | Dropped. |
 | `mj-hero` children other than `mj-text` and `mj-button` | Dropped. |
 | `css-class` on any element other than section, column, text, button or image | Dropped. |
+| A section mixing `mj-group` with loose columns, or holding more than one group | Flattened. A row-level flag cannot describe it, and applying it anyway would stop the ungrouped columns stacking too, so those columns will stack on mobile. |
+| `mj-column` widths totalling more than the body width | Scaled to fit. Usually a sign the source was authored against a different body width. |
 
 Silently:
 
 | Input | What happens |
 |---|---|
-| `mj-column` `width` | Ignored, including in MJML that Lit Pigeon wrote itself. Every column in a section gets an equal share of the 12-column grid, so a 30%/70% layout opens as 50%/50%. [`restoreColumnWidths`](./migrating-from-grapesjs.md#2-import-the-mjml) re-applies the widths after parsing. |
-| `mj-group` | Its columns are imported as ordinary columns. |
+| `mj-column` `width` | Rounded to the nearest twelfth of the 12-column grid, so a 30%/70% layout opens as 4:8 and saves back as 33.33%/66.67%. Widths that overflow the body warn and are scaled to fit. |
 | `mj-font` | Dropped. Register fonts with `config.fontConfig` and pass them to `documentToMjml` and `render`. |
-| `mj-title`, `mj-breakpoint`, `mj-html-attributes` | Dropped. |
+| `mj-breakpoint`, `mj-html-attributes` | Dropped. |
 | `<mj-style inline="inline">` | Dropped, so its rules are no longer inlined into the HTML. Move them to a non-inline `mj-style` or into the content. |
 | Attributes the document model has no field for (for example section borders, image height, button width) | Dropped. The fields each block keeps are listed in [`packages/core/src/types/document.ts`](../../packages/core/src/types/document.ts). |
-| `metadata.name` | Always `'Imported Template'`. Keep the template's name in your own record. |
+| `metadata.name` | Read from `mj-title`, falling back to `'Imported Template'` when the source has none. |
 | Ids | New ids are generated on every open, so ids are not stable across loads. |
 | `RowNode.locked` | Always `false`. |
 | Custom blocks | Their `renderMjml` output is plain MJML, so it opens as built-in blocks (or is dropped). See [Custom blocks](./custom-blocks.md). |
@@ -185,8 +188,7 @@ A practical approach for a production application is to store all three:
 the JSON document as the source of truth for editing, the MJML for
 portability, and the HTML for sending. If MJML must remain the source of
 truth, show the parse warnings to users when a template opens, and avoid
-features that do not survive the round trip (custom blocks, row locking,
-uneven column widths).
+features that do not survive the round trip (custom blocks, row locking).
 
 In every case, treat stored HTML as untrusted: it was produced in a browser
 you do not control. Re-render it on the server from the MJML or JSON before
