@@ -15,7 +15,7 @@ All events are `CustomEvent`s dispatched on the `<pigeon-editor>` element with
 | `pigeon:ready` | `null` | Once, after the element's first render. Moving the element in the DOM does not fire it again. |
 | `pigeon:change` | `{ document: PigeonDocument }` | After every change of editor state: every edit, every selection change, and every document load (setting `document` or calling `loadDocument()`). |
 | `pigeon:select` | `{ selection: Selection \| null }` | After every edit and selection change (not on document load). |
-| `pigeon:preview` | `null` | The toolbar's Preview button is clicked. With a `renderer`, the built-in preview also opens. See the known issue below. |
+| `pigeon:preview` | `null` | The toolbar's Preview button is clicked. With a `renderer`, the built-in preview also opens. |
 | `pigeon:export` | `null` | The toolbar's Export menu is opened. |
 | `pigeon:export-html` | `{ document, html: string \| null }` | The user chooses Export HTML. `html` comes from `renderer` and is `null` without one. Fires after rendering, so it is asynchronous. |
 | `pigeon:export-mjml` | `{ document, mjml: string \| null }` | The user chooses Export MJML. `mjml` is `null` without `documentToMjml`. |
@@ -120,14 +120,6 @@ content, so this tracker reports unsaved changes after undoing back to the
 saved state. If that matters, compare `document.body` with the saved one using
 `deepEqual` from `@lit-pigeon/core` (`metadata.updatedAt` is not restored by
 undo, so compare the body only).
-
-### Known issue: duplicate `pigeon:preview`
-
-In `@lit-pigeon/editor` 0.3.3, the toolbar's own `pigeon:preview` event is not
-stopped at the editor boundary. Without a `renderer`, the host receives
-`pigeon:preview` **twice** per click; with a `renderer`, it receives it once
-while the built-in preview opens. If you handle Preview yourself, debounce the
-handler or ignore the second event in the same task.
 
 ## Methods
 

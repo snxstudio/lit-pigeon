@@ -121,8 +121,8 @@ same release, `pigeon:export` (Export menu opened) and
 `pigeon:merge-tag-request` started firing; before 0.3.3 they were documented
 but never dispatched.
 
-`pigeon:preview` still reaches the host twice when no `renderer` is set; see
-[Events and API](./events-and-api.md#known-issue-duplicate-pigeonpreview).
+`pigeon:preview` reached the host twice when no `renderer` was set in 0.3.4 and
+earlier; later releases send it once per click.
 
 ## Keyboard shortcuts act on the host page's own widgets
 
