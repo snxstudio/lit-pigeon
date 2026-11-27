@@ -1,5 +1,24 @@
 # @lit-pigeon/lint
 
+## 0.1.6
+
+### Patch Changes
+
+- Updated dependencies [c9b2881]
+- Updated dependencies [c532903]
+- Updated dependencies [9d63a2a]
+- Updated dependencies [e2f6771]
+- Updated dependencies [cb51c66]
+- Updated dependencies [dbe6173]
+- Updated dependencies [33a9939]
+- Updated dependencies [ee2d70d]
+- Updated dependencies [a8b808c]
+- Updated dependencies [6c35111]
+- Updated dependencies [519cec3]
+- Updated dependencies [e0b4b49]
+- Updated dependencies [3448501]
+  - @lit-pigeon/core@0.4.0
+
 ## 0.1.5
 
 ### Patch Changes

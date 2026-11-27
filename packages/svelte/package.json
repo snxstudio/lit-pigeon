@@ -1,6 +1,6 @@
 {
   "name": "@lit-pigeon/svelte",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "Svelte wrapper for the Pigeon email editor",
   "type": "module",
   "main": "./dist/index.js",
