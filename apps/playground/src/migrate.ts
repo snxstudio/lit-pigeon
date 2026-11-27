@@ -3,10 +3,12 @@ import { registerStandardBlocks } from '@lit-pigeon/blocks';
 import { unlayerToDocument, type ImportWarning } from '@lit-pigeon/import-unlayer';
 import type { PigeonEditor } from '@lit-pigeon/editor';
 import { unlayerSamples } from './unlayer-samples.js';
+import { loadRendererOnPreview } from './preview.js';
 
 registerStandardBlocks();
 
 const editor = document.getElementById('editor') as PigeonEditor;
+loadRendererOnPreview(editor);
 const input = document.getElementById('design-input') as HTMLTextAreaElement;
 const sampleSelect = document.getElementById('sample-select') as HTMLSelectElement;
 const status = document.getElementById('status')!;
