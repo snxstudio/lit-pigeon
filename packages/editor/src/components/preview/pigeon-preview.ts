@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { keyed } from 'lit/directives/keyed.js';
 import type { PigeonDocument, Renderer, FontDefinition } from '@lit-pigeon/core';
 import { t } from '../../i18n/index.js';
 
@@ -330,13 +331,14 @@ export class PigeonPreview extends LitElement {
   private _renderContent() {
     switch (this._viewMode) {
       case 'preview':
-        return html`
+        // Chrome leaves a sandboxed iframe blank when its srcdoc changes, so each render gets a new one.
+        return keyed(this._htmlContent, html`
           <iframe
             style="width: ${this._device === 'mobile' ? '375px' : '100%'}; height: 100%;"
             sandbox="allow-popups allow-popups-to-escape-sandbox"
             srcdoc=${this._htmlContent}
           ></iframe>
-        `;
+        `);
       case 'html':
         return html`<div class="source-view">${this._htmlContent}</div>`;
       case 'mjml':

@@ -10,6 +10,7 @@ import {
   type PigeonDocument,
 } from '@lit-pigeon/core';
 import { registerStandardBlocks } from '@lit-pigeon/blocks';
+import { loadRendererOnPreview } from './preview.js';
 import type { PigeonEditor } from '@lit-pigeon/editor';
 
 // Register the optional standard block catalog (video, countdown, accordion,
@@ -416,6 +417,8 @@ document.getElementById('btn-export')!.addEventListener('click', () => {
 editor.addEventListener('pigeon:export-html', () => void openExportModal('html'));
 editor.addEventListener('pigeon:export-mjml', () => void openExportModal('mjml'));
 editor.addEventListener('pigeon:export-json', () => void openExportModal('json'));
+
+loadRendererOnPreview(editor);
 
 document.getElementById('btn-json')!.addEventListener('click', () => {
   const doc = editor.getDocument();

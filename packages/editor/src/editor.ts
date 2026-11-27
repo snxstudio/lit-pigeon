@@ -852,10 +852,13 @@ export class PigeonEditor extends LitElement {
     }));
   }
 
-  private _handlePreview() {
+  private _handlePreview(e?: Event) {
+    // The toolbar's own preview event is composed; stop it so the host sees only ours.
+    e?.stopPropagation();
     if (this.renderer) {
       this._setPreviewOpen(true);
-    } else {
+    }
+    if (e || !this.renderer) {
       this.dispatchEvent(new CustomEvent('pigeon:preview', {
         bubbles: true,
         composed: true,

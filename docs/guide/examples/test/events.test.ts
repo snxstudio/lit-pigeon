@@ -109,16 +109,16 @@ describe('events', () => {
     expect(await el.exportHtml()).toBeNull();
   });
 
-  it('pigeon:preview reaches the host twice without a renderer and once with one (known issue)', async () => {
+  it('pigeon:preview reaches the host once per click, with or without a renderer', async () => {
     const el = await mount();
     const previews = record(el, 'pigeon:preview');
     const toolbar = shadow<HTMLElement & Record<string, () => void>>(el, 'pigeon-toolbar');
     toolbar._onPreview();
-    expect(previews).toHaveLength(2);
+    expect(previews).toHaveLength(1);
     el.renderer = new MjmlRenderer();
     await el.updateComplete;
     toolbar._onPreview();
-    expect(previews).toHaveLength(3);
+    expect(previews).toHaveLength(2);
   });
 
   it('keyboard shortcuts ignore key presses aimed at host widgets', async () => {
