@@ -14,6 +14,7 @@ export default defineConfig({
       'packages/lint',
       'packages/figma-import',
       'packages/mcp-server',
+      'packages/thumbnail',
       'packages/svelte',
       'packages/vue',
       'docs/guide/examples',

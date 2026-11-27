@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { AssetStorage, BrandKitStorage } from '@lit-pigeon/core';
-import { handleRequest, type RouteContext } from './route.js';
+import { handleRequest, type RouteContext, type ThumbnailRenderer } from './route.js';
 
 export interface CreateHandlerOptions {
   /** Require this exact bearer token on every request. */
@@ -25,6 +25,13 @@ export interface CreateHandlerOptions {
    * are enabled; otherwise they 503.
    */
   assetStorage?: AssetStorage;
+  /**
+   * Optional thumbnail rasteriser, e.g. `renderThumbnail` from
+   * `@lit-pigeon/thumbnail`. When supplied, `/render/thumbnail` is enabled;
+   * otherwise it 503s. Kept injected so this package needs no headless
+   * browser to serve every other route.
+   */
+  thumbnailRenderer?: ThumbnailRenderer;
 }
 
 /**
@@ -49,6 +56,7 @@ export function createHandler(options: CreateHandlerOptions = {}): RestHandler {
     ...(options.bearerToken ? { bearerToken: options.bearerToken } : {}),
     ...(options.brandKitStorage ? { brandKitStorage: options.brandKitStorage } : {}),
     ...(options.assetStorage ? { assetStorage: options.assetStorage } : {}),
+    ...(options.thumbnailRenderer ? { thumbnailRenderer: options.thumbnailRenderer } : {}),
   };
 
   return async function handler(req, res) {
