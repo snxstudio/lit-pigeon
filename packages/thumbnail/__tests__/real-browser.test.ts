@@ -1,3 +1,5 @@
+import { createServer } from 'node:http';
+import type { AddressInfo } from 'node:net';
 import { describe, it, expect } from 'vitest';
 import { createBlock, createColumn, createDefaultDocument, createRow } from '@lit-pigeon/core';
 import { renderThumbnail } from '../src/thumbnail.js';
@@ -24,6 +26,12 @@ function doc(backgroundColor: string) {
   const d = createDefaultDocument('Thumbnail');
   d.body.attributes.backgroundColor = backgroundColor;
   d.body.rows.push(createRow([createColumn([createBlock('text', { content: '<p>Hello</p>' })])]));
+  return d;
+}
+
+function htmlDoc(content: string) {
+  const d = createDefaultDocument('Thumbnail');
+  d.body.rows.push(createRow([createColumn([createBlock('html', { content })])]));
   return d;
 }
 
@@ -64,5 +72,46 @@ describe.skipIf(!available)('rasterising with a real browser', () => {
       renderThumbnail(doc('#ff0000'), { executablePath, browserArgs, width: 200, height: 150 }),
     ]);
     expect(white.thumbnail).not.toBe(red.thumbnail);
+  });
+
+  it('requests nothing from a local server named in an HTML block', async () => {
+    const requests: string[] = [];
+    const server = createServer((req, res) => {
+      requests.push(req.url ?? '');
+      res.end('internal');
+    });
+    await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+    const { port } = server.address() as AddressInfo;
+    try {
+      await renderThumbnail(
+        htmlDoc(
+          `<img src="http://127.0.0.1:${port}/img">` +
+            `<img src="http://localhost:${port}/name">` +
+            `<iframe src="http://127.0.0.1:${port}/frame"></iframe>` +
+            `<iframe srcdoc="<img src='http://127.0.0.1:${port}/srcdoc'>"></iframe>` +
+            `<link rel="stylesheet" href="http://127.0.0.1:${port}/css">` +
+            `<meta http-equiv="refresh" content="0;url=http://127.0.0.1:${port}/refresh">` +
+            `<script>fetch('http://127.0.0.1:${port}/script')</script>`,
+        ),
+        { executablePath, browserArgs, width: 200, height: 150 },
+      );
+      await new Promise((resolve) => setTimeout(resolve, 200));
+      expect(requests).toEqual([]);
+    } finally {
+      server.close();
+    }
+  });
+
+  it('still paints a data: image', async () => {
+    const image = (colour: string) =>
+      htmlDoc(
+        `<img width="100" height="100" src="data:image/svg+xml,` +
+          `%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='100' height='100' fill='${colour}'/%3E%3C/svg%3E">`,
+      );
+    const [red, blue] = await Promise.all([
+      renderThumbnail(image('red'), { executablePath, browserArgs, width: 200, height: 150 }),
+      renderThumbnail(image('blue'), { executablePath, browserArgs, width: 200, height: 150 }),
+    ]);
+    expect(red.thumbnail).not.toBe(blue.thumbnail);
   });
 });

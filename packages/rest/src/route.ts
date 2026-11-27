@@ -147,10 +147,12 @@ const SERVER_ONLY_THUMBNAIL_OPTIONS = ['executablePath', 'browserArgs', 'launch'
 // unbounded request can exhaust the server's memory without ever tripping the
 // time budget. These cover any thumbnail worth rendering; past them the
 // caller wants a full-page render, not a preview.
+// `timeoutMs` is capped so a caller cannot pin a browser process for an hour.
 const THUMBNAIL_BOUNDS = {
   width: 4000,
   height: 8000,
   deviceScaleFactor: 4,
+  timeoutMs: 60_000,
 } as const;
 
 function outOfBoundsThumbnailOption(options: Record<string, unknown>): string | null {

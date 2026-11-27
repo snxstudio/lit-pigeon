@@ -92,6 +92,7 @@ describe('POST /render/thumbnail', () => {
     ['width', 4001],
     ['height', 8001],
     ['deviceScaleFactor', 5],
+    ['timeoutMs', 60001],
     ['width', 0],
     ['height', -1],
     ['deviceScaleFactor', 'big'],
@@ -106,7 +107,7 @@ describe('POST /render/thumbnail', () => {
   it('allows dimensions at the bounds', async () => {
     const renderer = vi.fn<ThumbnailRenderer>(ok);
     const res = await post(
-      { document: document(), options: { width: 4000, height: 8000, deviceScaleFactor: 4 } },
+      { document: document(), options: { width: 4000, height: 8000, deviceScaleFactor: 4, timeoutMs: 60000 } },
       renderer,
     );
     expect(res.status).toBe(200);

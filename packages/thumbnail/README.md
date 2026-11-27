@@ -48,9 +48,17 @@ Headless browsers are the one dependency here that can hang rather than fail. `t
 
 `browserArgs` is empty by default: the browser sandbox stays on, because the HTML being rasterised comes from a document this package did not write. Containers that run as root typically need `--no-sandbox`, which is a decision for whoever owns the container.
 
+### Network policy
+
+The document is untrusted input, so the page it is loaded into is locked down. JavaScript is off. Every request the page makes is intercepted: only `http:` and `https:` requests whose host resolves entirely to public addresses go through, and `data:` URLs render as usual. Loopback, private (`10/8`, `172.16/12`, `192.168/16`, `100.64/10`), link-local (`169.254/16`, `fe80::/10`, which covers cloud metadata endpoints), unique-local (`fc00::/7`) and unspecified addresses are blocked, as are `localhost`, other schemes such as `file:`, and any hostname with a DNS record pointing at one of those ranges. Redirects are followed up to five hops with each hop checked the same way. Frame navigations are blocked outright, so an `<iframe src>` or a meta refresh loads nothing.
+
+There is no option to relax this. A blocked image simply does not appear in the thumbnail.
+
+The check resolves a hostname and the request then resolves it again, so a DNS server that answers differently the second time is not covered; run the service with egress firewalling if that matters to you.
+
 ### Bring your own browser
 
-`launch` takes anything matching `ThumbnailBrowser` — a structural subset of Playwright's `Browser`. A Playwright browser satisfies it as-is, so you can reuse one you already have running instead of paying for a launch per thumbnail:
+`launch` takes anything matching `ThumbnailBrowser` — a structural subset of Playwright's `Browser`, including the `page.route` interception the network policy runs on. A Playwright browser satisfies it as-is, so you can reuse one you already have running instead of paying for a launch per thumbnail:
 
 ```ts
 const browser = await chromium.launch();

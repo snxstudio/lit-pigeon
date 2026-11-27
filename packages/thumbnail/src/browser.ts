@@ -1,14 +1,27 @@
 /**
  * The slice of a headless browser this package drives.
  *
- * Deliberately structural and tiny: a real Playwright `Browser` satisfies
- * `ThumbnailBrowser` as-is, a Puppeteer one adapts in a few lines, and tests
- * can pass a fake. Nothing here imports a browser driver — the default
+ * Deliberately structural and small: a real Playwright `Browser` satisfies
+ * `ThumbnailBrowser` as-is and tests can pass a fake. Any other driver has to
+ * supply request interception that can fetch without following redirects. Nothing here imports a browser driver — the default
  * launcher below is the only place `playwright-core` is named, and it is
  * imported dynamically so hosts that never take a thumbnail never load it.
  */
 
+export interface ThumbnailResponse {
+  status(): number;
+  headers(): Record<string, string>;
+}
+
+export interface ThumbnailRoute {
+  request(): { url(): string; isNavigationRequest(): boolean };
+  abort(): Promise<void>;
+  fetch(options?: { url?: string; maxRedirects?: number }): Promise<ThumbnailResponse>;
+  fulfill(options?: { response?: ThumbnailResponse }): Promise<void>;
+}
+
 export interface ThumbnailPage {
+  route(url: string, handler: (route: ThumbnailRoute) => Promise<void>): Promise<unknown>;
   setContent(html: string, options?: { waitUntil?: 'load' | 'domcontentloaded' }): Promise<void>;
   screenshot(options?: {
     type?: 'png' | 'jpeg';
@@ -21,6 +34,7 @@ export interface ThumbnailBrowser {
   newPage(options?: {
     viewport?: { width: number; height: number };
     deviceScaleFactor?: number;
+    javaScriptEnabled?: boolean;
   }): Promise<ThumbnailPage>;
   close(): Promise<void>;
 }

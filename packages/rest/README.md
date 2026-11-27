@@ -70,6 +70,11 @@ headless browser to serve everything else. Pass `thumbnailRenderer:
 renderThumbnail` from [`@lit-pigeon/thumbnail`](../thumbnail) to enable it; left
 unset, the endpoint answers 503, as the brand-kit and asset routes do when their
 storage is unconfigured.
+`width`, `height`, `deviceScaleFactor` and `timeoutMs` are capped at 4000, 8000,
+4 and 60000; anything over is a 400. The renderer loads the document with
+JavaScript off and blocks requests to loopback, private and link-local
+addresses, so a submitted document cannot make the server fetch internal URLs;
+see [its network policy](../thumbnail/README.md#network-policy).
 
 Part of [Lit Pigeon](https://github.com/snxstudio/lit-pigeon) — open-source drag-and-drop email editor.
 

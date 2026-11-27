@@ -1,3 +1,5 @@
+import { lookup } from 'node:dns/promises';
+import { BlockList } from 'node:net';
 import type { PigeonDocument, RenderError } from '@lit-pigeon/core';
 import { renderDocument, type RenderDocumentOptions } from '@lit-pigeon/ssr';
 import { launchChromium, type LaunchBrowser } from './browser.js';
@@ -38,6 +40,19 @@ export interface ThumbnailResult {
 
 const DEFAULTS = { width: 600, height: 800, deviceScaleFactor: 1, timeoutMs: 15_000 } as const;
 
+const PRIVATE_NETWORKS = new BlockList();
+PRIVATE_NETWORKS.addSubnet('0.0.0.0', 8);
+PRIVATE_NETWORKS.addSubnet('10.0.0.0', 8);
+PRIVATE_NETWORKS.addSubnet('100.64.0.0', 10);
+PRIVATE_NETWORKS.addSubnet('127.0.0.0', 8);
+PRIVATE_NETWORKS.addSubnet('169.254.0.0', 16);
+PRIVATE_NETWORKS.addSubnet('172.16.0.0', 12);
+PRIVATE_NETWORKS.addSubnet('192.168.0.0', 16);
+PRIVATE_NETWORKS.addAddress('::', 'ipv6');
+PRIVATE_NETWORKS.addAddress('::1', 'ipv6');
+PRIVATE_NETWORKS.addSubnet('fc00::', 7, 'ipv6');
+PRIVATE_NETWORKS.addSubnet('fe80::', 10, 'ipv6');
+
 /**
  * Rasterise a document to a preview image.
  *
@@ -65,6 +80,34 @@ export async function renderThumbnail(
     const page = await browser.newPage({
       viewport: { width, height },
       deviceScaleFactor: options.deviceScaleFactor ?? DEFAULTS.deviceScaleFactor,
+      javaScriptEnabled: false,
+    });
+    await page.route('**/*', async (route) => {
+      // Can outlive the budget closing the page; a rejection here would be unhandled.
+      try {
+        const request = route.request();
+        if (request.isNavigationRequest()) {
+          await route.abort();
+          return;
+        }
+        let url = new URL(request.url());
+        // The browser follows redirects without asking again, so each hop is checked here.
+        for (let hop = 0; hop < 5; hop += 1) {
+          if (url.protocol !== 'http:' && url.protocol !== 'https:') break;
+          const addresses = await lookup(url.hostname.replace(/^\[|\]$/g, ''), { all: true });
+          if (addresses.some((a) => PRIVATE_NETWORKS.check(a.address, a.family === 6 ? 'ipv6' : 'ipv4'))) break;
+          const response = await route.fetch({ url: url.href, maxRedirects: 0 });
+          const location = response.headers().location;
+          if (response.status() < 300 || response.status() > 399 || !location) {
+            await route.fulfill({ response });
+            return;
+          }
+          url = new URL(location, url);
+        }
+        await route.abort();
+      } catch {
+        await route.abort().catch(() => {});
+      }
     });
     // `load` rather than `networkidle`: remote images that never answer are
     // ordinary in email markup, and the budget above is the real backstop.

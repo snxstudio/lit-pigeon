@@ -3,7 +3,18 @@ import { createBlock, createColumn, createDefaultDocument, createRow } from '@li
 import { renderThumbnail } from '../src/thumbnail.js';
 import { ThumbnailTimeoutError } from '../src/budget.js';
 import { BrowserUnavailableError, launchChromium } from '../src/browser.js';
-import type { LaunchBrowser, ThumbnailBrowser, ThumbnailPage } from '../src/browser.js';
+import type { LaunchBrowser, ThumbnailBrowser, ThumbnailPage, ThumbnailRoute } from '../src/browser.js';
+
+vi.mock('node:dns/promises', async (importOriginal) => {
+  const dns = await importOriginal<typeof import('node:dns/promises')>();
+  return {
+    ...dns,
+    lookup: async (hostname: string, options: object) =>
+      hostname === 'assets.example.com'
+        ? [{ address: '127.0.0.1', family: 4 }]
+        : dns.lookup(hostname, options),
+  };
+});
 
 function doc(content = '<p>Hello</p>') {
   const d = createDefaultDocument('Test');
@@ -20,6 +31,7 @@ interface Fake {
   newPageOptions: () => unknown;
   setContentHtml: () => string;
   screenshotOptions: () => unknown;
+  routeHandler: () => (route: ThumbnailRoute) => Promise<void>;
 }
 
 function fakeBrowser(overrides: Partial<ThumbnailPage> = {}): Fake {
@@ -27,8 +39,12 @@ function fakeBrowser(overrides: Partial<ThumbnailPage> = {}): Fake {
   let newPageOptions: unknown;
   let setContentHtml = '';
   let screenshotOptions: unknown;
+  let routeHandler: (route: ThumbnailRoute) => Promise<void> = async () => {};
 
   const page: ThumbnailPage = {
+    route: async (_url, handler) => {
+      routeHandler = handler;
+    },
     setContent: async (html) => {
       setContentHtml = html;
     },
@@ -56,6 +72,7 @@ function fakeBrowser(overrides: Partial<ThumbnailPage> = {}): Fake {
     newPageOptions: () => newPageOptions,
     setContentHtml: () => setContentHtml,
     screenshotOptions: () => screenshotOptions,
+    routeHandler: () => routeHandler,
   };
 }
 
@@ -74,7 +91,11 @@ describe('renderThumbnail', () => {
     const fake = fakeBrowser();
     const result = await renderThumbnail(doc(), { launch: fake.launch });
 
-    expect(fake.newPageOptions()).toEqual({ viewport: { width: 600, height: 800 }, deviceScaleFactor: 1 });
+    expect(fake.newPageOptions()).toEqual({
+      viewport: { width: 600, height: 800 },
+      deviceScaleFactor: 1,
+      javaScriptEnabled: false,
+    });
     expect(fake.screenshotOptions()).toMatchObject({
       type: 'png',
       clip: { x: 0, y: 0, width: 600, height: 800 },
@@ -91,7 +112,7 @@ describe('renderThumbnail', () => {
       deviceScaleFactor: 2,
     });
 
-    expect(fake.newPageOptions()).toEqual({ viewport: { width: 320, height: 240 }, deviceScaleFactor: 2 });
+    expect(fake.newPageOptions()).toMatchObject({ viewport: { width: 320, height: 240 }, deviceScaleFactor: 2 });
     expect(result).toMatchObject({ width: 320, height: 240 });
   });
 
@@ -167,6 +188,99 @@ describe('the time budget', () => {
     // The launch is still in flight when we give up; the browser it hands back
     // must not be left running.
     await vi.waitFor(() => expect(closes).toBe(1), { timeout: 1000 });
+  });
+});
+
+describe('the network policy', () => {
+  const PUBLIC = 'http://93.184.216.34/logo.png';
+
+  async function send(
+    url: string,
+    responses: Array<{ status: number; location?: string }> = [{ status: 200 }],
+    navigation = false,
+  ) {
+    const fake = fakeBrowser();
+    await renderThumbnail(doc(), { launch: fake.launch });
+    const fetched: string[] = [];
+    let outcome = '';
+    await fake.routeHandler()({
+      request: () => ({ url: () => url, isNavigationRequest: () => navigation }),
+      abort: async () => {
+        outcome = 'aborted';
+      },
+      fetch: async (options) => {
+        fetched.push(options?.url ?? '');
+        const { status, location } = responses[fetched.length - 1];
+        return { status: () => status, headers: () => (location ? { location } : {}) };
+      },
+      fulfill: async () => {
+        outcome = 'fulfilled';
+      },
+    });
+    return { outcome, fetched };
+  }
+
+  it.each([
+    'http://127.0.0.1:8080/admin',
+    'http://localhost/admin',
+    'http://10.0.0.5/',
+    'http://172.16.0.1/',
+    'http://192.168.1.1/',
+    'http://169.254.169.254/latest/meta-data/',
+    'http://100.100.100.200/latest/meta-data/',
+    'http://0.0.0.0/',
+    'http://2130706433/',
+    'http://[::1]/',
+    'http://[::ffff:127.0.0.1]/',
+    'http://[fe80::1]/',
+    'http://[fd00::1]/',
+    'file:///etc/passwd',
+    'ftp://93.184.216.34/logo.png',
+  ])('blocks %s without requesting it', async (url) => {
+    expect(await send(url)).toEqual({ outcome: 'aborted', fetched: [] });
+  });
+
+  it('blocks a public-looking hostname that resolves to a loopback address', async () => {
+    expect(await send('https://assets.example.com/logo.png')).toEqual({ outcome: 'aborted', fetched: [] });
+  });
+
+  it('allows an image on a public address', async () => {
+    expect(await send(PUBLIC)).toEqual({ outcome: 'fulfilled', fetched: [PUBLIC] });
+  });
+
+  it('follows a redirect between public addresses', async () => {
+    const result = await send(PUBLIC, [{ status: 302, location: '/moved.png' }, { status: 200 }]);
+    expect(result).toEqual({ outcome: 'fulfilled', fetched: [PUBLIC, 'http://93.184.216.34/moved.png'] });
+  });
+
+  it('blocks a redirect from a public address to a private one', async () => {
+    const result = await send(PUBLIC, [{ status: 302, location: 'http://169.254.169.254/latest/meta-data/' }]);
+    expect(result).toEqual({ outcome: 'aborted', fetched: [PUBLIC] });
+  });
+
+  it('gives up on a redirect loop', async () => {
+    const result = await send(PUBLIC, Array(5).fill({ status: 302, location: PUBLIC }));
+    expect(result.outcome).toBe('aborted');
+    expect(result.fetched).toHaveLength(5);
+  });
+
+  it('blocks frame navigations, even to a public address', async () => {
+    expect(await send(PUBLIC, [{ status: 200 }], true)).toEqual({ outcome: 'aborted', fetched: [] });
+  });
+
+  it('aborts rather than rejecting when the request fails', async () => {
+    const fake = fakeBrowser();
+    await renderThumbnail(doc(), { launch: fake.launch });
+    const abort = vi.fn(async () => {});
+    await fake.routeHandler()({
+      request: () => ({ url: () => PUBLIC, isNavigationRequest: () => false }),
+      abort,
+      fetch: async () => {
+        throw new Error('connection reset');
+      },
+      fulfill: async () => {},
+    });
+    expect(abort).toHaveBeenCalledTimes(1);
   });
 });
 
